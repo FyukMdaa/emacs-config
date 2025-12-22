@@ -43,7 +43,7 @@
             # init.orgをinit.elとして読み込み
             (pkgs.tangleOrgBabelFile "init.el" ./init.org {})
           ];
-          emacsPackage = pkgs.emacs-git;
+          emacsPackage = pkgs.emacs-pgtk;
           extraRecipeDir = ./recipes;
         };
 
