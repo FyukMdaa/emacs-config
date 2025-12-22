@@ -60,8 +60,12 @@
           ];
         });
 
+	    earlyInitEl = (pkgs.tangleOrgBabelFile "early-init.el" ./early-init.org {});
+	    
       in {
         packages.default = package;
+
+		earlyInitEl = earlyInitEl;
 
         # Home Manager
         homeModules.twist = {
@@ -71,6 +75,7 @@
           programs.emacs-twist = {
             enable = true;
             config = package;
+            earlyInitFile = lib.mkDefault earlyInitEl;
             createInitFile = true;
           };
         };

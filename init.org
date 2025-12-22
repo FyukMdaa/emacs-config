@@ -1,0 +1,2 @@
+#+TITLE: init.org
+#+AUTHER: FyukMdaa
