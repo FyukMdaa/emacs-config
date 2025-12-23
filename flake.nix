@@ -28,6 +28,7 @@
   outputs = { self, nixpkgs, flake-utils, ... } @ inputs:
     flake-utils.lib.eachDefaultSystem (system:
       let
+        inherit (nixpkgs) lib;
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
@@ -68,7 +69,7 @@
 		earlyInitEl = earlyInitEl;
 
         # Home Manager
-        homeModules.twist = {
+        homeModules.twist = { lib, ... }: {
           imports = [
             inputs.twist.homeModules.emacs-twist
           ];
