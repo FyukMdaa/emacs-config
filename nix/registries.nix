@@ -1,5 +1,9 @@
 inputs: [
   {
+    type = "melpa";
+    path = ../recipes;
+  }
+  {
     name = "gnu";
     type = "elpa";
     path = inputs.elpa.outPath + "/elpa-packages";

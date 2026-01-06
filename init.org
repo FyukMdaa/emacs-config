@@ -1,2 +1,621 @@
-#+TITLE: init.org
-#+AUTHER: FyukMdaa
+# -*- mode: org; coding: utf-8-unix -*-
+#+TITLE: Emacs Configuration
+#+AUTHOR: Your Name
+#+DATE: 2026-01-05
+#+STARTUP: overview
+#+PROPERTY: header-args:emacs-lisp :tangle yes
+
+* 初期設定
+** 基本的なEmacs設定
+
+#+begin_src emacs-lisp
+;; 基本設定
+(setq inhibit-startup-message t)
+(setq ring-bell-function 'ignore)
+(setq create-lockfiles nil)
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+(setq custom-file (concat user-emacs-directory "custom.el"))
+
+(when (file-exists-p custom-file)
+  (load custom-file))
+
+;; UI設定
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(menu-bar-mode -1)
+(global-hl-line-mode 1)
+(column-number-mode 1)
+(global-display-line-numbers-mode 1)
+(setq display-line-numbers-type t)
+
+;; 日本語設定
+(set-language-environment "Japanese")
+(prefer-coding-system 'utf-8)
+#+end_src
+
+* パフォーマンス・システム連携
+
+** gcmh
+操作中のGC（ゴミ拾い）を抑制するパッケージ最適化。
+
+#+begin_src emacs-lisp
+(use-package gcmh
+  :ensure t
+  :config
+  (gcmh-mode 1))
+#+end_src
+
+** envrc
+direnv との連携。
+
+#+begin_src emacs-lisp
+(use-package envrc
+  :ensure t
+  :hook (after-init . envrc-global-mode))
+#+end_src
+
+** exec-path-from-shell
+シェルの環境変数を引き継ぐ設定（GUI起動時等）。
+
+#+begin_src emacs-lisp
+(use-package exec-path-from-shell
+  :ensure t
+  :if (display-graphic-p)
+  :config
+  (exec-path-from-shell-initialize))
+#+end_src
+
+* テーマ・外観
+
+** ef-themes
+美しいカラーテーマコレクション
+
+ #+begin_src emacs-lisp
+  (use-package ef-themes
+    :ensure t
+    :config
+    (setq ef-themes-mixed-fonts t
+          ef-themes-variable-pitch-ui t
+          ef-themes-region '(intense no-extend)
+          ef-themes-headings '((1 . (bold 1.3))
+                               (2 . (regular 1.2))
+                               (t . (regular 1.1))))
+    (load-theme 'ef-owl t))
+#+end_src 
+
+** nerd-icons
+アイコンフォントのサポート
+
+#+begin_src emacs-lisp
+(use-package nerd-icons
+  :ensure t
+  :config
+  ;; 初回起動時は M-x nerd-icons-install-fonts を実行
+  )
+#+end_src
+
+** spacious-padding
+適度なパディングで読みやすさ向上
+
+#+begin_src emacs-lisp
+(use-package spacious-padding
+  :ensure t
+  :config
+  (setq spacious-padding-widths
+        '(:internal-border-width 15
+          :header-line-width 4
+          :mode-line-width 6
+          :tab-width 4
+          :right-divider-width 30
+          :scroll-bar-width 8))
+  (spacious-padding-mode 1))
+#+end_src
+
+** moody
+タブ風のモードライン
+
+#+begin_src emacs-lisp
+(use-package moody
+  :ensure t
+  :config
+  (setq x-underline-at-descent-line t)
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-vc-mode))
+#+end_src
+
+** mlscroll
+モードラインのスクロールバー
+
+#+begin_src emacs-lisp
+(use-package mlscroll
+  :ensure t
+  :config
+  (setq mlscroll-width-chars 12)
+  (mlscroll-mode 1))
+#+end_src
+
+** dimmer
+非アクティブウィンドウを暗く
+
+#+begin_src emacs-lisp
+(use-package dimmer
+  :ensure t
+  :config
+  (setq dimmer-fraction 0.4)
+  (dimmer-mode 1))
+#+end_src
+
+** fill-column-indicator
+列の目安線を表示
+
+#+begin_src emacs-lisp
+(use-package fill-column-indicator
+  :ensure t
+  :hook (prog-mode . fci-mode)
+  :config
+  (setq fci-rule-column 80))
+#+end_src
+
+** minimap
+コードのミニマップ表示
+
+#+begin_src emacs-lisp
+(use-package minimap
+  :ensure t
+  :config
+  (setq minimap-window-location 'right)
+  (setq minimap-width-fraction 0.1)
+  :bind ("C-c m" . minimap-mode))
+#+end_src
+
+** hide-mode-line
+モードラインの非表示機能
+
+#+begin_src emacs-lisp
+(use-package hide-mode-line
+  :ensure t
+  :hook ((treemacs-mode imenu-list-minor-mode) . hide-mode-line-mode))
+#+end_src
+
+* Git統合
+
+** diff-hl
+変更箇所の視覚化
+
+#+begin_src emacs-lisp
+(use-package diff-hl
+  :ensure t
+  :config
+  (global-diff-hl-mode 1)
+  (diff-hl-flydiff-mode 1)
+  ;; Dired と Magit と連携
+  :hook ((magit-pre-refresh . diff-hl-magit-pre-refresh)
+         (magit-post-refresh . diff-hl-magit-post-refresh)))
+#+end_src
+
+* 編集支援
+
+** paren
+対応する括弧をハイライト
+
+#+begin_src emacs-lisp
+(use-package paren
+  :ensure nil
+  :config
+  (setq show-paren-delay 0)
+  (setq show-paren-style 'mixed)
+  (show-paren-mode 1))
+#+end_src
+
+** rainbow-delimiters
+括弧をカラフルに
+
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+** puni
+構造化編集のサポート
+
+#+begin_src emacs-lisp
+(use-package puni
+  :ensure t
+  :hook ((prog-mode sgml-mode nxml-mode tex-mode) . puni-mode)
+  :bind (:map puni-mode-map
+              ("C-M-f" . puni-forward-sexp)
+              ("C-M-b" . puni-backward-sexp)
+              ("C-M-t" . puni-transpose)
+              ("C-)" . puni-slurp-forward)
+              ("C-}" . puni-barf-forward)
+              ("C-(" . puni-slurp-backward)
+              ("C-{" . puni-barf-backward)))
+#+end_src
+
+** volatile-highlights
+編集箇所を一時的にハイライト
+
+#+begin_src emacs-lisp
+(use-package volatile-highlights
+  :ensure t
+  :config
+  (volatile-highlights-mode 1))
+#+end_src
+
+** highlight-indent-guides
+インデントガイド線
+
+#+begin_src emacs-lisp
+(use-package highlight-indent-guides
+  :ensure t
+  :hook (prog-mode . highlight-indent-guides-mode)
+  :config
+  (setq highlight-indent-guides-method 'character)
+  (setq highlight-indent-guides-responsive 'top))
+#+end_src
+
+** vundo
+ビジュアルなundo/redoツリー
+
+#+begin_src emacs-lisp
+(use-package vundo
+  :ensure t
+  :bind ("C-x u" . vundo))
+#+end_src
+
+** visual-regexp
+正規表現の視覚的プレビュー
+
+#+begin_src emacs-lisp
+(use-package visual-regexp
+  :ensure t
+  :bind (("C-c r" . vr/replace)
+         ("C-c q" . vr/query-replace)))
+#+end_src
+
+** reformatter
+コードフォーマッターの統合
+
+#+begin_src emacs-lisp
+(use-package reformatter
+  :ensure t
+  :config
+  ;; 例: Pythonのblackフォーマッター
+  ;; (reformatter-define black
+  ;;   :program "black"
+  ;;   :args '("-"))
+  )
+#+end_src
+
+* 補完・検索
+
+** vertico
+縦型ミニバッファ補完
+
+#+begin_src emacs-lisp
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode)
+  :config
+  (setq vertico-cycle t)
+  (setq vertico-resize nil))
+#+end_src
+
+** orderless
+柔軟な補完スタイル
+
+#+begin_src emacs-lisp
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+#+end_src
+
+** marginalia
+補完候補に注釈を追加
+
+#+begin_src emacs-lisp
+(use-package marginalia
+  :ensure t
+  :init
+  (marginalia-mode)
+  :bind (:map minibuffer-local-map
+              ("M-A" . marginalia-cycle)))
+#+end_src
+
+** consult
+強力な検索・ナビゲーション
+
+#+begin_src emacs-lisp
+(use-package consult
+  :ensure t
+  :bind (("C-s" . consult-line)
+         ("C-x b" . consult-buffer)
+         ("C-x 4 b" . consult-buffer-other-window)
+         ("C-x r b" . consult-bookmark)
+         ("M-g g" . consult-goto-line)
+         ("M-g M-g" . consult-goto-line)
+         ("M-g i" . consult-imenu)
+         ("M-s d" . consult-find)
+         ("M-s g" . consult-grep)
+         ("M-s r" . consult-ripgrep))
+  :config
+  (setq consult-narrow-key "<"))
+#+end_src
+
+** corfu
+バッファ内ポップアップ補完
+
+#+begin_src emacs-lisp
+(use-package corfu
+  :ensure t
+  :init
+  (global-corfu-mode)
+  :config
+  (setq corfu-auto t)
+  (setq corfu-auto-delay 0.2)
+  (setq corfu-auto-prefix 2)
+  (setq corfu-cycle t)
+  :bind (:map corfu-map
+              ("TAB" . corfu-next)
+              ([tab] . corfu-next)
+              ("S-TAB" . corfu-previous)
+              ([backtab] . corfu-previous)))
+#+end_src
+
+** nerd-icons-corfu
+補完ポップアップ内のアイコン表示
+
+#+begin_src emacs-lisp
+(use-package nerd-icons-corfu
+  :ensure t
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+#+end_src
+
+* プログラミング・LSP
+
+** eglot
+LSPクライアント（定義ジャンプやリファクタリングの核）。
+
+#+begin_src emacs-lisp
+(use-package eglot
+  :ensure nil  ; Emacs 29+ Built-in
+  :config
+  (setq eglot-autoshutdown t))
+#+end_src
+
+** consult-eglot
+LSPのシンボルを `consult` 経由で検索する機能。
+
+#+begin_src emacs-lisp
+(use-package consult-eglot
+  :ensure t
+  :bind ("C-c e s" . consult-eglot-symbols))
+#+end_src
+
+** flycheck
+リアルタイムのエラー・警告表示。
+
+#+begin_src emacs-lisp
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+#+end_src
+
+** consult-flycheck
+エラー箇所を `consult` で一覧表示する機能。
+
+#+begin_src emacs-lisp
+(use-package consult-flycheck
+  :ensure t
+  :bind ("C-c ! c" . consult-flycheck))
+#+end_src
+
+** web-mode
+複雑なテンプレートファイル（Vue/React等）の多機能モード。
+
+#+begin_src emacs-lisp
+(use-package web-mode
+  :ensure t
+  :mode ("\\.html?\\'" "\\.erb\\'" "\\.vue\\'")
+  :config
+  (setq web-mode-markup-indent-offset 2))
+#+end_src
+
+* ナビゲーション・プロジェクト管理
+
+** treemacs
+プロジェクトファイルツリー
+
+#+begin_src emacs-lisp
+(use-package treemacs
+  :ensure t
+  :bind (("C-c t" . treemacs)
+         :map treemacs-mode-map
+         ([mouse-1] . treemacs-single-click-expand-action))
+  :config
+  (setq treemacs-width 30)
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t))
+
+(use-package treemacs-nerd-icons
+  :ensure t
+  :after treemacs
+  :config
+  (treemacs-load-theme "nerd-icons"))
+#+end_src
+
+** imenu-list
+関数・クラス一覧のサイドバー
+
+#+begin_src emacs-lisp
+(use-package imenu-list
+  :ensure t
+  :bind ("C-c i" . imenu-list-smart-toggle)
+  :config
+  (setq imenu-list-focus-after-activation t)
+  (setq imenu-list-auto-resize t))
+#+end_src
+
+* Org Mode
+
+** org-modern
+見出しやボタンを美しく整形する UI 拡張。
+
+#+begin_src emacs-lisp
+(use-package org-modern
+  :ensure t
+  :hook (org-mode . org-modern-mode)
+  :config
+  (setq org-modern-star 'replace
+        org-modern-block-name nil
+        org-modern-keyword nil
+        org-modern-table nil))
+#+end_src
+
+** org-appear
+強調記号を自動で隠し、編集時だけ表示する機能。
+
+#+begin_src emacs-lisp
+(use-package org-appear
+  :ensure t
+  :hook (org-mode . org-appear-mode)
+  :config
+  (setq org-appear-autolinks t
+        org-appear-autoentities t
+        org-appear-autokeywords t
+        org-appear-autosubmarkers t))
+#+end_src
+
+** denote
+命名規則に基づいたファイルベースのノート管理。
+
+#+begin_src emacs-lisp
+(use-package denote
+  :ensure t
+  :config
+  (setq denote-directory (expand-file-name "~/org/notes/")
+        denote-known-keywords '("emacs" "nix" "dev" "idea" "work")
+        denote-prompts '(title keywords))
+  :bind (("C-c n n" . denote)
+         ("C-c n f" . denote-open-or-create)))
+#+end_src
+
+** consult-notes
+ノートを素早く横断検索する機能。
+
+#+begin_src emacs-lisp
+(use-package consult-notes
+  :ensure t
+  :bind ("C-c n s" . consult-notes)
+  :config
+  (setq consult-notes-denote-files-function #'denote-directory-files))
+#+end_src
+
+** olivetti
+執筆に集中するための「余白」作成モード。
+
+#+begin_src emacs-lisp
+(use-package olivetti
+  :ensure t
+  :bind ("C-c o" . olivetti-mode)
+  :config
+  (setq olivetti-body-width 0.65))
+#+end_src
+
+* Dired (ファイラ)
+
+** nerd-icons-dired
+ファイルツリーにアイコンを表示。
+
+#+begin_src emacs-lisp
+(use-package nerd-icons-dired
+  :ensure t
+  :hook (dired-mode . nerd-icons-dired-mode))
+#+end_src
+
+** dired-hide-dotfiles
+ドットファイルをトグル表示する機能。
+
+#+begin_src emacs-lisp
+(use-package dired-hide-dotfiles
+  :ensure t
+  :hook (dired-mode . dired-hide-dotfiles-mode)
+  :bind (:map dired-mode-map
+              ("H" . dired-hide-dotfiles-mode)))
+#+end_src
+
+* キーバインド・コマンド支援
+
+** which-key
+キーバインドのガイド表示
+
+#+begin_src emacs-lisp
+(use-package which-key
+  :ensure t
+  :config
+  (setq which-key-idle-delay 0.5)
+  (setq which-key-popup-type 'side-window)
+  (which-key-mode 1))
+#+end_src
+
+** amx
+M-xコマンドの履歴・頻度管理
+
+#+begin_src emacs-lisp
+(use-package amx
+  :ensure t
+  :config
+  (amx-mode 1))
+#+end_src
+
+** hydra
+連続コマンド実行のメニュー
+
+#+begin_src emacs-lisp
+(use-package hydra
+  :ensure t)
+
+;; ウィンドウ操作用のhydra
+(defhydra hydra-window (:hint nil)
+  " ^Move^ ^Split^ ^Resize^ ^Layout^ 
+  h: left   v: vertical   H: ←      u: undo
+  j: down   s: horiz      J: ↓      r: redo
+  k: up     d: delete     K: ↑      b: balance
+  l: right  o: delete-o   L: →      m: maximize"
+  ("h" windmove-left)
+  ("j" windmove-down)
+  ("k" windmove-up)
+  ("l" windmove-right)
+  ("v" split-window-right)
+  ("s" split-window-below)
+  ("d" delete-window)
+  ("o" delete-other-windows)
+  ("H" shrink-window-horizontally)
+  ("J" shrink-window)
+  ("K" enlarge-window)
+  ("L" enlarge-window-horizontally)
+  ("u" winner-undo)
+  ("r" winner-redo)
+  ("b" balance-windows)
+  ("m" maximize-window)
+  ("q" nil "quit"))
+
+(global-set-key (kbd "C-c w") 'hydra-window/body)
+#+end_src
+
+* 最終設定
+
+#+begin_src emacs-lisp
+;; winner-modeを有効化（ウィンドウ配置のundo/redo）
+(winner-mode 1)
+
+;; 起動メッセージ
+(message "Emacs configuration loaded successfully!")
+#+end_src

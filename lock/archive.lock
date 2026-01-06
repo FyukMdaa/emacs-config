@@ -1,0 +1,15 @@
+{
+  "minimap": {
+    "archive": {
+      "narHash": "sha256-2VlhFQH+DrdIF3kioHicRhKwJGIK7MBDQS0+fNwCrrc=",
+      "type": "tarball",
+      "url": "https://elpa.gnu.org/devel/minimap-1.4.0.20201201.162630.tar"
+    },
+    "inventory": {
+      "type": "archive",
+      "url": "https://elpa.gnu.org/devel/"
+    },
+    "packageRequires": {},
+    "version": "1.4.0.20201201.162630"
+  }
+}
