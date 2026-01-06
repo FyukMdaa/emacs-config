@@ -13,10 +13,22 @@
       repo = "amx";
       type = "github";
     };
+    anzu = {
+      flake = false;
+      owner = "emacsorphanage";
+      repo = "anzu";
+      type = "github";
+    };
     avy = {
       flake = false;
       owner = "abo-abo";
       repo = "avy";
+      type = "github";
+    };
+    cape = {
+      flake = false;
+      owner = "minad";
+      repo = "cape";
       type = "github";
     };
     cfrs = {
@@ -31,10 +43,22 @@
       repo = "compat";
       type = "github";
     };
+    cond-let = {
+      flake = false;
+      owner = "tarsius";
+      repo = "cond-let";
+      type = "github";
+    };
     consult = {
       flake = false;
       owner = "minad";
       repo = "consult";
+      type = "github";
+    };
+    consult-dir = {
+      flake = false;
+      owner = "karthink";
+      repo = "consult-dir";
       type = "github";
     };
     consult-eglot = {
@@ -55,16 +79,33 @@
       repo = "consult-notes";
       type = "github";
     };
+    consult-projectile = {
+      flake = false;
+      owner = "OlMon";
+      repo = "consult-projectile";
+      type = "gitlab";
+    };
     corfu = {
       flake = false;
       owner = "minad";
       repo = "corfu";
       type = "github";
     };
+    corfu-terminal = {
+      flake = false;
+      type = "git";
+      url = "https://codeberg.org/akib/emacs-corfu-terminal";
+    };
     dash = {
       flake = false;
       owner = "magnars";
       repo = "dash.el";
+      type = "github";
+    };
+    dashboard = {
+      flake = false;
+      owner = "emacs-dashboard";
+      repo = "emacs-dashboard";
       type = "github";
     };
     denote = {
@@ -79,22 +120,52 @@
       repo = "diff-hl";
       type = "github";
     };
-    dimmer = {
-      flake = false;
-      owner = "gonewest818";
-      repo = "dimmer.el";
-      type = "github";
-    };
     dired-hide-dotfiles = {
       flake = false;
       owner = "mattiasb";
       repo = "dired-hide-dotfiles";
       type = "github";
     };
+    dockerfile-mode = {
+      flake = false;
+      owner = "spotify";
+      repo = "dockerfile-mode";
+      type = "github";
+    };
     ef-themes = {
       flake = false;
       owner = "protesilaos";
       repo = "ef-themes";
+      type = "github";
+    };
+    elisp-demos = {
+      flake = false;
+      owner = "xuchunyang";
+      repo = "elisp-demos";
+      type = "github";
+    };
+    elisp-refs = {
+      flake = false;
+      owner = "Wilfred";
+      repo = "elisp-refs";
+      type = "github";
+    };
+    embark = {
+      flake = false;
+      owner = "oantolin";
+      repo = "embark";
+      type = "github";
+    };
+    embark-consult = {
+      flake = false;
+      owner = "oantolin";
+      repo = "embark";
+      type = "github";
+    };
+    emmet-mode = {
+      flake = false;
+      owner = "smihica";
+      repo = "emmet-mode";
       type = "github";
     };
     envrc = {
@@ -109,10 +180,16 @@
       repo = "exec-path-from-shell";
       type = "github";
     };
-    fill-column-indicator = {
+    expand-region = {
       flake = false;
-      owner = "alpaker";
-      repo = "fill-column-indicator";
+      owner = "magnars";
+      repo = "expand-region.el";
+      type = "github";
+    };
+    "f" = {
+      flake = false;
+      owner = "rejeep";
+      repo = "f.el";
       type = "github";
     };
     flycheck = {
@@ -126,10 +203,28 @@
       type = "git";
       url = "https://gitlab.com/koral/gcmh";
     };
+    go-mode = {
+      flake = false;
+      owner = "dominikh";
+      repo = "go-mode.el";
+      type = "github";
+    };
+    helpful = {
+      flake = false;
+      owner = "Wilfred";
+      repo = "helpful";
+      type = "github";
+    };
     hide-mode-line = {
       flake = false;
       owner = "hlissner";
       repo = "emacs-hide-mode-line";
+      type = "github";
+    };
+    highlight-defined = {
+      flake = false;
+      owner = "Fanael";
+      repo = "highlight-defined";
       type = "github";
     };
     highlight-indent-guides = {
@@ -138,10 +233,22 @@
       repo = "highlight-indent-guides";
       type = "github";
     };
+    hl-todo = {
+      flake = false;
+      owner = "tarsius";
+      repo = "hl-todo";
+      type = "github";
+    };
     ht = {
       flake = false;
       owner = "Wilfred";
       repo = "ht.el";
+      type = "github";
+    };
+    htmlize = {
+      flake = false;
+      owner = "emacsorphanage";
+      repo = "htmlize";
       type = "github";
     };
     hydra = {
@@ -162,16 +269,58 @@
       repo = "inheritenv";
       type = "github";
     };
+    llama = {
+      flake = false;
+      owner = "tarsius";
+      repo = "llama";
+      type = "github";
+    };
+    lua-mode = {
+      flake = false;
+      owner = "immerrr";
+      repo = "lua-mode";
+      type = "github";
+    };
     lv = {
       flake = false;
       owner = "abo-abo";
       repo = "hydra";
       type = "github";
     };
+    macrostep = {
+      flake = false;
+      owner = "emacsorphanage";
+      repo = "macrostep";
+      type = "github";
+    };
+    magit = {
+      flake = false;
+      owner = "magit";
+      repo = "magit";
+      type = "github";
+    };
+    magit-section = {
+      flake = false;
+      owner = "magit";
+      repo = "magit";
+      type = "github";
+    };
     marginalia = {
       flake = false;
       owner = "minad";
       repo = "marginalia";
+      type = "github";
+    };
+    markdown-mode = {
+      flake = false;
+      owner = "jrblevin";
+      repo = "markdown-mode";
+      type = "github";
+    };
+    minions = {
+      flake = false;
+      owner = "tarsius";
+      repo = "minions";
       type = "github";
     };
     mlscroll = {
@@ -210,6 +359,12 @@
       repo = "nerd-icons-dired";
       type = "github";
     };
+    nix-ts-mode = {
+      flake = false;
+      owner = "nix-community";
+      repo = "nix-ts-mode";
+      type = "github";
+    };
     olivetti = {
       flake = false;
       owner = "rnkn";
@@ -240,10 +395,21 @@
       repo = "pfuture";
       type = "github";
     };
+    popon = {
+      flake = false;
+      type = "git";
+      url = "https://codeberg.org/akib/emacs-popon";
+    };
     posframe = {
       flake = false;
       owner = "tumashu";
       repo = "posframe";
+      type = "github";
+    };
+    projectile = {
+      flake = false;
+      owner = "bbatsov";
+      repo = "projectile";
       type = "github";
     };
     puni = {
@@ -258,10 +424,10 @@
       repo = "rainbow-delimiters";
       type = "github";
     };
-    reformatter = {
+    rust-mode = {
       flake = false;
-      owner = "purcell";
-      repo = "emacs-reformatter";
+      owner = "rust-lang";
+      repo = "rust-mode";
       type = "github";
     };
     "s" = {
@@ -276,7 +442,25 @@
       repo = "spacious-padding";
       type = "github";
     };
+    tempel = {
+      flake = false;
+      owner = "minad";
+      repo = "tempel";
+      type = "github";
+    };
+    transient = {
+      flake = false;
+      owner = "magit";
+      repo = "transient";
+      type = "github";
+    };
     treemacs = {
+      flake = false;
+      owner = "Alexander-Miller";
+      repo = "treemacs";
+      type = "github";
+    };
+    treemacs-magit = {
       flake = false;
       owner = "Alexander-Miller";
       repo = "treemacs";
@@ -288,10 +472,34 @@
       repo = "treemacs-nerd-icons";
       type = "github";
     };
+    treemacs-projectile = {
+      flake = false;
+      owner = "Alexander-Miller";
+      repo = "treemacs";
+      type = "github";
+    };
+    treesit-auto = {
+      flake = false;
+      owner = "renzmann";
+      repo = "treesit-auto";
+      type = "github";
+    };
+    twist = {
+      flake = false;
+      owner = "emacs-twist";
+      repo = "twist.el";
+      type = "github";
+    };
     vertico = {
       flake = false;
       owner = "minad";
       repo = "vertico";
+      type = "github";
+    };
+    vertico-posframe = {
+      flake = false;
+      owner = "tumashu";
+      repo = "vertico-posframe";
       type = "github";
     };
     visual-regexp = {
@@ -318,10 +526,28 @@
       repo = "web-mode";
       type = "github";
     };
+    wgrep = {
+      flake = false;
+      owner = "mhayashi1120";
+      repo = "Emacs-wgrep";
+      type = "github";
+    };
     which-key = {
       flake = false;
       owner = "justbur";
       repo = "emacs-which-key";
+      type = "github";
+    };
+    with-editor = {
+      flake = false;
+      owner = "magit";
+      repo = "with-editor";
+      type = "github";
+    };
+    yaml-mode = {
+      flake = false;
+      owner = "yoshiki";
+      repo = "yaml-mode";
       type = "github";
     };
   };

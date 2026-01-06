@@ -10,6 +10,7 @@ inputs: [
     auto-sync-only = true;
     exclude = [
       "lv"
+      "embark-consult"
     ];
   }
   {
