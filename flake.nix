@@ -50,6 +50,7 @@
           
           ln -s ${initFile} "$initdir/init.el"
           ln -s ${earlyInitFile} "$initdir/early-init.el"
+          ln -s ${emacsEnv}/share/twist-manifest.json "$initdir/twist-manifest.json"
 
           exec ${emacsEnv}/bin/emacs --init-directory="$initdir" "$@"
         '';
@@ -65,14 +66,35 @@
         apps = emacsEnv.makeApps {
           lockDirName = "lock";
         };
+        
+        homeModules.twist = { config, lib, ... }: {
+          imports = [ inputs.twist.homeModules.emacs-twist ];
 
-        homeModules.twist = {  
-          imports = [ inputs.twist.homeModules.emacs-twist ];  
-          programs.emacs-twist = {  
-            enable = true;  
+          programs.emacs-twist = {
+            enable = true;
+
+            directory = ".local/share/emacs";
+            
+            # twist manifest
             createManifestFile = true;
-            config = emacsEnv;  
-          };  
+
+            # flake.nix で定義した環境
+            config = emacsEnv;
+
+            # early-initファイルを指定
+            earlyInitFile = earlyInitFile;
+
+            # サービス統合を有効化
+            emacsclient.enable = true;
+            serviceIntegration.enable = lib.mkDefault true;
+          };
+
+          home.packages = with pkgs; [
+            
+          ];
+
+          # デスクトップファイルの生成
+          services.emacs.client.enable = config.programs.emacs-twist.serviceIntegration.enable;
         };
       }
     );
