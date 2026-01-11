@@ -1,5 +1,5 @@
 #+TITLE: early-init.org
-#+AUTHOR: FyukMdaa
+#+AUTHOR: fyukmdaa
 #+PROPERTY: header-args:emacs-lisp :tangle yes
 
 * Commentary
@@ -29,6 +29,7 @@ GUI描画前の最適化を行う。
 ** ファイル名ハンドラを一時的に無効化
 
 起動時のファイルアクセスを高速化。init.el読み込み後に復元。
+(init.org側で復元処理が存在します)
 
 #+begin_src emacs-lisp
 (defvar my--file-name-handler-alist file-name-handler-alist)
@@ -50,6 +51,7 @@ twist.nixで管理するため、Emacs標準のパッケージシステムを無
 ** デフォルトフレーム設定
 
 フレーム生成前に設定することでチラつきを防止。
+spacious-paddingを利用するため、internal-border-widthは広めに取っています。
 
 #+begin_src emacs-lisp
 (setq default-frame-alist

@@ -2,30 +2,40 @@
 #+AUTHOR: fyukmdaa
 #+PROPERTY: header-args:emacs-lisp :tangle yes
 
-* Bootstrap & Core
-** Basic Configuration
+* 起動時設定
+** 基本設定
 #+begin_src emacs-lisp
-;; 基本設定（early-init.orgと重複しない項目のみ）
+;; 基本設定
 (setq create-lockfiles nil
       make-backup-files nil
       auto-save-default nil
       custom-file (concat user-emacs-directory "custom.el"))
-
 (when (file-exists-p custom-file)
   (load custom-file))
+#+end_src
 
+** UI設定
+#+begin_src emacs-lisp
 ;; UI設定
 (global-hl-line-mode 1)
 (column-number-mode 1)
 (global-display-line-numbers-mode 1)
 (setq display-line-numbers-type t)
+;; mlscroll使用のためスクロールバーを無効化
+(scroll-bar-mode -1)
+#+end_src
 
+** スクロール設定
+#+begin_src emacs-lisp
 ;; スクロールの最適化
 (setq scroll-conservatively 101
       scroll-margin 0
       scroll-preserve-screen-position t
       auto-window-vscroll nil)
+#+end_src
 
+** バックアップディレクトリ設定
+#+begin_src emacs-lisp
 ;; バックアップと自動保存を専用ディレクトリへ（再有効化した場合用）
 (let ((backup-dir (concat user-emacs-directory "backups"))
       (auto-save-dir (concat user-emacs-directory "auto-save-list")))
@@ -33,21 +43,26 @@
   (unless (file-exists-p auto-save-dir) (make-directory auto-save-dir t))
   (setq backup-directory-alist `((".*" . ,backup-dir))
         auto-save-file-name-transforms `((".*" ,auto-save-dir t))))
-
-;; パッケージの再読み込み防止
-(advice-add 'package-refresh-contents :override #'ignore)
-;; パッケージのロードをキャッシュ
-(setq package-quickstart t)
 #+end_src
 
-** History & Persistence
+** パッケージ設定
+#+begin_src emacs-lisp
+;; パッケージの再読み込み防止 (twist.nix環境)
+(advice-add 'package-refresh-contents :override #'ignore)
+#+end_src
+
+** 履歴管理
+*** savehist
 #+begin_src emacs-lisp
 (use-package savehist
   :ensure nil
   :demand t
   :config
   (savehist-mode))
+#+end_src
 
+*** recentf
+#+begin_src emacs-lisp
 (use-package recentf
   :ensure nil
   :demand t
@@ -57,12 +72,11 @@
   (recentf-mode 1))
 #+end_src
 
-** Performance & Startup
-*** Delayed Execution Macro
+** パフォーマンス最適化
+*** 遅延実行マクロ
 #+begin_src emacs-lisp
 (defvar my/delayed-configurations '())
 (defvar my/delayed-timer nil)
-
 (setq my/delayed-timer
       (run-with-timer
        0.3 0.001
@@ -72,7 +86,6 @@
              (eval (pop my/delayed-configurations))))
          (unless my/delayed-configurations
            (cancel-timer my/delayed-timer)))))
-
 (defmacro with-delayed-execution (&rest body)
   (declare (indent 0))
   `(setq my/delayed-configurations
@@ -83,9 +96,10 @@
 #+begin_src emacs-lisp
 (eval-when-compile
   (require 'use-package))
-
 (eval-and-compile
-  (setopt use-package-ensure-function #'ignore) 
+  ;; twist.nix でパッケージを管理するため、ensure機能自体は無効化するが
+  ;; :ensure t 宣言は twist.nix 側で解釈させるために残す
+  (setopt use-package-ensure-function #'ignore)
   (setopt use-package-always-defer t)
   (setopt use-package-compute-statistics t))
 #+end_src
@@ -106,12 +120,16 @@
   (gcmh-mode 1))
 #+end_src
 
-** Environment Integration
+** 環境統合
+*** envrc
 #+begin_src emacs-lisp
 (use-package envrc
   :ensure t
   :hook (after-init . envrc-global-mode))
+#+end_src
 
+*** exec-path-from-shell
+#+begin_src emacs-lisp
 (use-package exec-path-from-shell
   :ensure t
   :if (display-graphic-p)
@@ -120,8 +138,9 @@
   (exec-path-from-shell-initialize))
 #+end_src
 
-* User Interface & Appearance
-** Themes & Colors
+* 外観・テーマ
+** カラーテーマ
+*** ef-themes
 #+begin_src emacs-lisp
 (use-package ef-themes
   :ensure t
@@ -136,7 +155,8 @@
   (load-theme 'ef-owl t))
 #+end_src
 
-** Layout & Spacing
+** パディング・スペーシング
+*** spacious-padding
 #+begin_src emacs-lisp
 (use-package spacious-padding
   :ensure t
@@ -150,13 +170,17 @@
           :right-divider-width 30
           :scroll-bar-width 8))
   (spacious-padding-mode 1))
+#+end_src
 
+*** 列ガイド
+#+begin_src emacs-lisp
 ;; 列ガイド（prog-modeのみ）
 (setq-default display-fill-column-indicator-column 80)
 (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
 #+end_src
 
-** Dashboard
+** ダッシュボード
+*** dashboard
 #+begin_src emacs-lisp
 (use-package dashboard
   :ensure t
@@ -177,14 +201,16 @@
   (dashboard-setup-startup-hook))
 #+end_src
 
-** Icons
+** アイコン
+*** nerd-icons
 #+begin_src emacs-lisp
 (use-package nerd-icons
   :ensure t
   :demand t)
 #+end_src
 
-** Mode Line
+** モードライン
+*** moody
 #+begin_src emacs-lisp
 (use-package moody
   :ensure t
@@ -193,13 +219,19 @@
   (setq x-underline-at-descent-line t)
   (moody-replace-mode-line-buffer-identification)
   (moody-replace-vc-mode))
+#+end_src
 
+*** minions
+#+begin_src emacs-lisp
 (use-package minions
   :ensure t
   :demand t
   :config
   (minions-mode 1))
+#+end_src
 
+*** mlscroll
+#+begin_src emacs-lisp
 (use-package mlscroll
   :ensure t
   :after moody
@@ -208,7 +240,8 @@
   (mlscroll-mode 1))
 #+end_src
 
-** Visual Enhancements (Delayed)
+** ウィンドウ効果
+*** dimmer
 #+begin_src emacs-lisp
 (with-delayed-execution
   (use-package dimmer
@@ -216,14 +249,18 @@
     :config
     (setq dimmer-fraction 0.4)
     (dimmer-mode 1)))
+#+end_src
 
+*** hide-mode-line
+#+begin_src emacs-lisp
 (use-package hide-mode-line
   :ensure t
   :hook ((treemacs-mode imenu-list-minor-mode) . hide-mode-line-mode))
 #+end_src
 
-* Completion Framework
-** Vertico (Completion UI)
+* 補完フレームワーク
+** 補完UI
+*** vertico
 #+begin_src emacs-lisp
 (use-package vertico
   :ensure t
@@ -232,7 +269,10 @@
   (setq vertico-cycle t
         vertico-resize nil)
   (vertico-mode))
+#+end_src
 
+*** vertico-posframe
+#+begin_src emacs-lisp
 (use-package vertico-posframe
   :ensure t
   :after vertico
@@ -244,7 +284,8 @@
   (vertico-posframe-mode 1))
 #+end_src
 
-** Orderless & Marginalia
+** 補完スタイル
+*** orderless
 #+begin_src emacs-lisp
 (use-package orderless
   :ensure t
@@ -252,7 +293,10 @@
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
+#+end_src
 
+*** marginalia
+#+begin_src emacs-lisp
 (use-package marginalia
   :ensure t
   :demand t
@@ -262,7 +306,8 @@
   (marginalia-mode))
 #+end_src
 
-** Consult (Enhanced Search)
+** 検索・ナビゲーション
+*** consult
 #+begin_src emacs-lisp
 (use-package consult
   :ensure t
@@ -278,7 +323,10 @@
   :config
   (setq consult-narrow-key "<"
         consult-preview-key 'any))
+#+end_src
 
+*** consult-dir
+#+begin_src emacs-lisp
 (use-package consult-dir
   :ensure t
   :bind (("C-x C-d" . consult-dir)
@@ -287,7 +335,8 @@
          ("C-x C-j" . consult-dir-jump-file)))
 #+end_src
 
-** Embark (Actions)
+** アクション
+*** embark
 #+begin_src emacs-lisp
 (use-package embark
   :ensure t
@@ -296,14 +345,18 @@
          ("C-h B" . embark-bindings))
   :config
   (setq prefix-help-command #'embark-prefix-help-command))
+#+end_src
 
+*** embark-consult
+#+begin_src emacs-lisp
 (use-package embark-consult
   :ensure t
   :after (embark consult)
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 
-** Corfu (In-buffer Completion)
+** バッファ内補完
+*** corfu
 #+begin_src emacs-lisp
 (use-package corfu
   :ensure t
@@ -321,14 +374,20 @@
               ("S-TAB" . corfu-previous)
               ([backtab] . corfu-previous)
               ("RET" . corfu-insert)))
+#+end_src
 
+*** corfu-terminal
+#+begin_src emacs-lisp
 (use-package corfu-terminal
   :ensure t
   :if (not (display-graphic-p))
   :after corfu
   :config
   (corfu-terminal-mode +1))
+#+end_src
 
+*** nerd-icons-corfu
+#+begin_src emacs-lisp
 (use-package nerd-icons-corfu
   :ensure t
   :after corfu
@@ -336,7 +395,8 @@
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 #+end_src
 
-** Cape & Tempel
+** 補完拡張
+*** cape
 #+begin_src emacs-lisp
 (use-package cape
   :ensure t
@@ -344,7 +404,10 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-keyword))
+#+end_src
 
+*** tempel
+#+begin_src emacs-lisp
 (use-package tempel
   :ensure t
   :bind (("M-+" . tempel-complete)
@@ -357,7 +420,8 @@
   :hook ((prog-mode text-mode) . my/tempel-setup-capf))
 #+end_src
 
-** AMX
+** コマンド履歴
+*** amx
 #+begin_src emacs-lisp
 (use-package amx
   :ensure t
@@ -366,8 +430,9 @@
   (amx-mode 1))
 #+end_src
 
-* Editing
-** Parentheses
+* 編集機能
+** 括弧管理
+*** paren
 #+begin_src emacs-lisp
 (use-package paren
   :ensure nil
@@ -377,11 +442,17 @@
         show-paren-style 'mixed
         show-paren-when-point-inside-paren t)
   (show-paren-mode 1))
+#+end_src
 
+*** rainbow-delimiters
+#+begin_src emacs-lisp
 (use-package rainbow-delimiters
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
 
+*** puni
+#+begin_src emacs-lisp
 (use-package puni
   :ensure t
   :hook ((prog-mode sgml-mode nxml-mode tex-mode) . puni-mode)
@@ -395,7 +466,8 @@
               ("C-{" . puni-barf-backward)))
 #+end_src
 
-** Navigation & Selection
+** ナビゲーション
+*** avy
 #+begin_src emacs-lisp
 (use-package avy
   :ensure t
@@ -404,21 +476,28 @@
   :config
   (setq avy-timeout-seconds 0.3
         avy-all-windows nil))
+#+end_src
 
+*** expand-region
+#+begin_src emacs-lisp
 (use-package expand-region
   :ensure t
   :bind (("C-=" . er/expand-region)
          ("C--" . er/contract-region)))
 #+end_src
 
-** Visual Feedback
+** ビジュアルフィードバック
+*** volatile-highlights
 #+begin_src emacs-lisp
 (use-package volatile-highlights
   :ensure t
   :demand t
   :config
   (volatile-highlights-mode 1))
+#+end_src
 
+*** vundo
+#+begin_src emacs-lisp
 (use-package vundo
   :ensure t
   :bind ("C-x u" . vundo)
@@ -426,7 +505,8 @@
   (setq vundo-glyph-alist vundo-unicode-symbols))
 #+end_src
 
-** Search & Replace
+** 検索・置換
+*** anzu
 #+begin_src emacs-lisp
 (use-package anzu
   :ensure t
@@ -435,19 +515,26 @@
          ("C-M-%" . anzu-query-replace-regexp))
   :config
   (global-anzu-mode +1))
+#+end_src
 
+*** visual-regexp
+#+begin_src emacs-lisp
 (use-package visual-regexp
   :ensure t
   :bind (("C-c r" . vr/replace)
          ("C-c q" . vr/query-replace)))
+#+end_src
 
+*** wgrep
+#+begin_src emacs-lisp
 (use-package wgrep
   :ensure t
   :config
   (setq wgrep-auto-save-buffer t))
 #+end_src
 
-** Indentation
+** インデント表示
+*** highlight-indent-guides
 #+begin_src emacs-lisp
 (use-package highlight-indent-guides
   :ensure t
@@ -458,8 +545,9 @@
         highlight-indent-guides-delay 0))
 #+end_src
 
-* Version Control
-** Diff-hl
+* バージョン管理
+** Git差分表示
+*** diff-hl
 #+begin_src emacs-lisp
 (use-package diff-hl
   :ensure t
@@ -473,11 +561,15 @@
          (dired-mode . diff-hl-dired-mode)))
 #+end_src
 
-** Magit
+** Git操作
+*** transient
 #+begin_src emacs-lisp
 (use-package transient
   :ensure t)
+#+end_src
 
+*** magit
+#+begin_src emacs-lisp
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status)
@@ -485,18 +577,21 @@
   (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 #+end_src
 
-* Programming & Development
-** Tree-sitter
+* プログラミング・開発
+** シンタックスハイライト
+*** treesit-auto
 #+begin_src emacs-lisp
 (use-package treesit-auto
   :ensure t
   :demand t
   :config
-  (setq treesit-auto-install 'prompt)
+  ;; Nix(twist)環境ではOS側でgrammarを管理するため、自動ダウンロードは無効化
+  (setq treesit-auto-install 'nil)
   (global-treesit-auto-mode))
 #+end_src
 
-** LSP & Linting
+** LSP・補完
+*** eglot
 #+begin_src emacs-lisp
 (use-package eglot
   :ensure nil
@@ -504,26 +599,37 @@
   (setq eglot-autoshutdown t
         eglot-sync-connect nil
         eglot-extend-to-xref t))
+#+end_src
 
+*** consult-eglot
+#+begin_src emacs-lisp
 (use-package consult-eglot
   :ensure t
   :after (consult eglot)
   :bind (:map eglot-mode-map
               ("C-c e s" . consult-eglot-symbols)))
+#+end_src
 
+** 構文チェック
+*** flycheck
+#+begin_src emacs-lisp
 (use-package flycheck
   :ensure t
   :hook (prog-mode . flycheck-mode)
   :config
   (setq flycheck-check-syntax-automatically '(save mode-enabled)))
+#+end_src
 
+*** consult-flycheck
+#+begin_src emacs-lisp
 (use-package consult-flycheck
   :ensure t
   :after (consult flycheck)
   :bind ("C-c ! c" . consult-flycheck))
 #+end_src
 
-** Programming Utilities
+** 開発支援
+*** hl-todo
 #+begin_src emacs-lisp
 (use-package hl-todo
   :ensure t
@@ -535,15 +641,19 @@
           ("HACK" . "#9900ff")
           ("NOTE" . "#0000ff")
           ("REVIEW" . "#00ff00"))))
+#+end_src
 
+*** rainbow-mode
+#+begin_src emacs-lisp
 (use-package rainbow-mode
   :ensure t
   :hook ((css-mode web-mode) . rainbow-mode))
 #+end_src
 
-** Language Support
+** 言語サポート
+*** マークアップ・システム設定
+**** markdown-mode
 #+begin_src emacs-lisp
-;; Markup & Systems
 (use-package markdown-mode
   :ensure t
   :mode (("README\\.md\\'" . gfm-mode)
@@ -551,35 +661,56 @@
          ("\\.markdown\\'" . markdown-mode))
   :config
   (setq markdown-command "pandoc"))
+#+end_src
 
+**** nix-ts-mode
+#+begin_src emacs-lisp
 (use-package nix-ts-mode
   :ensure t
   :mode "\\.nix\\'")
+#+end_src
 
+**** dockerfile-mode
+#+begin_src emacs-lisp
 (use-package dockerfile-mode
   :ensure t
   :mode "Dockerfile\\'")
+#+end_src
 
+**** yaml-mode
+#+begin_src emacs-lisp
 (use-package yaml-mode
   :ensure t
   :mode "\\.ya?ml\\'")
+#+end_src
 
-;; Programming Languages
+*** プログラミング言語
+**** rust-mode
+#+begin_src emacs-lisp
 (use-package rust-mode
   :ensure t
   :mode "\\.rs\\'"
   :config
   (setq rust-format-on-save t))
+#+end_src
 
+**** go-mode
+#+begin_src emacs-lisp
 (use-package go-mode
   :ensure t
   :mode "\\.go\\'")
+#+end_src
 
+**** lua-mode
+#+begin_src emacs-lisp
 (use-package lua-mode
   :ensure t
   :mode "\\.lua\\'")
+#+end_src
 
-;; Web Development
+*** Web開発
+**** web-mode
+#+begin_src emacs-lisp
 (use-package web-mode
   :ensure t
   :mode ("\\.html?\\'" "\\.erb\\'" "\\.vue\\'" "\\.jsx?\\'")
@@ -589,31 +720,42 @@
         web-mode-code-indent-offset 2
         web-mode-enable-auto-pairing t
         web-mode-enable-css-colorization t))
+#+end_src
 
+**** emmet-mode
+#+begin_src emacs-lisp
 (use-package emmet-mode
   :ensure t
   :hook ((sgml-mode web-mode css-mode) . emmet-mode))
 #+end_src
 
-** Emacs Lisp Development
+** Emacs Lisp開発
+*** macrostep
 #+begin_src emacs-lisp
 (use-package macrostep
   :ensure t
   :bind (:map emacs-lisp-mode-map
               ("C-c e m" . macrostep-expand)))
+#+end_src
 
+*** elisp-demos
+#+begin_src emacs-lisp
 (use-package elisp-demos
   :ensure t
   :config
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
+#+end_src
 
+*** highlight-defined
+#+begin_src emacs-lisp
 (use-package highlight-defined
   :ensure t
   :hook (emacs-lisp-mode . highlight-defined-mode))
 #+end_src
 
-* Project & File Management
-** Projectile
+* プロジェクト・ファイル管理
+** プロジェクト管理
+*** projectile
 #+begin_src emacs-lisp
 (use-package projectile
   :ensure t
@@ -625,7 +767,10 @@
         projectile-enable-caching t
         projectile-sort-order 'recently-active
         projectile-indexing-method 'alien))
+#+end_src
 
+*** consult-projectile
+#+begin_src emacs-lisp
 (use-package consult-projectile
   :ensure t
   :after (projectile consult)
@@ -635,7 +780,8 @@
               ("b" . consult-projectile-switch-to-buffer)))
 #+end_src
 
-** Treemacs
+** ファイルツリー
+*** treemacs
 #+begin_src emacs-lisp
 (use-package treemacs
   :ensure t
@@ -648,23 +794,33 @@
   (treemacs-follow-mode t)
   (treemacs-filewatch-mode t)
   (treemacs-git-mode 'simple))
+#+end_src
 
+*** treemacs-nerd-icons
+#+begin_src emacs-lisp
 (use-package treemacs-nerd-icons
   :ensure t
   :after treemacs
   :config
   (treemacs-load-theme "nerd-icons"))
+#+end_src
 
+*** treemacs-magit
+#+begin_src emacs-lisp
 (use-package treemacs-magit
   :ensure t
   :after (treemacs magit))
+#+end_src
 
+*** treemacs-projectile
+#+begin_src emacs-lisp
 (use-package treemacs-projectile
   :ensure t
   :after (treemacs projectile))
 #+end_src
 
-** Imenu List & Dired
+** アウトライン・ファイル管理
+*** imenu-list
 #+begin_src emacs-lisp
 (use-package imenu-list
   :ensure t
@@ -674,18 +830,10 @@
   (setq imenu-list-focus-after-activation t
         imenu-list-auto-resize t
         imenu-list-position 'right))
+#+end_src
 
-(use-package nerd-icons-dired
-  :ensure t
-  :hook (dired-mode . nerd-icons-dired-mode))
-
-(use-package dired-hide-dotfiles
-  :ensure t
-  :hook (dired-mode . dired-hide-dotfiles-mode)
-  :bind (:map dired-mode-map
-              ("H" . dired-hide-dotfiles-mode)))
-
-;; Dired最適化
+*** dired
+#+begin_src emacs-lisp
 (use-package dired
   :ensure nil
   :config
@@ -694,8 +842,25 @@
         dired-kill-when-opening-new-dired-buffer t))
 #+end_src
 
-* Org Mode & Notes
-** Org Appearance
+*** nerd-icons-dired
+#+begin_src emacs-lisp
+(use-package nerd-icons-dired
+  :ensure t
+  :hook (dired-mode . nerd-icons-dired-mode))
+#+end_src
+
+*** dired-hide-dotfiles
+#+begin_src emacs-lisp
+(use-package dired-hide-dotfiles
+  :ensure t
+  :hook (dired-mode . dired-hide-dotfiles-mode)
+  :bind (:map dired-mode-map
+              ("H" . dired-hide-dotfiles-mode)))
+#+end_src
+
+* Org Mode・ノート
+** Org外観
+*** org-modern
 #+begin_src emacs-lisp
 (use-package org-modern
   :ensure t
@@ -706,7 +871,10 @@
         org-modern-block-name nil
         org-modern-keyword nil
         org-modern-table nil))
+#+end_src
 
+*** org-appear
+#+begin_src emacs-lisp
 (use-package org-appear
   :ensure t
   :hook (org-mode . org-appear-mode)
@@ -716,12 +884,16 @@
         org-appear-autokeywords t
         org-appear-autosubmarkers t
         org-appear-inside-latex t))
+#+end_src
 
+*** htmlize
+#+begin_src emacs-lisp
 (use-package htmlize
   :ensure t)
 #+end_src
 
-** Note-taking
+** ノート管理
+*** denote
 #+begin_src emacs-lisp
 (use-package denote
   :ensure t
@@ -734,14 +906,20 @@
         denote-known-keywords '("emacs" "nix" "dev" "idea" "work")
         denote-prompts '(title keywords)
         denote-file-type 'org))
+#+end_src
 
+*** consult-notes
+#+begin_src emacs-lisp
 (use-package consult-notes
   :ensure t
   :after consult
   :bind ("C-c n s" . consult-notes)
   :config
   (setq consult-notes-denote-files-function #'denote-directory-files))
+#+end_src
 
+*** olivetti
+#+begin_src emacs-lisp
 (use-package olivetti
   :ensure t
   :commands olivetti-mode
@@ -751,8 +929,9 @@
         olivetti-minimum-body-width 80))
 #+end_src
 
-* Help & Discovery
-** Which-key & Helpful
+* ヘルプ・操作支援
+** キーバインド確認
+*** which-key
 #+begin_src emacs-lisp
 (use-package which-key
   :ensure t
@@ -763,7 +942,11 @@
         which-key-side-window-location 'bottom
         which-key-sort-order 'which-key-key-order-alpha)
   (which-key-mode 1))
+#+end_src
 
+** ヘルプ機能強化
+*** helpful
+#+begin_src emacs-lisp
 (use-package helpful
   :ensure t
   :bind (("C-h f" . helpful-callable)
@@ -773,18 +956,27 @@
          ("C-c C-d" . helpful-at-point)))
 #+end_src
 
-* Window Management
-** Winner Mode & Windmove
+* ウィンドウ管理
+** 基本設定
+*** winner-mode
 #+begin_src emacs-lisp
 (winner-mode 1)
+#+end_src
+
+*** windmove
+#+begin_src emacs-lisp
 (windmove-default-keybindings)
 #+end_src
 
 ** Hydra
+*** hydra
 #+begin_src emacs-lisp
 (use-package hydra
   :ensure t)
+#+end_src
 
+*** ウィンドウ管理hydra
+#+begin_src emacs-lisp
 (with-eval-after-load 'hydra
   (defhydra hydra-window (:hint nil)
     "
@@ -815,12 +1007,11 @@
     ("b" balance-windows)
     ("m" maximize-window)
     ("q" nil "quit"))
-
   (global-set-key (kbd "C-c w") 'hydra-window/body))
 #+end_src
 
-* Finalization
-** GC Settings Restoration
+* 最終設定
+** GC設定の復元
 #+begin_src emacs-lisp
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -830,7 +1021,7 @@
             (makunbound 'my--file-name-handler-alist)))
 #+end_src
 
-** Startup Message
+** 起動メッセージ
 #+begin_src emacs-lisp
 (message "Emacs configuration loaded successfully!")
 #+end_src
