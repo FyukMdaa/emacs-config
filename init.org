@@ -1,5 +1,5 @@
 #+TITLE: init.org
-#+AUTHOR: fyukmdaa
+#+AUTHOR: fyukmdaa (integrated with Kyure_A's essence)
 #+PROPERTY: header-args:emacs-lisp :tangle yes
 
 * 起動時設定
@@ -34,21 +34,30 @@
       auto-window-vscroll nil)
 #+end_src
 
-** バックアップディレクトリ設定
-#+begin_src emacs-lisp
-;; バックアップと自動保存を専用ディレクトリへ（再有効化した場合用）
-(let ((backup-dir (concat user-emacs-directory "backups"))
-      (auto-save-dir (concat user-emacs-directory "auto-save-list")))
-  (unless (file-exists-p backup-dir) (make-directory backup-dir t))
-  (unless (file-exists-p auto-save-dir) (make-directory auto-save-dir t))
-  (setq backup-directory-alist `((".*" . ,backup-dir))
-        auto-save-file-name-transforms `((".*" ,auto-save-dir t))))
-#+end_src
-
 ** パッケージ設定
 #+begin_src emacs-lisp
 ;; パッケージの再読み込み防止 (twist.nix環境)
 (advice-add 'package-refresh-contents :override #'ignore)
+#+end_src
+
+** 遅延実行マクロ
+#+begin_src emacs-lisp
+(defvar my/delayed-priority-low-configurations '())
+(defvar my/delayed-priority-low-configuration-timer nil)
+
+(setq my/delayed-priority-low-configuration-timer
+      (run-with-timer
+       0.3 0.001
+       (lambda ()
+         (if my/delayed-priority-low-configurations
+             (let ((inhibit-message t))
+               (eval (pop my/delayed-priority-low-configurations)))
+           (cancel-timer my/delayed-priority-low-configuration-timer)))))
+
+(defmacro with-delayed-execution (&rest body)
+  (declare (indent 0))
+  `(setq my/delayed-priority-low-configurations
+         (append my/delayed-priority-low-configurations ',body)))
 #+end_src
 
 ** 履歴管理
@@ -68,55 +77,43 @@
   :demand t
   :config
   (setq recentf-max-saved-items 1000
-        recentf-auto-cleanup 'never)
+        recentf-auto-cleanup 'mode)
   (recentf-mode 1))
 #+end_src
 
 ** パフォーマンス最適化
-*** 遅延実行マクロ
-#+begin_src emacs-lisp
-(defvar my/delayed-configurations '())
-(defvar my/delayed-timer nil)
-(setq my/delayed-timer
-      (run-with-timer
-       0.3 0.001
-       (lambda ()
-         (when my/delayed-configurations
-           (let ((inhibit-message t))
-             (eval (pop my/delayed-configurations))))
-         (unless my/delayed-configurations
-           (cancel-timer my/delayed-timer)))))
-(defmacro with-delayed-execution (&rest body)
-  (declare (indent 0))
-  `(setq my/delayed-configurations
-         (append my/delayed-configurations ',body)))
-#+end_src
 
 *** use-package
+twist.nix でパッケージを管理するため、ensure機能自体は無効化するが
+:ensure t 宣言は twist.nix 側で解釈させるために残す
 #+begin_src emacs-lisp
 (eval-when-compile
   (require 'use-package))
 (eval-and-compile
-  ;; twist.nix でパッケージを管理するため、ensure機能自体は無効化するが
-  ;; :ensure t 宣言は twist.nix 側で解釈させるために残す
   (setopt use-package-ensure-function #'ignore)
   (setopt use-package-always-defer t)
   (setopt use-package-compute-statistics t))
 #+end_src
 
 *** twist
+manifestファイルがない場合は無効化
 #+begin_src emacs-lisp
 (use-package twist
   :ensure t
+  :if (and (boundp 'twist-manifest-file)
+           (file-exists-p twist-manifest-file))
   :hook (emacs-startup . twist-watch-mode))
 #+end_src
 
 *** gcmh
+GCを頻繁に行うことでメモリ使用量を安定させ、ガベージコレクションによる
+大きなストップを防ぐ（必要に応じて調整）
 #+begin_src emacs-lisp
 (use-package gcmh
   :ensure t
   :demand t
   :config
+  (setq gcmh-high-cons-threshold (* 128 1024 1024))
   (gcmh-mode 1))
 #+end_src
 
@@ -139,6 +136,32 @@
 #+end_src
 
 * 外観・テーマ
+
+** 基本UI・操作設定
+*** フォント設定
+フォントはあらかじめインストール
+#+begin_src emacs-lisp
+(when (display-graphic-p)
+  (set-face-attribute 'default nil
+                      :family "PlemolJP Console NF"
+                      :height 120)
+  (set-face-attribute 'variable-pitch nil
+                      :family "Noto Sans CJK JP"
+                      :height 1.0))
+#+end_src
+
+*** スムーズスクロール
+#+begin_src emacs-lisp
+(when (fboundp 'pixel-scroll-precision-mode)
+  (pixel-scroll-precision-mode 1))
+#+end_src
+
+*** リピートモード
+#+begin_src emacs-lisp
+(when (fboundp 'repeat-mode)
+  (repeat-mode 1))
+#+end_src
+
 ** カラーテーマ
 *** ef-themes
 #+begin_src emacs-lisp
@@ -243,12 +266,11 @@
 ** ウィンドウ効果
 *** dimmer
 #+begin_src emacs-lisp
-(with-delayed-execution
-  (use-package dimmer
-    :ensure t
-    :config
-    (setq dimmer-fraction 0.4)
-    (dimmer-mode 1)))
+(use-package dimmer
+  :ensure t
+  :hook (emacs-startup . dimmer-mode)
+  :config
+  (setq dimmer-fraction 0.4))
 #+end_src
 
 *** hide-mode-line
@@ -322,7 +344,7 @@
          ("M-s r" . consult-ripgrep))
   :config
   (setq consult-narrow-key "<"
-        consult-preview-key 'any))
+        consult-preview-key '(any . 0.5)))
 #+end_src
 
 *** consult-dir
@@ -486,6 +508,23 @@
          ("C--" . er/contract-region)))
 #+end_src
 
+** 直感的な編集操作
+*** mwim (Move Where I Mean)
+#+begin_src emacs-lisp
+(use-package mwim
+  :ensure t
+  :bind (("C-a" . mwim-beginning-of-code-or-line)
+         ("C-e" . mwim-end-of-code-or-line)))
+#+end_src
+
+*** undo-fu (Undo/Redoの改善)
+#+begin_src emacs-lisp
+(use-package undo-fu
+  :ensure t
+  :bind (("C-z" . undo-fu-only-undo)
+         ("C-S-z" . undo-fu-only-redo)))
+#+end_src
+
 ** ビジュアルフィードバック
 *** volatile-highlights
 #+begin_src emacs-lisp
@@ -577,6 +616,130 @@
   (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 #+end_src
 
+* プロジェクト・ファイル管理
+** プロジェクト管理
+*** projectile
+#+begin_src emacs-lisp
+(use-package projectile
+  :ensure t
+  :demand t
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :config
+  (projectile-mode +1)
+  (setq projectile-completion-system 'default
+        projectile-enable-caching t
+        projectile-sort-order 'recently-active
+        projectile-indexing-method 'alien))
+#+end_src
+
+*** consult-projectile
+#+begin_src emacs-lisp
+(use-package consult-projectile
+  :ensure t
+  :after (projectile consult)
+  :bind (:map projectile-command-map
+              ("f" . consult-projectile-find-file)
+              ("s" . consult-projectile-switch-project)
+              ("b" . consult-projectile-switch-to-buffer)))
+#+end_src
+
+** ファイルツリー・ファイラ
+Kyure_Aの設定を統合: dirvish を採用し、既存の dired 拡張を置き換え
+
+*** treemacs
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :ensure t
+    :commands treemacs
+    :bind ("C-c t" . treemacs)
+    :config
+    (setq treemacs-width 30
+          treemacs-follow-after-init t
+          treemacs-is-never-other-window t
+          treemacs-show-hidden-files t)
+
+    ;; マウス操作の明示的な有効化と設定
+    (setq treemacs-silent-refresh nil)
+
+    ;; ターミナル利用時もマウスを有効にする
+    (unless (display-graphic-p)
+      (xterm-mouse-mode 1))
+
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-git-mode 'simple))
+#+end_src
+
+*** treemacs-nerd-icons
+#+begin_src emacs-lisp
+(use-package treemacs-nerd-icons
+  :ensure t
+  :after treemacs
+  :config
+  (treemacs-load-theme "nerd-icons"))
+#+end_src
+
+*** treemacs-magit
+#+begin_src emacs-lisp
+(use-package treemacs-magit
+  :ensure t
+  :after (treemacs magit))
+#+end_src
+
+*** treemacs-projectile
+#+begin_src emacs-lisp
+(use-package treemacs-projectile
+  :ensure t
+  :after (treemacs projectile))
+#+end_src
+
+*** dirvish
+#+begin_src emacs-lisp
+(use-package dirvish
+  :ensure t
+  :after nerd-icons
+  :demand t
+  :config
+  ;; diredをdirvishで上書き
+  (dirvish-override-dired-mode)
+  ;; プレビュー設定
+  (setq dirvish-preview-dispatchers 
+        (cl-substitute 'pdf-preface 'pdf dirvish-preview-dispatchers))
+  ;; サイドバーに表示する属性
+  (setq dirvish-attributes 
+        '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size))
+  (setq dirvish-subtree-state-style 'nerd)
+  ;; セパレータのカスタマイズ（nerd-icons使用）
+  (setq dirvish-path-separators (list
+                                 (format "  %s " (nerd-icons-codicon "nf-cod-home"))
+                                 (format "  %s " (nerd-icons-codicon "nf-cod-root_folder"))
+                                 (format " %s " (nerd-icons-faicon "nf-fa-angle_right")))))
+#+end_src
+
+** アウトライン・ファイル管理
+*** imenu-list
+#+begin_src emacs-lisp
+(use-package imenu-list
+  :ensure t
+  :commands imenu-list-smart-toggle
+  :bind ("C-c i" . imenu-list-smart-toggle)
+  :config
+  (setq imenu-list-focus-after-activation t
+        imenu-list-auto-resize t
+        imenu-list-position 'right))
+#+end_src
+
+*** dired (基本設定)
+dirvishがdired-modeをオーバーライドしますが、基本的な設定は残しておきます。
+#+begin_src emacs-lisp
+(use-package dired
+  :ensure nil
+  :config
+  (setq dired-listing-switches "-alh --group-directories-first"
+        dired-dwim-target t
+        dired-kill-when-opening-new-dired-buffer t))
+#+end_src
+
 * プログラミング・開発
 ** シンタックスハイライト
 *** treesit-auto
@@ -598,7 +761,32 @@
   :config
   (setq eglot-autoshutdown t
         eglot-sync-connect nil
-        eglot-extend-to-xref t))
+        eglot-extend-to-xref t)
+
+  ;; --- Web/TS開発環境自動検出用ヘルパー ---
+  (defun project-root* ()
+    (when-let* ((proj (project-current nil)))
+      (project-root proj)))
+
+  (defun project-has-file-p (&rest names)
+    (when-let* ((root (project-root*)))
+      (seq-some (lambda (f)
+                  (file-exists-p (expand-file-name f root)))
+                names)))
+
+  (defun deno-project-p () (project-has-file-p "deno.json" "deno.jsonc"))
+  (defun node-project-p () (project-has-file-p "package.json"))
+  (defun bun-project-p  () (project-has-file-p "bun.lockb"))
+
+  (defun es-server-program (_)
+    (cond ((deno-project-p)
+           '("deno" "lsp" :initializationOptions (:enable t :lint t)))
+          ((or (node-project-p) (bun-project-p))
+           '("typescript-language-server" "--stdio"))))
+  ;; ---------------------------------------
+
+  ;; 既存の設定に追加
+  (add-to-list 'eglot-server-programs '((js-mode web-mode typescript-mode) . es-server-program)))
 #+end_src
 
 *** consult-eglot
@@ -651,7 +839,7 @@
 #+end_src
 
 ** 言語サポート
-*** マークアップ・システム設定
+*** マークダウン・システム設定
 **** markdown-mode
 #+begin_src emacs-lisp
 (use-package markdown-mode
@@ -751,111 +939,6 @@
 (use-package highlight-defined
   :ensure t
   :hook (emacs-lisp-mode . highlight-defined-mode))
-#+end_src
-
-* プロジェクト・ファイル管理
-** プロジェクト管理
-*** projectile
-#+begin_src emacs-lisp
-(use-package projectile
-  :ensure t
-  :demand t
-  :bind-keymap ("C-c p" . projectile-command-map)
-  :config
-  (projectile-mode +1)
-  (setq projectile-completion-system 'default
-        projectile-enable-caching t
-        projectile-sort-order 'recently-active
-        projectile-indexing-method 'alien))
-#+end_src
-
-*** consult-projectile
-#+begin_src emacs-lisp
-(use-package consult-projectile
-  :ensure t
-  :after (projectile consult)
-  :bind (:map projectile-command-map
-              ("f" . consult-projectile-find-file)
-              ("s" . consult-projectile-switch-project)
-              ("b" . consult-projectile-switch-to-buffer)))
-#+end_src
-
-** ファイルツリー
-*** treemacs
-#+begin_src emacs-lisp
-(use-package treemacs
-  :ensure t
-  :commands treemacs
-  :bind ("C-c t" . treemacs)
-  :config
-  (setq treemacs-width 30
-        treemacs-follow-after-init t
-        treemacs-is-never-other-window t)
-  (treemacs-follow-mode t)
-  (treemacs-filewatch-mode t)
-  (treemacs-git-mode 'simple))
-#+end_src
-
-*** treemacs-nerd-icons
-#+begin_src emacs-lisp
-(use-package treemacs-nerd-icons
-  :ensure t
-  :after treemacs
-  :config
-  (treemacs-load-theme "nerd-icons"))
-#+end_src
-
-*** treemacs-magit
-#+begin_src emacs-lisp
-(use-package treemacs-magit
-  :ensure t
-  :after (treemacs magit))
-#+end_src
-
-*** treemacs-projectile
-#+begin_src emacs-lisp
-(use-package treemacs-projectile
-  :ensure t
-  :after (treemacs projectile))
-#+end_src
-
-** アウトライン・ファイル管理
-*** imenu-list
-#+begin_src emacs-lisp
-(use-package imenu-list
-  :ensure t
-  :commands imenu-list-smart-toggle
-  :bind ("C-c i" . imenu-list-smart-toggle)
-  :config
-  (setq imenu-list-focus-after-activation t
-        imenu-list-auto-resize t
-        imenu-list-position 'right))
-#+end_src
-
-*** dired
-#+begin_src emacs-lisp
-(use-package dired
-  :ensure nil
-  :config
-  (setq dired-listing-switches "-alh --group-directories-first"
-        dired-dwim-target t
-        dired-kill-when-opening-new-dired-buffer t))
-#+end_src
-
-*** nerd-icons-dired
-#+begin_src emacs-lisp
-(use-package nerd-icons-dired
-  :ensure t
-  :hook (dired-mode . nerd-icons-dired-mode))
-#+end_src
-
-*** dired-hide-dotfiles
-#+begin_src emacs-lisp
-(use-package dired-hide-dotfiles
-  :ensure t
-  :hook (dired-mode . dired-hide-dotfiles-mode)
-  :bind (:map dired-mode-map
-              ("H" . dired-hide-dotfiles-mode)))
 #+end_src
 
 * Org Mode・ノート
@@ -972,12 +1055,9 @@
 *** hydra
 #+begin_src emacs-lisp
 (use-package hydra
-  :ensure t)
-#+end_src
-
-*** ウィンドウ管理hydra
-#+begin_src emacs-lisp
-(with-eval-after-load 'hydra
+  :ensure t
+  :demand t
+  :config
   (defhydra hydra-window (:hint nil)
     "
 ╔═══════════════════════════════════════════════════╗
@@ -1015,10 +1095,9 @@
 #+begin_src emacs-lisp
 (add-hook 'emacs-startup-hook
           (lambda ()
-            (setq gc-cons-threshold (* 16 1024 1024)
-                  gc-cons-percentage 0.1)
             (setq file-name-handler-alist my--file-name-handler-alist)
-            (makunbound 'my--file-name-handler-alist)))
+            (when (boundp 'my--file-name-handler-alist)
+              (makunbound 'my--file-name-handler-alist))))
 #+end_src
 
 ** 起動メッセージ

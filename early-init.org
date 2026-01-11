@@ -2,11 +2,6 @@
 #+AUTHOR: fyukmdaa
 #+PROPERTY: header-args:emacs-lisp :tangle yes
 
-* Commentary
-
-Emacs 27+で起動プロセスの一番最初に読み込まれる設定。
-GUI描画前の最適化を行う。
-
 * 言語とエンコーディング設定
 
 #+begin_src emacs-lisp
@@ -61,7 +56,7 @@ spacious-paddingを利用するため、internal-border-widthは広めに取っ�
         (width . 81)
         (vertical-scroll-bars . nil)
         (horizontal-scroll-bars . nil)
-        (internal-border-width . 24)
+        (internal-border-width . 15)
         (left-fringe . 1)
         (right-fringe . 1)
         (fullscreen . maximized)
@@ -105,8 +100,7 @@ spacious-paddingを利用するため、internal-border-widthは広めに取っ�
 
 #+begin_src emacs-lisp
 (setq native-comp-async-report-warnings-errors nil
-      native-comp-warning-on-missing-source nil
-      native-comp-deferred-compilation t)
+      native-comp-warning-on-missing-source nil)
 #+end_src
 
 ** コンパイル設定
@@ -115,7 +109,7 @@ spacious-paddingを利用するため、internal-border-widthは広めに取っ�
 (when (fboundp 'native-compile-async)
   (setq native-comp-async-jobs-number 8
         native-comp-speed 3
-        native-comp-always-compile t))
+        native-comp-always-compile nil))
 #+end_src
 
 ** ELNキャッシュディレクトリの設定

@@ -320,19 +320,35 @@
         "type": "github"
       }
     },
-    "dired-hide-dotfiles": {
+    "dimmer": {
       "flake": false,
       "locked": {
-        "lastModified": 1722100859,
-        "narHash": "sha256-kHyoS642Ev/OfnagwIPsYtRuZoyMkjhxKft9bqVYWDA=",
-        "owner": "mattiasb",
-        "repo": "dired-hide-dotfiles",
-        "rev": "0d035ba8c5decc5957d50f3c64ef860b5c2093a1",
+        "lastModified": 1660699338,
+        "narHash": "sha256-JO82ZD2rQhDCZj3b7RRud3y3y8lkjoH9IaXV7/W7R9I=",
+        "owner": "gonewest818",
+        "repo": "dimmer.el",
+        "rev": "a5b697580e5aed6168b571ae3d925753428284f8",
         "type": "github"
       },
       "original": {
-        "owner": "mattiasb",
-        "repo": "dired-hide-dotfiles",
+        "owner": "gonewest818",
+        "repo": "dimmer.el",
+        "type": "github"
+      }
+    },
+    "dirvish": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1746346061,
+        "narHash": "sha256-QBOamfJXLdkw1ShH29w8nYkWfvY/ibjJPNRt0kc8LDU=",
+        "owner": "alexluigit",
+        "repo": "dirvish",
+        "rev": "d877433f957a363ad78b228e13a8e5215f2d6593",
+        "type": "github"
+      },
+      "original": {
+        "owner": "alexluigit",
+        "repo": "dirvish",
         "type": "github"
       }
     },
@@ -912,6 +928,22 @@
         "type": "github"
       }
     },
+    "mwim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1541876426,
+        "narHash": "sha256-yp9jVUVgzF97RetyfqluAalmoeUiweq26OKl+0Iwc1A=",
+        "owner": "alezost",
+        "repo": "mwim.el",
+        "rev": "b4f3edb4c0fb8f8b71cecbf8095c2c25a8ffbf85",
+        "type": "github"
+      },
+      "original": {
+        "owner": "alezost",
+        "repo": "mwim.el",
+        "type": "github"
+      }
+    },
     "nerd-icons": {
       "flake": false,
       "locked": {
@@ -941,22 +973,6 @@
       "original": {
         "owner": "LuigiPiucco",
         "repo": "nerd-icons-corfu",
-        "type": "github"
-      }
-    },
-    "nerd-icons-dired": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1762454437,
-        "narHash": "sha256-episNqWqqBTUpdEPMIWXWL5HCeItl9ckiORT11Phd84=",
-        "owner": "rainstormstudio",
-        "repo": "nerd-icons-dired",
-        "rev": "3265d6c4b552eae457d50d423adb10494113d70b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "rainstormstudio",
-        "repo": "nerd-icons-dired",
         "type": "github"
       }
     },
@@ -1158,7 +1174,8 @@
         "dashboard": "dashboard",
         "denote": "denote",
         "diff-hl": "diff-hl",
-        "dired-hide-dotfiles": "dired-hide-dotfiles",
+        "dimmer": "dimmer",
+        "dirvish": "dirvish",
         "dockerfile-mode": "dockerfile-mode",
         "ef-themes": "ef-themes",
         "elisp-demos": "elisp-demos",
@@ -1195,9 +1212,9 @@
         "mlscroll": "mlscroll",
         "modus-themes": "modus-themes",
         "moody": "moody",
+        "mwim": "mwim",
         "nerd-icons": "nerd-icons",
         "nerd-icons-corfu": "nerd-icons-corfu",
-        "nerd-icons-dired": "nerd-icons-dired",
         "nix-ts-mode": "nix-ts-mode",
         "olivetti": "olivetti",
         "orderless": "orderless",
@@ -1220,6 +1237,7 @@
         "treemacs-projectile": "treemacs-projectile",
         "treesit-auto": "treesit-auto",
         "twist": "twist",
+        "undo-fu": "undo-fu",
         "vertico": "vertico",
         "vertico-posframe": "vertico-posframe",
         "visual-regexp": "visual-regexp",
@@ -1406,6 +1424,22 @@
         "owner": "emacs-twist",
         "repo": "twist.el",
         "type": "github"
+      }
+    },
+    "undo-fu": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767842631,
+        "narHash": "sha256-lJiavAy3tHKT4XgyIG0rbTS2Jx7oO6NkoPYmAgOfok4=",
+        "ref": "refs/heads/main",
+        "rev": "b4ce5ed20c1cf0591e497e6998a7634a172726fa",
+        "revCount": 110,
+        "type": "git",
+        "url": "https://codeberg.org/ideasman42/emacs-undo-fu.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://codeberg.org/ideasman42/emacs-undo-fu.git"
       }
     },
     "vertico": {
