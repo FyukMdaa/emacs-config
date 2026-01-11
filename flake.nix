@@ -75,8 +75,8 @@
             enable = true;
             config = lib.mkDefault emacsEnv;
             earlyInitFile = lib.mkDefault earlyInitFile;
+            createManifestFile = true;
           };
-          createManifestFile = true;
         };
       }
     );
