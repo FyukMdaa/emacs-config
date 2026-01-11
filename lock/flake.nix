@@ -120,10 +120,16 @@
       repo = "diff-hl";
       type = "github";
     };
-    dired-hide-dotfiles = {
+    dimmer = {
       flake = false;
-      owner = "mattiasb";
-      repo = "dired-hide-dotfiles";
+      owner = "gonewest818";
+      repo = "dimmer.el";
+      type = "github";
+    };
+    dirvish = {
+      flake = false;
+      owner = "alexluigit";
+      repo = "dirvish";
       type = "github";
     };
     dockerfile-mode = {
@@ -341,6 +347,12 @@
       repo = "moody";
       type = "github";
     };
+    mwim = {
+      flake = false;
+      owner = "alezost";
+      repo = "mwim.el";
+      type = "github";
+    };
     nerd-icons = {
       flake = false;
       owner = "rainstormstudio";
@@ -351,12 +363,6 @@
       flake = false;
       owner = "LuigiPiucco";
       repo = "nerd-icons-corfu";
-      type = "github";
-    };
-    nerd-icons-dired = {
-      flake = false;
-      owner = "rainstormstudio";
-      repo = "nerd-icons-dired";
       type = "github";
     };
     nix-ts-mode = {
@@ -489,6 +495,11 @@
       owner = "emacs-twist";
       repo = "twist.el";
       type = "github";
+    };
+    undo-fu = {
+      flake = false;
+      type = "git";
+      url = "https://codeberg.org/ideasman42/emacs-undo-fu.git";
     };
     vertico = {
       flake = false;
