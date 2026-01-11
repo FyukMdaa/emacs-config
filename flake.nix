@@ -72,6 +72,7 @@
           ];
 
           programs.emacs-twist = {
+            enable = true;
             config = lib.mkDefault emacsEnv;
             earlyInitFile = lib.mkDefault earlyInitFile;
           };
