@@ -430,16 +430,17 @@ GCを頻繁に行うことでメモリ使用量を安定させ、ガベージコ
 
 *** tempel
 #+begin_src emacs-lisp
-(use-package tempel
-  :ensure t
-  :bind (("M-+" . tempel-complete)
-         ("M-*" . tempel-insert))
-  :init
-  (defun my/tempel-setup-capf ()
-    (setq-local completion-at-point-functions
-                (cons #'tempel-expand
-                      completion-at-point-functions)))
-  :hook ((prog-mode text-mode) . my/tempel-setup-capf))
+  (use-package tempel
+    :ensure t
+    :demand t
+    :bind (("M-+" . tempel-complete)
+           ("M-*" . tempel-insert))
+    :init
+    (defun my/tempel-setup-capf ()
+      (setq-local completion-at-point-functions
+                  (cons #'tempel-expand
+                        completion-at-point-functions)))
+    :hook ((prog-mode text-mode) . my/tempel-setup-capf))
 #+end_src
 
 ** コマンド履歴
@@ -667,7 +668,15 @@ Kyure_Aの設定を統合: dirvish を採用し、既存の dired 拡張を置�
 
     (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
-    (treemacs-git-mode 'simple))
+    (treemacs-git-mode 'simple)
+
+    (defun my/cleanup-treemacs-processes ()
+      (dolist (p (process-list))
+        (when (string-match-p "treemacs" (process-name p))
+          (delete-process p))))
+    (add-hook 'kill-emacs-hook #'my/cleanup-treemacs-processes)
+  )
+#+end_src
 #+end_src
 
 *** treemacs-nerd-icons
@@ -1068,6 +1077,7 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
 ║  j: ↓         s: horiz    J: ↓ shrink  r: redo    ║
 ║  k: ↑         d: delete   K: ↑ grow    b: balance ║
 ║  l: →         o: delete-o L: → grow    m: max     ║
+║  t: treemacs                           w: wrap    ║
 ╚═══════════════════════════════════════════════════╝
 "
     ("h" windmove-left)
@@ -1086,6 +1096,8 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
     ("r" winner-redo)
     ("b" balance-windows)
     ("m" maximize-window)
+    ("t" treemacs-select-window "Treemacsへ移動")
+    ("w" (setq windmove-wrap-around (not windmove-wrap-around)) "移動周回設定")
     ("q" nil "quit"))
   (global-set-key (kbd "C-c w") 'hydra-window/body))
 #+end_src
