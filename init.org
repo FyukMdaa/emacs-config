@@ -1107,6 +1107,15 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
   :demand t
   :commands (aozora-view aozora-list))
 #+end_src
+*** aozora-helper-mode
+#+begin_src emacs-lisp
+(use-package aozora-helper-mode
+  :ensure t
+  ;; /aozora/ が含まれる .txt ファイルを対象にする
+  :mode (".*/aozora/.*\\.txt\\'") 
+  :config
+  )
+#+end_src
 ** ノート管理
 *** denote
 #+begin_src emacs-lisp
