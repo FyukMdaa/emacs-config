@@ -1,0 +1,3 @@
+(aozora-helper-mode :fetcher github 
+					:repo "fyukmdaa/emacs-config" 
+					:files ("elisp/aozora-helper-mode/*.el"))
