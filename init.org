@@ -952,17 +952,115 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
 
 * Org Mode・ノート
 ** Org外観
+*** 基本設定
+#+begin_src emacs-lisp
+(use-package org
+  :custom
+  ;; 見た目の改善
+  (org-startup-indented t)  ;; インデント表示
+  (org-pretty-entities t)    ;; エンティティを綺麗に表示
+  (org-hide-emphasis-markers t)  ;; 強調マーカーを隠す
+  (org-fontify-whole-heading-line t)  ;; 見出し行全体をフォント化
+  (org-fontify-done-headline t)  ;; DONE見出しをフォント化
+  (org-fontify-quote-and-verse-blocks t)  ;; 引用ブロックをフォント化
+  
+  ;; リストの改善
+  (org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+")))
+  (org-list-allow-alphabetical t)  ;; a. b. c. 形式のリストを許可
+  
+  ;; リストの自動補完機能
+  (org-list-automatic-rules '((bullet . t)      ;; 箇条書き記号を自動挿入
+                              (checkbox . t)    ;; チェックボックスを自動挿入
+                              (indent . t)))    ;; インデントを自動調整
+  
+  ;; 強調記号のカスタマイズ
+  (org-emphasis-alist
+   '(("*" bold)
+     ("/" italic)
+     ("_" underline)
+     ("=" org-verbatim verbatim)
+     ("~" org-code verbatim)
+     ("+" (:strike-through t))))
+  
+  :bind
+  (:map org-mode-map
+        ;; M-RET: 新しいリスト項目を作成（デフォルト動作を維持）
+        ("M-<return>" . org-meta-return)
+        ;; C-RET: 新しいリスト項目を作成（同レベル）
+        ("C-<return>" . org-insert-heading-respect-content)
+        ;; M-S-RET: 新しいTODO項目を作成
+        ("M-S-<return>" . org-insert-todo-heading))
+  
+  :config
+  ;; 空のリスト項目でRETを押したらリストを終了
+  (defun my/org-return-dwim ()
+    "リスト内で賢くRETを処理する"
+    (interactive)
+    (if (org-in-item-p)
+        (if (string-match-p "^[ \t]*[-+*][ \t]*$" 
+                           (buffer-substring-no-properties
+                            (line-beginning-position)
+                            (line-end-position)))
+            ;; 空のリスト項目の場合、リストを終了
+            (progn
+              (beginning-of-line)
+              (kill-line)
+              (org-return))
+          ;; 内容があるリスト項目の場合、新しい項目を作成
+          (org-return))
+      ;; リスト外では通常のRET
+      (org-return)))
+  
+  (define-key org-mode-map (kbd "RET") #'my/org-return-dwim))
+#+end_src
+
 *** org-modern
 #+begin_src emacs-lisp
 (use-package org-modern
   :ensure t
   :hook (org-mode . org-modern-mode)
-  :config
-  (setq org-modern-star 'replace
-        org-modern-hide-stars nil
-        org-modern-block-name nil
-        org-modern-keyword nil
-        org-modern-table nil))
+  :custom
+  ;; 見出しのスター表示
+  (org-modern-star '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶"))
+  (org-modern-hide-stars nil)
+  
+  ;; ブロックの装飾
+  (org-modern-block-fringe nil)
+  (org-modern-block-name '("" . ""))
+  
+  ;; キーワードの装飾
+  (org-modern-keyword t)
+  (org-modern-timestamp t)
+  (org-modern-priority t)
+  (org-modern-checkbox '((?X . "☑")
+                         (?- . "◐")
+                         (?\s . "☐")))
+  
+  ;; テーブルの装飾
+  (org-modern-table t)
+  (org-modern-table-vertical 1)
+  (org-modern-table-horizontal 0.2)
+  
+  ;; タグの装飾
+  (org-modern-tag-faces
+   '(("work" . (:foreground "#88c0d0" :background "#2e3440"))
+     ("personal" . (:foreground "#a3be8c" :background "#2e3440"))
+     ("urgent" . (:foreground "#bf616a" :background "#2e3440"))))
+  
+  ;; ToDoの装飾
+  (org-modern-todo-faces
+   '(("TODO" . (:foreground "#bf616a" :weight bold))
+     ("DOING" . (:foreground "#ebcb8b" :weight bold))
+     ("DONE" . (:foreground "#a3be8c" :weight bold))))
+  
+  ;; その他
+  (org-modern-list '((43 . "▸")
+                     (45 . "•")
+                     (42 . "◦")))
+  (org-modern-footnote (cons nil (cadr org-script-display)))
+  (org-modern-internal-target '(" ⌖ " t " "))
+  (org-modern-radio-target '(" ⎆ " t " "))
+  (org-modern-horizontal-rule "──────────────────────────────────────"))
 #+end_src
 
 *** org-appear
@@ -970,12 +1068,29 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
 (use-package org-appear
   :ensure t
   :hook (org-mode . org-appear-mode)
+  :custom
+  ;; リンクのマークアップを表示
+  (org-appear-autolinks t)
+  ;; エンティティ（特殊文字）のマークアップを表示
+  (org-appear-autoentities t)
+  ;; #+KEYWORDのマークアップを表示
+  (org-appear-autokeywords t)
+  ;; 下付き・上付きのマークアップを表示
+  (org-appear-autosubmarkers t)
+  ;; LaTeX数式のマークアップを表示
+  (org-appear-inside-latex t)
+  ;; 強調記号（*bold*など）のマークアップを表示
+  (org-appear-autoemphasis t)
+  ;; カーソルが近づいたら即座に表示
+  (org-appear-trigger 'manual)
   :config
-  (setq org-appear-autolinks t
-        org-appear-autoentities t
-        org-appear-autokeywords t
-        org-appear-autosubmarkers t
-        org-appear-inside-latex t))
+  ;; manual triggerを使う場合の設定
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (add-hook 'post-command-hook
+                        #'org-appear-manual-start nil t)
+              (add-hook 'pre-command-hook
+                        #'org-appear-manual-stop nil t))))
 #+end_src
 
 *** htmlize
@@ -984,6 +1099,14 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
   :ensure t)
 #+end_src
 
+** tex aozora
+*** aozora
+#+begin_src emacs-lisp
+(use-package aozora
+  :ensure t
+  :demand t
+  :commands (aozora-view aozora-list))
+#+end_src
 ** ノート管理
 *** denote
 #+begin_src emacs-lisp

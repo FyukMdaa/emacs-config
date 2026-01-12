@@ -48,6 +48,22 @@
         "type": "github"
       }
     },
+    "aozora": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1492751613,
+        "narHash": "sha256-18vgrXQLzYfSe2R5EPoW6t/o9Z8F+XaAVm+QrFqqpIY=",
+        "owner": "cxxxr",
+        "repo": "aozora",
+        "rev": "6851d26c6776f298ad5c9caca4903efd02c4a298",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cxxxr",
+        "repo": "aozora",
+        "type": "github"
+      }
+    },
     "avy": {
       "flake": false,
       "locked": {
@@ -1157,6 +1173,7 @@
         "ace-window": "ace-window",
         "amx": "amx",
         "anzu": "anzu",
+        "aozora": "aozora",
         "avy": "avy",
         "cape": "cape",
         "cfrs": "cfrs",
