@@ -1,0 +1,3 @@
+(aozora :fetcher github
+        :repo "cxxxr/aozora"
+        :files ("*.el" "*.txt"))

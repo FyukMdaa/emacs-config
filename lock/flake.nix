@@ -19,6 +19,12 @@
       repo = "anzu";
       type = "github";
     };
+    aozora = {
+      flake = false;
+      owner = "cxxxr";
+      repo = "aozora";
+      type = "github";
+    };
     avy = {
       flake = false;
       owner = "abo-abo";
