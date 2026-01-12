@@ -1,5 +1,5 @@
 #+TITLE: init.org
-#+AUTHOR: fyukmdaa (integrated with Kyure_A's essence)
+#+AUTHOR: fyukmdaa
 #+PROPERTY: header-args:emacs-lisp :tangle yes
 
 * 起動時設定
