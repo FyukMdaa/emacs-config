@@ -25,6 +25,12 @@
       repo = "aozora";
       type = "github";
     };
+    aozora-helper-mode = {
+      flake = false;
+      owner = "fyukmdaa";
+      repo = "emacs-config";
+      type = "github";
+    };
     avy = {
       flake = false;
       owner = "abo-abo";

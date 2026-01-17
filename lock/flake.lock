@@ -64,6 +64,22 @@
         "type": "github"
       }
     },
+    "aozora-helper-mode": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768228435,
+        "narHash": "sha256-1w3xh0lwRox0hSv/TL2SD9Hs5LoZOFV44esqLU45+f8=",
+        "owner": "fyukmdaa",
+        "repo": "emacs-config",
+        "rev": "d60d1fe332b8cf413ba4607280ef491e443c43ea",
+        "type": "github"
+      },
+      "original": {
+        "owner": "fyukmdaa",
+        "repo": "emacs-config",
+        "type": "github"
+      }
+    },
     "avy": {
       "flake": false,
       "locked": {
@@ -1174,6 +1190,7 @@
         "amx": "amx",
         "anzu": "anzu",
         "aozora": "aozora",
+        "aozora-helper-mode": "aozora-helper-mode",
         "avy": "avy",
         "cape": "cape",
         "cfrs": "cfrs",
