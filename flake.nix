@@ -4,17 +4,35 @@
     twist.url = "github:emacs-twist/twist.nix";
     org-babel.url = "github:emacs-twist/org-babel";
     emacs-overlay.url = "github:nix-community/emacs-overlay";
-    
+
     # Archive inputs (no need to process as flakes)
-    elpa = { url = "github:elpa-mirrors/elpa"; flake = false; };
-    melpa = { url = "github:melpa/melpa"; flake = false; };
-    nongnu = { url = "github:elpa-mirrors/nongnu"; flake = false; };
-    epkgs = { url = "github:emacsmirror/epkgs"; flake = false; };
+    elpa = {
+      url = "github:elpa-mirrors/elpa";
+      flake = false;
+    };
+    melpa = {
+      url = "github:melpa/melpa";
+      flake = false;
+    };
+    nongnu = {
+      url = "github:elpa-mirrors/nongnu";
+      flake = false;
+    };
+    epkgs = {
+      url = "github:emacsmirror/epkgs";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils, emacs-overlay, ... } @ inputs:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+    emacs-overlay,
+    ...
+  } @ inputs:
+    flake-utils.lib.eachDefaultSystem (
+      system: let
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
@@ -32,29 +50,30 @@
           inherit pkgs;
           emacsPackage = pkgs.emacs-pgtk;
           lockDir = ./lock;
-          initFiles = [ initFile ];
+          initFiles = [initFile];
           exportManifest = true;
-          registries = (import ./nix/registries.nix inputs) ++ [
-            {
-              name = "custom";
-              type = "melpa";
-              path = ./recipes;
-            }
-          ];
+          registries =
+            (import ./nix/registries.nix inputs)
+            ++ [
+              {
+                name = "custom";
+                type = "melpa";
+                path = ./recipes;
+              }
+            ];
         };
 
         # Emacs wrapper with both init files
         emacsWithConfig = pkgs.writeShellScriptBin "emacs" ''
           initdir="$(mktemp --tmpdir -d emacs-XXX)"
           trap "rm -rf '$initdir'" EXIT
-          
+
           ln -s ${initFile} "$initdir/init.el"
           ln -s ${earlyInitFile} "$initdir/early-init.el"
 
           exec ${emacsEnv}/bin/emacs --init-directory="$initdir" "$@"
         '';
-      in
-      {
+      in {
         packages = {
           default = emacsWithConfig;
           env = emacsEnv;
@@ -65,10 +84,11 @@
         apps = emacsEnv.makeApps {
           lockDirName = "lock";
         };
-        
-        homeModules.twist = { lib, ... }: {
+
+        homeModules.twist = {lib, ...}: {
           imports = [
             inputs.twist.homeModules.emacs-twist
+			     ./nix/home.nix	    		     
           ];
 
           programs.emacs-twist = {
