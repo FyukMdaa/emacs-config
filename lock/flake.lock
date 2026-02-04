@@ -112,6 +112,22 @@
         "type": "github"
       }
     },
+    "cdlatex": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1728318222,
+        "narHash": "sha256-PkF3pq8l22jvFBzzGKWgObH2vhepo71sgv/Bt4yzoaA=",
+        "owner": "cdominik",
+        "repo": "cdlatex",
+        "rev": "fac070f0164ac9f5859cb4cccba7d29a65c337f3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cdominik",
+        "repo": "cdlatex",
+        "type": "github"
+      }
+    },
     "cfrs": {
       "flake": false,
       "locked": {
@@ -416,6 +432,22 @@
         "type": "github"
       }
     },
+    "eglot-booster": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1752690112,
+        "narHash": "sha256-xUBQrQpw+JZxcqT1fy/8C2tjKwa7sLFHXamBm45Fa4Y=",
+        "owner": "jdtsmith",
+        "repo": "eglot-booster",
+        "rev": "cab7803c4f0adc7fff9da6680f90110674bb7a22",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jdtsmith",
+        "repo": "eglot-booster",
+        "type": "github"
+      }
+    },
     "elisp-demos": {
       "flake": false,
       "locked": {
@@ -590,6 +622,22 @@
       "original": {
         "type": "git",
         "url": "https://gitlab.com/koral/gcmh"
+      }
+    },
+    "general": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1749769759,
+        "narHash": "sha256-Ym0wRFYFPq58m3QGSSdujSfPqWKGmohwngN6ftEVaKY=",
+        "owner": "noctuid",
+        "repo": "general.el",
+        "rev": "a48768f85a655fe77b5f45c2880b420da1b1b9c3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctuid",
+        "repo": "general.el",
+        "type": "github"
       }
     },
     "go-mode": {
@@ -960,6 +1008,22 @@
         "type": "github"
       }
     },
+    "move-text": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1729240477,
+        "narHash": "sha256-lDLThZiYwS+MVx3LzE97aGBOsAHB9Td0lxgLXr3iuXw=",
+        "owner": "emacsfodder",
+        "repo": "move-text",
+        "rev": "2a8ebefeb0b363681e9562847eca3fd66e090d70",
+        "type": "github"
+      },
+      "original": {
+        "owner": "emacsfodder",
+        "repo": "move-text",
+        "type": "github"
+      }
+    },
     "mwim": {
       "flake": false,
       "locked": {
@@ -1193,6 +1257,7 @@
         "aozora-helper-mode": "aozora-helper-mode",
         "avy": "avy",
         "cape": "cape",
+        "cdlatex": "cdlatex",
         "cfrs": "cfrs",
         "compat": "compat",
         "cond-let": "cond-let",
@@ -1212,6 +1277,7 @@
         "dirvish": "dirvish",
         "dockerfile-mode": "dockerfile-mode",
         "ef-themes": "ef-themes",
+        "eglot-booster": "eglot-booster",
         "elisp-demos": "elisp-demos",
         "elisp-refs": "elisp-refs",
         "embark": "embark",
@@ -1223,6 +1289,7 @@
         "f": "f",
         "flycheck": "flycheck",
         "gcmh": "gcmh",
+        "general": "general",
         "go-mode": "go-mode",
         "helpful": "helpful",
         "hide-mode-line": "hide-mode-line",
@@ -1246,6 +1313,7 @@
         "mlscroll": "mlscroll",
         "modus-themes": "modus-themes",
         "moody": "moody",
+        "move-text": "move-text",
         "mwim": "mwim",
         "nerd-icons": "nerd-icons",
         "nerd-icons-corfu": "nerd-icons-corfu",
@@ -1263,13 +1331,13 @@
         "rust-mode": "rust-mode",
         "s": "s",
         "spacious-padding": "spacious-padding",
+        "sudo-edit": "sudo-edit",
         "tempel": "tempel",
         "transient": "transient",
         "treemacs": "treemacs",
         "treemacs-magit": "treemacs-magit",
         "treemacs-nerd-icons": "treemacs-nerd-icons",
         "treemacs-projectile": "treemacs-projectile",
-        "treesit-auto": "treesit-auto",
         "twist": "twist",
         "undo-fu": "undo-fu",
         "vertico": "vertico",
@@ -1329,6 +1397,22 @@
       "original": {
         "owner": "protesilaos",
         "repo": "spacious-padding",
+        "type": "github"
+      }
+    },
+    "sudo-edit": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1659359864,
+        "narHash": "sha256-hRfS4fGXuXd/GIsgszfci62/lU8Tp7CNuTkw8vOti4c=",
+        "owner": "nflath",
+        "repo": "sudo-edit",
+        "rev": "74eb1e6986461baed9a9269566ff838530b4379b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nflath",
+        "repo": "sudo-edit",
         "type": "github"
       }
     },
@@ -1425,22 +1509,6 @@
       "original": {
         "owner": "Alexander-Miller",
         "repo": "treemacs",
-        "type": "github"
-      }
-    },
-    "treesit-auto": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1715437550,
-        "narHash": "sha256-pA6BWV1Uc4yRh5eKevhbGuKGzbFliAZbJBf3y05Vew0=",
-        "owner": "renzmann",
-        "repo": "treesit-auto",
-        "rev": "016bd286a1ba4628f833a626f8b9d497882ecdf3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "renzmann",
-        "repo": "treesit-auto",
         "type": "github"
       }
     },

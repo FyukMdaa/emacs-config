@@ -135,6 +135,56 @@ GCを頻繁に行うことでメモリ使用量を安定させ、ガベージコ
   (exec-path-from-shell-initialize))
 #+end_src
 
+* キーバインド管理 (General.el)
+
+キーバインドを一元管理し、階層的に定義するための設定。
+将来的なキーバインドの追加や変更を容易にします。
+
+#+begin_src emacs-lisp
+(use-package general
+  :ensure t
+  :demand t
+  :config
+  ;; リーダーキーの定義 (C-c をベースにする)
+  ;; もし spacemacs 風にするなら "SPC" などに変更可能
+  (general-create-definer my/leader-key
+    :keymaps '(normal visual insert emacs)
+    :prefix "C-c"
+    :global-prefix "C-c")
+
+  ;; グローバルなプレフィックスグループの定義
+  (my/leader-key
+    "f" '(:ignore t :which-key "find/file")
+    "b" '(:ignore t :which-key "buffer")
+    "p" '(:ignore t :which-key "project")
+    "n" '(:ignore t :which-key "notes/denote")
+    "w" '(:ignore t :which-key "window")
+    "h" '(:ignore t :which-key "help"))
+
+  ;; 主要ツールのキーバインド割り当て例（既存の :bind を置き換える第一歩）
+  (my/leader-key
+    "ss" '(consult-line :which-key "search line")
+    "sb" '(consult-buffer :which-key "switch buffer")
+    "sf" '(consult-find :which-key "find file")
+    "sg" '(consult-grep :which-key "grep")
+    "si" '(consult-imenu :which-key "imenu"))
+  
+  ;; ウィンドウ操作
+  (my/leader-key
+    "wh" '(windmove-left :which-key "move left")
+    "wj" '(windmove-down :which-key "move down")
+    "wk" '(windmove-up :which-key "move up")
+    "wl" '(windmove-right :which-key "move right")
+    "wu" '(winner-undo :which-key "winner undo")
+    "wr" '(winner-redo :which-key "winner redo"))
+  
+  ;; ノート関連
+  (my/leader-key
+    "nn" '(denote :which-key "new note")
+    "nf" '(denote-open-or-create :which-key "open note")
+    "ni" '(denote-link :which-key "insert link")))
+#+end_src
+
 * 外観・テーマ
 
 ** 基本UI・操作設定
@@ -510,6 +560,16 @@ GCを頻繁に行うことでメモリ使用量を安定させ、ガベージコ
 #+end_src
 
 ** 直感的な編集操作
+*** move-text
+行やリージョンを上下に移動させるユーティリティ。
+
+#+begin_src emacs-lisp
+(use-package move-text
+  :ensure t
+  :bind (("M-p" . move-text-up)
+         ("M-n" . move-text-down)))
+#+end_src
+
 *** mwim (Move Where I Mean)
 #+begin_src emacs-lisp
 (use-package mwim
@@ -524,6 +584,15 @@ GCを頻繁に行うことでメモリ使用量を安定させ、ガベージコ
   :ensure t
   :bind (("C-z" . undo-fu-only-undo)
          ("C-S-z" . undo-fu-only-redo)))
+#+end_src
+
+*** sudo-edit
+現在のファイルを root 権限で開き直す機能を提供。
+
+#+begin_src emacs-lisp
+(use-package sudo-edit
+  :ensure t
+  :bind ("C-c C-r" . sudo-edit))
 #+end_src
 
 ** ビジュアルフィードバック
@@ -645,8 +714,6 @@ GCを頻繁に行うことでメモリ使用量を安定させ、ガベージコ
 #+end_src
 
 ** ファイルツリー・ファイラ
-Kyure_Aの設定を統合: dirvish を採用し、既存の dired 拡張を置き換え
-
 *** treemacs
 #+begin_src emacs-lisp
   (use-package treemacs
@@ -676,7 +743,6 @@ Kyure_Aの設定を統合: dirvish を採用し、既存の dired 拡張を置�
           (delete-process p))))
     (add-hook 'kill-emacs-hook #'my/cleanup-treemacs-processes)
   )
-#+end_src
 #+end_src
 
 *** treemacs-nerd-icons
@@ -712,10 +778,10 @@ Kyure_Aの設定を統合: dirvish を採用し、既存の dired 拡張を置�
   ;; diredをdirvishで上書き
   (dirvish-override-dired-mode)
   ;; プレビュー設定
-  (setq dirvish-preview-dispatchers 
+  (setq dirvish-preview-dispatchers
         (cl-substitute 'pdf-preface 'pdf dirvish-preview-dispatchers))
   ;; サイドバーに表示する属性
-  (setq dirvish-attributes 
+  (setq dirvish-attributes
         '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size))
   (setq dirvish-subtree-state-style 'nerd)
   ;; セパレータのカスタマイズ（nerd-icons使用）
@@ -806,6 +872,18 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
           ((or (node-project-p) (bun-project-p))
            '("typescript-language-server" "--stdio"))))
   (add-to-list 'eglot-server-programs '((js-mode web-mode typescript-mode) . es-server-program)))
+#+end_src
+
+*** eglot-booster
+LSP通信を最適化し、補完のラグを劇的に低減します。
+eglot-boosterを動作させるには、システムに python3 が必要です。
+(Nix環境では home.nix 等で python3 を含めてください)
+#+begin_src emacs-lisp
+(use-package eglot-booster
+  :after eglot
+  :ensure t
+  :config
+  (eglot-booster-mode))
 #+end_src
 
 *** consult-eglot
@@ -973,16 +1051,16 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
   (org-fontify-whole-heading-line t)  ;; 見出し行全体をフォント化
   (org-fontify-done-headline t)  ;; DONE見出しをフォント化
   (org-fontify-quote-and-verse-blocks t)  ;; 引用ブロックをフォント化
-  
+
   ;; リストの改善
   (org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+")))
   (org-list-allow-alphabetical t)  ;; a. b. c. 形式のリストを許可
-  
+
   ;; リストの自動補完機能
   (org-list-automatic-rules '((bullet . t)      ;; 箇条書き記号を自動挿入
                               (checkbox . t)    ;; チェックボックスを自動挿入
                               (indent . t)))    ;; インデントを自動調整
-  
+
   ;; 強調記号のカスタマイズ
   (org-emphasis-alist
    '(("*" bold)
@@ -991,7 +1069,7 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
      ("=" org-verbatim verbatim)
      ("~" org-code verbatim)
      ("+" (:strike-through t))))
-  
+
   :bind
   (:map org-mode-map
         ;; M-RET: 新しいリスト項目を作成（デフォルト動作を維持）
@@ -1000,14 +1078,14 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
         ("C-<return>" . org-insert-heading-respect-content)
         ;; M-S-RET: 新しいTODO項目を作成
         ("M-S-<return>" . org-insert-todo-heading))
-  
+
   :config
   ;; 空のリスト項目でRETを押したらリストを終了
   (defun my/org-return-dwim ()
     "リスト内で賢くRETを処理する"
     (interactive)
     (if (org-in-item-p)
-        (if (string-match-p "^[ \t]*[-+*][ \t]*$" 
+        (if (string-match-p "^[ \t]*[-+*][ \t]*$"
                            (buffer-substring-no-properties
                             (line-beginning-position)
                             (line-end-position)))
@@ -1020,7 +1098,7 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
           (org-return))
       ;; リスト外では通常のRET
       (org-return)))
-  
+
   (define-key org-mode-map (kbd "RET") #'my/org-return-dwim))
 #+end_src
 
@@ -1033,11 +1111,11 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
   ;; 見出しのスター表示
   (org-modern-star '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶"))
   (org-modern-hide-stars nil)
-  
+
   ;; ブロックの装飾
   (org-modern-block-fringe nil)
   (org-modern-block-name '("" . ""))
-  
+
   ;; キーワードの装飾
   (org-modern-keyword t)
   (org-modern-timestamp t)
@@ -1045,24 +1123,24 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
   (org-modern-checkbox '((?X . "☑")
                          (?- . "◐")
                          (?\s . "☐")))
-  
+
   ;; テーブルの装飾
   (org-modern-table t)
   (org-modern-table-vertical 1)
   (org-modern-table-horizontal 0.2)
-  
+
   ;; タグの装飾
   (org-modern-tag-faces
    '(("work" . (:foreground "#88c0d0" :background "#2e3440"))
      ("personal" . (:foreground "#a3be8c" :background "#2e3440"))
      ("urgent" . (:foreground "#bf616a" :background "#2e3440"))))
-  
+
   ;; ToDoの装飾
   (org-modern-todo-faces
    '(("TODO" . (:foreground "#bf616a" :weight bold))
      ("DOING" . (:foreground "#ebcb8b" :weight bold))
      ("DONE" . (:foreground "#a3be8c" :weight bold))))
-  
+
   ;; その他
   (org-modern-list '((43 . "▸")
                      (45 . "•")
@@ -1103,6 +1181,16 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
                         #'org-appear-manual-stop nil t))))
 #+end_src
 
+*** cdlatex
+Org modeでのLaTeX数式入力を高速化します。
+TAB補完で環境や記号を素早く入力可能になります。
+
+#+begin_src emacs-lisp
+(use-package cdlatex
+  :ensure t
+  :hook (org-mode . turn-on-org-cdlatex))
+#+end_src
+
 *** htmlize
 #+begin_src emacs-lisp
 (use-package htmlize
@@ -1122,7 +1210,7 @@ dirvishがdired-modeをオーバーライドしますが、基本的な設定は
 (use-package aozora-helper-mode
   :ensure t
   ;; /aozora/ が含まれる .txt ファイルを対象にする
-  :mode (".*/aozora/.*\\.txt\\'") 
+  :mode (".*/aozora/.*\\.txt\\'")
   :config
   )
 #+end_src
