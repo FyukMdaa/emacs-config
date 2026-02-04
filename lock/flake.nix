@@ -43,6 +43,12 @@
       repo = "cape";
       type = "github";
     };
+    cdlatex = {
+      flake = false;
+      owner = "cdominik";
+      repo = "cdlatex";
+      type = "github";
+    };
     cfrs = {
       flake = false;
       owner = "Alexander-Miller";
@@ -156,6 +162,12 @@
       repo = "ef-themes";
       type = "github";
     };
+    eglot-booster = {
+      flake = false;
+      owner = "jdtsmith";
+      repo = "eglot-booster";
+      type = "github";
+    };
     elisp-demos = {
       flake = false;
       owner = "xuchunyang";
@@ -220,6 +232,12 @@
       flake = false;
       type = "git";
       url = "https://gitlab.com/koral/gcmh";
+    };
+    general = {
+      flake = false;
+      owner = "noctuid";
+      repo = "general.el";
+      type = "github";
     };
     go-mode = {
       flake = false;
@@ -359,6 +377,12 @@
       repo = "moody";
       type = "github";
     };
+    move-text = {
+      flake = false;
+      owner = "emacsfodder";
+      repo = "move-text";
+      type = "github";
+    };
     mwim = {
       flake = false;
       owner = "alezost";
@@ -460,6 +484,12 @@
       repo = "spacious-padding";
       type = "github";
     };
+    sudo-edit = {
+      flake = false;
+      owner = "nflath";
+      repo = "sudo-edit";
+      type = "github";
+    };
     tempel = {
       flake = false;
       owner = "minad";
@@ -494,12 +524,6 @@
       flake = false;
       owner = "Alexander-Miller";
       repo = "treemacs";
-      type = "github";
-    };
-    treesit-auto = {
-      flake = false;
-      owner = "renzmann";
-      repo = "treesit-auto";
       type = "github";
     };
     twist = {
