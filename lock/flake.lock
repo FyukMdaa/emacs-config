@@ -323,16 +323,16 @@
     "dashboard": {
       "flake": false,
       "locked": {
-        "lastModified": 1767198711,
-        "narHash": "sha256-TrFCCmFFgWnsmivH0fnnfqrQCKEyhOwl+f/Zv+0Cu1w=",
+        "lastModified": 1775104561,
+        "narHash": "sha256-9BtEtdylHxpSgWAkymDAKavC5sZ/UODpYvoDKswfq2g=",
         "owner": "emacs-dashboard",
-        "repo": "emacs-dashboard",
-        "rev": "49de4c16624f6a86a5beb1196f68f02636a74d1b",
+        "repo": "dashboard",
+        "rev": "176d641a55543bda1f0c7506fb954702350c1857",
         "type": "github"
       },
       "original": {
         "owner": "emacs-dashboard",
-        "repo": "emacs-dashboard",
+        "repo": "dashboard",
         "type": "github"
       }
     },
@@ -707,15 +707,15 @@
     "highlight-indent-guides": {
       "flake": false,
       "locked": {
-        "lastModified": 1763744895,
-        "narHash": "sha256-KW6zFeSnt4jKFGQf+zU03e2TpLM1Iikl0IXxzZL7M8M=",
-        "owner": "DarthFennec",
+        "lastModified": 1770036215,
+        "narHash": "sha256-+jOqcMBYnHcAO8c4FzRtj4G1veL6giYioYdvmO60lJE=",
+        "owner": "bumblepup",
         "repo": "highlight-indent-guides",
-        "rev": "2182caa942f88e4080f5dee49df334ebea52aed0",
+        "rev": "802fb2eaf67ead730d7e3483b9a1e9639705f267",
         "type": "github"
       },
       "original": {
-        "owner": "DarthFennec",
+        "owner": "bumblepup",
         "repo": "highlight-indent-guides",
         "type": "github"
       }

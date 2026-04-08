@@ -123,7 +123,7 @@
     dashboard = {
       flake = false;
       owner = "emacs-dashboard";
-      repo = "emacs-dashboard";
+      repo = "dashboard";
       type = "github";
     };
     denote = {
@@ -265,7 +265,7 @@
     };
     highlight-indent-guides = {
       flake = false;
-      owner = "DarthFennec";
+      owner = "bumblepup";
       repo = "highlight-indent-guides";
       type = "github";
     };

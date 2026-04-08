@@ -1,11 +1,10 @@
 {
   inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # ← 追加
     flake-utils.url = "github:numtide/flake-utils";
     twist.url = "github:emacs-twist/twist.nix";
     org-babel.url = "github:emacs-twist/org-babel";
     emacs-overlay.url = "github:nix-community/emacs-overlay";
-
-    # Archive inputs (no need to process as flakes)
     elpa = {
       url = "github:elpa-mirrors/elpa";
       flake = false;
@@ -40,38 +39,38 @@
             emacs-overlay.overlays.default
           ];
         };
-
-        # Tangle org files to elisp
         initFile = pkgs.tangleOrgBabelFile "init.el" ./init.org {};
         earlyInitFile = pkgs.tangleOrgBabelFile "early-init.el" ./early-init.org {};
-
-        # Main Emacs environment
         emacsEnv = inputs.twist.lib.makeEnv {
           inherit pkgs;
           emacsPackage = pkgs.emacs-pgtk;
           lockDir = ./lock;
-          initFiles = [initFile];
+          initFiles = [ initFile ];
           exportManifest = true;
-          registries =
-            (import ./nix/registries.nix inputs)
-            ++ [
-              {
-                name = "custom";
-                type = "melpa";
-                path = ./recipes;
-              }
-            ];
+          registries = import ./nix/registries.nix inputs;
+          extraSiteStartElisp = ''
+            (add-to-list 'treesit-extra-load-path "${
+              pkgs.emacs.pkgs.treesit-grammars.with-grammars (
+                _: builtins.filter
+                  (grammar: ((grammar.meta or {}).broken or null) != true)
+                  pkgs.tree-sitter.allGrammars
+              )
+            }/lib/")
+          '';
         };
-
-        # Emacs wrapper with both init files
+        treesitGrammars = pkgs.emacs.pkgs.treesit-grammars.with-grammars (
+          _: builtins.filter
+            (grammar: ((grammar.meta or {}).broken or null) != true)
+            pkgs.tree-sitter.allGrammars
+        );
+        initDir = pkgs.runCommand "emacs-initdir" {} ''
+          mkdir $out
+          ln -s ${initFile} $out/init.el
+          ln -s ${earlyInitFile} $out/early-init.el
+          ln -s ${treesitGrammars}/lib $out/tree-sitter
+        '';
         emacsWithConfig = pkgs.writeShellScriptBin "emacs" ''
-          initdir="$(mktemp --tmpdir -d emacs-XXX)"
-          trap "rm -rf '$initdir'" EXIT
-
-          ln -s ${initFile} "$initdir/init.el"
-          ln -s ${earlyInitFile} "$initdir/early-init.el"
-
-          exec ${emacsEnv}/bin/emacs --init-directory="$initdir" "$@"
+          exec ${emacsEnv}/bin/emacs --init-directory=${initDir} "$@"
         '';
       in {
         packages = {
@@ -80,24 +79,27 @@
           init = initFile;
           early-init = earlyInitFile;
         };
-
         apps = emacsEnv.makeApps {
           lockDirName = "lock";
         };
-
-        homeModules.twist = {lib, ...}: {
-          imports = [
-            inputs.twist.homeModules.emacs-twist
-			     ./nix/home.nix	    		     
-          ];
-
-          programs.emacs-twist = {
-            enable = true;
-            config = lib.mkDefault emacsEnv;
-            earlyInitFile = lib.mkDefault earlyInitFile;
-            createManifestFile = true;
-          };
-        };
       }
-    );
+    ) // { # ← eachDefaultSystemの外に出す
+      homeManagerModules.default = { lib, pkgs, ... }: {
+        imports = [
+          inputs.twist.homeModules.emacs-twist
+          ./nix/home.nix
+        ];
+        programs.emacs-twist = {
+          enable = true;
+          config = lib.mkDefault self.packages.${pkgs.stdenv.hostPlatform.system}.env;
+          earlyInitFile = lib.mkDefault (
+            (import nixpkgs {
+              system = pkgs.stdenv.hostPlatform.system;
+              overlays = [ inputs.org-babel.overlays.default ];
+            }).tangleOrgBabelFile "early-init.el" ./early-init.org {}
+          );
+          createManifestFile = true;
+        };
+      };
+    };
 }
