@@ -1,0 +1,1323 @@
+#+TITLE: init.org
+#+AUTHOR: fyukmdaa
+#+PROPERTY: header-args:emacs-lisp :tangle yes
+
+* 起動時設定
+** 基本設定
+#+begin_src emacs-lisp
+;; 基本設定
+(setq create-lockfiles nil
+      make-backup-files nil
+      auto-save-default nil
+      custom-file (concat user-emacs-directory "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
+#+end_src
+
+** UI設定
+#+begin_src emacs-lisp
+;; UI設定
+(global-hl-line-mode 1)
+(column-number-mode 1)
+(global-display-line-numbers-mode 1)
+(setq display-line-numbers-type t)
+;; mlscroll使用のためスクロールバーを無効化
+(scroll-bar-mode -1)
+#+end_src
+
+** スクロール設定
+#+begin_src emacs-lisp
+;; スクロールの最適化
+(setq scroll-conservatively 101
+      scroll-margin 0
+      scroll-preserve-screen-position t
+      auto-window-vscroll nil)
+#+end_src
+
+** パッケージ設定
+#+begin_src emacs-lisp
+;; パッケージの再読み込み防止 (twist.nix環境)
+(advice-add 'package-refresh-contents :override #'ignore)
+#+end_src
+
+** 遅延実行マクロ
+#+begin_src emacs-lisp
+(defvar my/delayed-priority-low-configurations '())
+(defvar my/delayed-priority-low-configuration-timer nil)
+
+(setq my/delayed-priority-low-configuration-timer
+      (run-with-timer
+       0.3 0.001
+       (lambda ()
+         (if my/delayed-priority-low-configurations
+             (let ((inhibit-message t))
+               (eval (pop my/delayed-priority-low-configurations)))
+           (cancel-timer my/delayed-priority-low-configuration-timer)))))
+
+(defmacro with-delayed-execution (&rest body)
+  (declare (indent 0))
+  `(setq my/delayed-priority-low-configurations
+         (append my/delayed-priority-low-configurations ',body)))
+#+end_src
+
+** 履歴管理
+*** savehist
+#+begin_src emacs-lisp
+(use-package savehist
+  :ensure nil
+  :demand t
+  :config
+  (savehist-mode))
+#+end_src
+
+*** recentf
+#+begin_src emacs-lisp
+(use-package recentf
+  :ensure nil
+  :demand t
+  :config
+  (setq recentf-max-saved-items 1000
+        recentf-auto-cleanup 'mode)
+  (recentf-mode 1))
+#+end_src
+
+** パフォーマンス最適化
+
+*** use-package
+twist.nix でパッケージを管理するため、ensure機能自体は無効化するが
+:ensure t 宣言は twist.nix 側で解釈させるために残す
+#+begin_src emacs-lisp
+(eval-when-compile
+  (require 'use-package))
+(eval-and-compile
+  (setopt use-package-ensure-function #'ignore)
+  (setopt use-package-always-defer t)
+  (setopt use-package-compute-statistics t))
+#+end_src
+
+*** twist
+manifestファイルがない場合は無効化
+#+begin_src emacs-lisp
+(use-package twist
+  :ensure t
+  :if (and (boundp 'twist-manifest-file)
+           (file-exists-p twist-manifest-file))
+  :hook (emacs-startup . twist-watch-mode))
+#+end_src
+
+*** gcmh
+GCを頻繁に行うことでメモリ使用量を安定させ、ガベージコレクションによる
+大きなストップを防ぐ（必要に応じて調整）
+#+begin_src emacs-lisp
+(use-package gcmh
+  :ensure t
+  :demand t
+  :config
+  (setq gcmh-high-cons-threshold (* 128 1024 1024))
+  (gcmh-mode 1))
+#+end_src
+
+** 環境統合
+*** envrc
+#+begin_src emacs-lisp
+(use-package envrc
+  :ensure t
+  :hook (after-init . envrc-global-mode))
+#+end_src
+
+*** exec-path-from-shell
+#+begin_src emacs-lisp
+(use-package exec-path-from-shell
+  :ensure t
+  :if (display-graphic-p)
+  :demand t
+  :config
+  (exec-path-from-shell-initialize))
+#+end_src
+
+* キーバインド管理 (General.el)
+
+キーバインドを一元管理し、階層的に定義するための設定。
+将来的なキーバインドの追加や変更を容易にします。
+
+#+begin_src emacs-lisp
+(use-package general
+  :ensure t
+  :demand t
+  :config
+  ;; リーダーキーの定義 (C-c をベースにする)
+  ;; もし spacemacs 風にするなら "SPC" などに変更可能
+  (general-create-definer my/leader-key
+    :keymaps '(normal visual insert emacs)
+    :prefix "C-c"
+    :global-prefix "C-c")
+
+  ;; グローバルなプレフィックスグループの定義
+  (my/leader-key
+    "f" '(:ignore t :which-key "find/file")
+    "b" '(:ignore t :which-key "buffer")
+    "p" '(:ignore t :which-key "project")
+    "n" '(:ignore t :which-key "notes/denote")
+    "w" '(:ignore t :which-key "window")
+    "h" '(:ignore t :which-key "help"))
+
+  ;; 主要ツールのキーバインド割り当て例（既存の :bind を置き換える第一歩）
+  (my/leader-key
+    "ss" '(consult-line :which-key "search line")
+    "sb" '(consult-buffer :which-key "switch buffer")
+    "sf" '(consult-find :which-key "find file")
+    "sg" '(consult-grep :which-key "grep")
+    "si" '(consult-imenu :which-key "imenu"))
+  
+  ;; ウィンドウ操作
+  (my/leader-key
+    "wh" '(windmove-left :which-key "move left")
+    "wj" '(windmove-down :which-key "move down")
+    "wk" '(windmove-up :which-key "move up")
+    "wl" '(windmove-right :which-key "move right")
+    "wu" '(winner-undo :which-key "winner undo")
+    "wr" '(winner-redo :which-key "winner redo"))
+  
+  ;; ノート関連
+  (my/leader-key
+    "nn" '(denote :which-key "new note")
+    "nf" '(denote-open-or-create :which-key "open note")
+    "ni" '(denote-link :which-key "insert link")))
+#+end_src
+
+* 外観・テーマ
+
+** 基本UI・操作設定
+*** フォント設定
+フォントはあらかじめインストール
+#+begin_src emacs-lisp
+(when (display-graphic-p)
+  (set-face-attribute 'default nil
+                      :family "PlemolJP Console NF"
+                      :height 120)
+  (set-face-attribute 'variable-pitch nil
+                      :family "Noto Sans CJK JP"
+                      :height 1.0))
+#+end_src
+
+*** スムーズスクロール
+#+begin_src emacs-lisp
+(when (fboundp 'pixel-scroll-precision-mode)
+  (pixel-scroll-precision-mode 1))
+#+end_src
+
+*** リピートモード
+#+begin_src emacs-lisp
+(when (fboundp 'repeat-mode)
+  (repeat-mode 1))
+#+end_src
+
+** カラーテーマ
+*** ef-themes
+#+begin_src emacs-lisp
+(use-package ef-themes
+  :ensure t
+  :demand t
+  :config
+  (setq ef-themes-mixed-fonts t
+        ef-themes-variable-pitch-ui t
+        ef-themes-region '(intense no-extend)
+        ef-themes-headings '((1 . (bold 1.3))
+                             (2 . (regular 1.2))
+                             (t . (regular 1.1))))
+  (load-theme 'ef-owl t))
+#+end_src
+
+** パディング・スペーシング
+*** spacious-padding
+#+begin_src emacs-lisp
+(use-package spacious-padding
+  :ensure t
+  :demand t
+  :config
+  (setq spacious-padding-widths
+        '(:internal-border-width 15
+          :header-line-width 4
+          :mode-line-width 6
+          :tab-width 4
+          :right-divider-width 30
+          :scroll-bar-width 8))
+  (spacious-padding-mode 1))
+#+end_src
+
+*** 列ガイド
+#+begin_src emacs-lisp
+;; 列ガイド（prog-modeのみ）
+(setq-default display-fill-column-indicator-column 80)
+(add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
+#+end_src
+
+** ダッシュボード
+*** dashboard
+#+begin_src emacs-lisp
+(use-package dashboard
+  :ensure t
+  :demand t
+  :init
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  :config
+  (setq dashboard-banner-logo-title "Welcome to Emacs, fyukmdaa!"
+        dashboard-items '((recents . 10)
+                         (projects . 5)
+                         (bookmarks . 5))
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        dashboard-icon-type 'nerd-icons
+        dashboard-projects-backend 'projectile
+        dashboard-center-content t
+        dashboard-startup-banner 'logo)
+  (dashboard-setup-startup-hook))
+#+end_src
+
+** アイコン
+*** nerd-icons
+#+begin_src emacs-lisp
+(use-package nerd-icons
+  :ensure t
+  :demand t)
+#+end_src
+
+** モードライン
+*** moody
+#+begin_src emacs-lisp
+(use-package moody
+  :ensure t
+  :demand t
+  :config
+  (setq x-underline-at-descent-line t)
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-vc-mode))
+#+end_src
+
+*** minions
+#+begin_src emacs-lisp
+(use-package minions
+  :ensure t
+  :demand t
+  :config
+  (minions-mode 1))
+#+end_src
+
+*** mlscroll
+#+begin_src emacs-lisp
+(use-package mlscroll
+  :ensure t
+  :after moody
+  :config
+  (setq mlscroll-width-chars 12)
+  (mlscroll-mode 1))
+#+end_src
+
+** ウィンドウ効果
+*** dimmer
+#+begin_src emacs-lisp
+(use-package dimmer
+  :ensure t
+  :hook (emacs-startup . dimmer-mode)
+  :config
+  (setq dimmer-fraction 0.4))
+#+end_src
+
+*** hide-mode-line
+#+begin_src emacs-lisp
+(use-package hide-mode-line
+  :ensure t
+  :hook ((treemacs-mode imenu-list-minor-mode) . hide-mode-line-mode))
+#+end_src
+
+* 補完フレームワーク
+** 補完UI
+*** vertico
+#+begin_src emacs-lisp
+(use-package vertico
+  :ensure t
+  :demand t
+  :config
+  (setq vertico-cycle t
+        vertico-resize nil)
+  (vertico-mode))
+#+end_src
+
+*** vertico-posframe
+#+begin_src emacs-lisp
+(use-package vertico-posframe
+  :ensure t
+  :after vertico
+  :if (display-graphic-p)
+  :config
+  (setq vertico-posframe-parameters
+        '((left-fringe . 8)
+          (right-fringe . 8)))
+  (vertico-posframe-mode 1))
+#+end_src
+
+** 補完スタイル
+*** orderless
+#+begin_src emacs-lisp
+(use-package orderless
+  :ensure t
+  :demand t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+#+end_src
+
+*** marginalia
+#+begin_src emacs-lisp
+(use-package marginalia
+  :ensure t
+  :demand t
+  :bind (:map minibuffer-local-map
+              ("M-A" . marginalia-cycle))
+  :config
+  (marginalia-mode))
+#+end_src
+
+** 検索・ナビゲーション
+*** consult
+#+begin_src emacs-lisp
+(use-package consult
+  :ensure t
+  :bind (("C-s" . consult-line)
+         ("C-x b" . consult-buffer)
+         ("C-x 4 b" . consult-buffer-other-window)
+         ("C-x r b" . consult-bookmark)
+         ("M-g g" . consult-goto-line)
+         ("M-g i" . consult-imenu)
+         ("M-s d" . consult-find)
+         ("M-s g" . consult-grep)
+         ("M-s r" . consult-ripgrep))
+  :config
+  (setq consult-narrow-key "<"
+        consult-preview-key '(any . 0.5)))
+#+end_src
+
+*** consult-dir
+#+begin_src emacs-lisp
+(use-package consult-dir
+  :ensure t
+  :bind (("C-x C-d" . consult-dir)
+         :map vertico-map
+         ("C-x C-d" . consult-dir)
+         ("C-x C-j" . consult-dir-jump-file)))
+#+end_src
+
+** アクション
+*** embark
+#+begin_src emacs-lisp
+(use-package embark
+  :ensure t
+  :bind (("C-." . embark-act)
+         ("M-." . embark-dwim)
+         ("C-h B" . embark-bindings))
+  :config
+  (setq prefix-help-command #'embark-prefix-help-command))
+#+end_src
+
+*** embark-consult
+#+begin_src emacs-lisp
+(use-package embark-consult
+  :ensure t
+  :after (embark consult)
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
+
+** バッファ内補完
+*** corfu
+#+begin_src emacs-lisp
+(use-package corfu
+  :ensure t
+  :demand t
+  :config
+  (setq corfu-auto t
+        corfu-auto-delay 0.2
+        corfu-auto-prefix 2
+        corfu-cycle t
+        corfu-preselect 'prompt)
+  (global-corfu-mode)
+  :bind (:map corfu-map
+              ("TAB" . corfu-next)
+              ([tab] . corfu-next)
+              ("S-TAB" . corfu-previous)
+              ([backtab] . corfu-previous)
+              ("RET" . corfu-insert)))
+#+end_src
+
+*** corfu-terminal
+#+begin_src emacs-lisp
+(use-package corfu-terminal
+  :ensure t
+  :if (not (display-graphic-p))
+  :after corfu
+  :config
+  (corfu-terminal-mode +1))
+#+end_src
+
+*** nerd-icons-corfu
+#+begin_src emacs-lisp
+(use-package nerd-icons-corfu
+  :ensure t
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+#+end_src
+
+** 補完拡張
+*** cape
+#+begin_src emacs-lisp
+(use-package cape
+  :ensure t
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-keyword))
+#+end_src
+
+*** tempel
+#+begin_src emacs-lisp
+  (use-package tempel
+    :ensure t
+    :demand t
+    :bind (("M-+" . tempel-complete)
+           ("M-*" . tempel-insert))
+    :init
+    (defun my/tempel-setup-capf ()
+      (setq-local completion-at-point-functions
+                  (cons #'tempel-expand
+                        completion-at-point-functions)))
+    :hook ((prog-mode text-mode) . my/tempel-setup-capf))
+#+end_src
+
+** コマンド履歴
+*** amx
+#+begin_src emacs-lisp
+(use-package amx
+  :ensure t
+  :demand t
+  :config
+  (amx-mode 1))
+#+end_src
+
+* 編集機能
+** 括弧管理
+*** paren
+#+begin_src emacs-lisp
+(use-package paren
+  :ensure nil
+  :demand t
+  :config
+  (setq show-paren-delay 0
+        show-paren-style 'mixed
+        show-paren-when-point-inside-paren t)
+  (show-paren-mode 1))
+#+end_src
+
+*** rainbow-delimiters
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+*** puni
+#+begin_src emacs-lisp
+(use-package puni
+  :ensure t
+  :hook ((prog-mode sgml-mode nxml-mode tex-mode) . puni-mode)
+  :bind (:map puni-mode-map
+              ("C-M-f" . puni-forward-sexp)
+              ("C-M-b" . puni-backward-sexp)
+              ("C-M-t" . puni-transpose)
+              ("C-)" . puni-slurp-forward)
+              ("C-}" . puni-barf-forward)
+              ("C-(" . puni-slurp-backward)
+              ("C-{" . puni-barf-backward)))
+#+end_src
+
+** ナビゲーション
+*** avy
+#+begin_src emacs-lisp
+(use-package avy
+  :ensure t
+  :bind (("M-j" . avy-goto-char-timer)
+         ("M-g f" . avy-goto-line))
+  :config
+  (setq avy-timeout-seconds 0.3
+        avy-all-windows nil))
+#+end_src
+
+*** expand-region
+#+begin_src emacs-lisp
+(use-package expand-region
+  :ensure t
+  :bind (("C-=" . er/expand-region)
+         ("C--" . er/contract-region)))
+#+end_src
+
+** 直感的な編集操作
+*** move-text
+行やリージョンを上下に移動させるユーティリティ。
+
+#+begin_src emacs-lisp
+(use-package move-text
+  :ensure t
+  :bind (("M-p" . move-text-up)
+         ("M-n" . move-text-down)))
+#+end_src
+
+*** mwim (Move Where I Mean)
+#+begin_src emacs-lisp
+(use-package mwim
+  :ensure t
+  :bind (("C-a" . mwim-beginning-of-code-or-line)
+         ("C-e" . mwim-end-of-code-or-line)))
+#+end_src
+
+*** undo-fu (Undo/Redoの改善)
+#+begin_src emacs-lisp
+(use-package undo-fu
+  :ensure t
+  :bind (("C-z" . undo-fu-only-undo)
+         ("C-S-z" . undo-fu-only-redo)))
+#+end_src
+
+*** sudo-edit
+現在のファイルを root 権限で開き直す機能を提供。
+
+#+begin_src emacs-lisp
+(use-package sudo-edit
+  :ensure t
+  :bind ("C-c C-r" . sudo-edit))
+#+end_src
+
+** ビジュアルフィードバック
+*** volatile-highlights
+#+begin_src emacs-lisp
+(use-package volatile-highlights
+  :ensure t
+  :demand t
+  :config
+  (volatile-highlights-mode 1))
+#+end_src
+
+*** vundo
+#+begin_src emacs-lisp
+(use-package vundo
+  :ensure t
+  :bind ("C-x u" . vundo)
+  :config
+  (setq vundo-glyph-alist vundo-unicode-symbols))
+#+end_src
+
+** 検索・置換
+*** anzu
+#+begin_src emacs-lisp
+(use-package anzu
+  :ensure t
+  :demand t
+  :bind (("M-%" . anzu-query-replace)
+         ("C-M-%" . anzu-query-replace-regexp))
+  :config
+  (global-anzu-mode +1))
+#+end_src
+
+*** visual-regexp
+#+begin_src emacs-lisp
+(use-package visual-regexp
+  :ensure t
+  :bind (("C-c r" . vr/replace)
+         ("C-c q" . vr/query-replace)))
+#+end_src
+
+*** wgrep
+#+begin_src emacs-lisp
+(use-package wgrep
+  :ensure t
+  :config
+  (setq wgrep-auto-save-buffer t))
+#+end_src
+
+** インデント表示
+*** highlight-indent-guides
+#+begin_src emacs-lisp
+(use-package highlight-indent-guides
+  :ensure t
+  :hook (prog-mode . highlight-indent-guides-mode)
+  :config
+  (setq highlight-indent-guides-method 'character
+        highlight-indent-guides-responsive 'top
+        highlight-indent-guides-delay 0))
+#+end_src
+
+* バージョン管理
+** Git差分表示
+*** diff-hl
+#+begin_src emacs-lisp
+(use-package diff-hl
+  :ensure t
+  :demand t
+  :config
+  (global-diff-hl-mode 1)
+  (when (fboundp 'diff-hl-flydiff-mode)
+    (diff-hl-flydiff-mode 1))
+  :hook ((magit-pre-refresh . diff-hl-magit-pre-refresh)
+         (magit-post-refresh . diff-hl-magit-post-refresh)
+         (dired-mode . diff-hl-dired-mode)))
+#+end_src
+
+** Git操作
+*** transient
+#+begin_src emacs-lisp
+(use-package transient
+  :ensure t)
+#+end_src
+
+*** magit
+#+begin_src emacs-lisp
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status)
+  :config
+  (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+#+end_src
+
+* プロジェクト・ファイル管理
+** プロジェクト管理
+*** projectile
+#+begin_src emacs-lisp
+(use-package projectile
+  :ensure t
+  :demand t
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :config
+  (projectile-mode +1)
+  (setq projectile-completion-system 'default
+        projectile-enable-caching t
+        projectile-sort-order 'recently-active
+        projectile-indexing-method 'alien))
+#+end_src
+
+*** consult-projectile
+#+begin_src emacs-lisp
+(use-package consult-projectile
+  :ensure t
+  :after (projectile consult)
+  :bind (:map projectile-command-map
+              ("f" . consult-projectile-find-file)
+              ("s" . consult-projectile-switch-project)
+              ("b" . consult-projectile-switch-to-buffer)))
+#+end_src
+
+** ファイルツリー・ファイラ
+*** treemacs
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :ensure t
+    :commands treemacs
+    :bind ("C-c t" . treemacs)
+    :config
+    (setq treemacs-width 30
+          treemacs-follow-after-init t
+          treemacs-is-never-other-window t
+          treemacs-show-hidden-files t)
+
+    ;; マウス操作の明示的な有効化と設定
+    (setq treemacs-silent-refresh nil)
+
+    ;; ターミナル利用時もマウスを有効にする
+    (unless (display-graphic-p)
+      (xterm-mouse-mode 1))
+
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-git-mode 'simple)
+
+    (defun my/cleanup-treemacs-processes ()
+      (dolist (p (process-list))
+        (when (string-match-p "treemacs" (process-name p))
+          (delete-process p))))
+    (add-hook 'kill-emacs-hook #'my/cleanup-treemacs-processes)
+  )
+#+end_src
+
+*** treemacs-nerd-icons
+#+begin_src emacs-lisp
+(use-package treemacs-nerd-icons
+  :ensure t
+  :after treemacs
+  :config
+  (treemacs-load-theme "nerd-icons"))
+#+end_src
+
+*** treemacs-magit
+#+begin_src emacs-lisp
+(use-package treemacs-magit
+  :ensure t
+  :after (treemacs magit))
+#+end_src
+
+*** treemacs-projectile
+#+begin_src emacs-lisp
+(use-package treemacs-projectile
+  :ensure t
+  :after (treemacs projectile))
+#+end_src
+
+*** dirvish
+#+begin_src emacs-lisp
+(use-package dirvish
+  :ensure t
+  :after nerd-icons
+  :demand t
+  :config
+  ;; diredをdirvishで上書き
+  (dirvish-override-dired-mode)
+  ;; プレビュー設定
+  (setq dirvish-preview-dispatchers
+        (cl-substitute 'pdf-preface 'pdf dirvish-preview-dispatchers))
+  ;; サイドバーに表示する属性
+  (setq dirvish-attributes
+        '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size))
+  (setq dirvish-subtree-state-style 'nerd)
+  ;; セパレータのカスタマイズ（nerd-icons使用）
+  (setq dirvish-path-separators (list
+                                 (format "  %s " (nerd-icons-codicon "nf-cod-home"))
+                                 (format "  %s " (nerd-icons-codicon "nf-cod-root_folder"))
+                                 (format " %s " (nerd-icons-faicon "nf-fa-angle_right")))))
+#+end_src
+
+** アウトライン・ファイル管理
+*** imenu-list
+#+begin_src emacs-lisp
+(use-package imenu-list
+  :ensure t
+  :commands imenu-list-smart-toggle
+  :bind ("C-c i" . imenu-list-smart-toggle)
+  :config
+  (setq imenu-list-focus-after-activation t
+        imenu-list-auto-resize t
+        imenu-list-position 'right))
+#+end_src
+
+*** dired (基本設定)
+dirvishがdired-modeをオーバーライドしますが、基本的な設定は残しておきます。
+#+begin_src emacs-lisp
+(use-package dired
+  :ensure nil
+  :config
+  (setq dired-listing-switches "-alh --group-directories-first"
+        dired-dwim-target t
+        dired-kill-when-opening-new-dired-buffer t))
+#+end_src
+
+* プログラミング・開発
+** LSP・補完
+*** eglot
+#+begin_src emacs-lisp
+(use-package eglot
+  :ensure nil
+  :config
+  (setq eglot-autoshutdown t
+        eglot-sync-connect nil
+        eglot-extend-to-xref t)
+
+  ;; --- Web/TS開発環境自動検出用ヘルパー ---
+  (defun project-root* ()
+    (when-let* ((proj (project-current nil)))
+      (project-root proj)))
+
+  (defun project-has-file-p (&rest names)
+    (when-let* ((root (project-root*)))
+      (seq-some (lambda (f)
+                  (file-exists-p (expand-file-name f root)))
+                names)))
+
+  (defun deno-project-p () (project-has-file-p "deno.json" "deno.jsonc"))
+  (defun node-project-p () (project-has-file-p "package.json"))
+  (defun bun-project-p  () (project-has-file-p "bun.lockb"))
+
+  (defun es-server-program (_)
+    (cond ((deno-project-p)
+           '("deno" "lsp" :initializationOptions (:enable t :lint t)))
+          ((or (node-project-p) (bun-project-p))
+           '("typescript-language-server" "--stdio"))))
+  (add-to-list 'eglot-server-programs '((js-mode web-mode typescript-mode) . es-server-program)))
+#+end_src
+
+*** eglot-booster
+LSP通信を最適化し、補完のラグを劇的に低減します。
+eglot-boosterを動作させるには、システムに python3 が必要です。
+(Nix環境では home.nix 等で python3 を含めてください)
+#+begin_src emacs-lisp
+(use-package eglot-booster
+  :after eglot
+  :ensure t
+  :config
+  (eglot-booster-mode))
+#+end_src
+
+*** consult-eglot
+#+begin_src emacs-lisp
+(use-package consult-eglot
+  :ensure t
+  :after (consult eglot)
+  :bind (:map eglot-mode-map
+              ("C-c e s" . consult-eglot-symbols)))
+#+end_src
+
+** 構文チェック
+*** flycheck
+#+begin_src emacs-lisp
+(use-package flycheck
+  :ensure t
+  :hook (prog-mode . flycheck-mode)
+  :config
+  (setq flycheck-check-syntax-automatically '(save mode-enabled)))
+#+end_src
+
+*** consult-flycheck
+#+begin_src emacs-lisp
+(use-package consult-flycheck
+  :ensure t
+  :after (consult flycheck)
+  :bind ("C-c ! c" . consult-flycheck))
+#+end_src
+
+** 開発支援
+*** hl-todo
+#+begin_src emacs-lisp
+(use-package hl-todo
+  :ensure t
+  :hook (prog-mode . hl-todo-mode)
+  :config
+  (setq hl-todo-keyword-faces
+        '(("TODO" . "#ff0000")
+          ("FIXME" . "#ff9900")
+          ("HACK" . "#9900ff")
+          ("NOTE" . "#0000ff")
+          ("REVIEW" . "#00ff00"))))
+#+end_src
+
+*** rainbow-mode
+#+begin_src emacs-lisp
+(use-package rainbow-mode
+  :ensure t
+  :hook ((css-mode web-mode) . rainbow-mode))
+#+end_src
+
+** 言語サポート
+*** マークダウン・システム設定
+**** markdown-mode
+#+begin_src emacs-lisp
+(use-package markdown-mode
+  :ensure t
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :config
+  (setq markdown-command "pandoc"))
+#+end_src
+
+**** nix-ts-mode
+#+begin_src emacs-lisp
+(use-package nix-ts-mode
+  :ensure t
+  :mode "\\.nix\\'")
+#+end_src
+
+**** dockerfile-mode
+#+begin_src emacs-lisp
+(use-package dockerfile-mode
+  :ensure t
+  :mode "Dockerfile\\'")
+#+end_src
+
+**** yaml-mode
+#+begin_src emacs-lisp
+(use-package yaml-mode
+  :ensure t
+  :mode "\\.ya?ml\\'")
+#+end_src
+
+*** プログラミング言語
+**** rust-mode
+#+begin_src emacs-lisp
+(use-package rust-mode
+  :ensure t
+  :mode "\\.rs\\'"
+  :config
+  (setq rust-format-on-save t))
+#+end_src
+
+**** go-mode
+#+begin_src emacs-lisp
+(use-package go-mode
+  :ensure t
+  :mode "\\.go\\'")
+#+end_src
+
+**** lua-mode
+#+begin_src emacs-lisp
+(use-package lua-mode
+  :ensure t
+  :mode "\\.lua\\'")
+#+end_src
+
+*** Web開発
+**** web-mode
+#+begin_src emacs-lisp
+(use-package web-mode
+  :ensure t
+  :mode ("\\.html?\\'" "\\.erb\\'" "\\.vue\\'" "\\.jsx?\\'")
+  :config
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2
+        web-mode-enable-auto-pairing t
+        web-mode-enable-css-colorization t))
+#+end_src
+
+**** emmet-mode
+#+begin_src emacs-lisp
+(use-package emmet-mode
+  :ensure t
+  :hook ((sgml-mode web-mode css-mode) . emmet-mode))
+#+end_src
+
+** Emacs Lisp開発
+*** macrostep
+#+begin_src emacs-lisp
+(use-package macrostep
+  :ensure t
+  :bind (:map emacs-lisp-mode-map
+              ("C-c e m" . macrostep-expand)))
+#+end_src
+
+*** elisp-demos
+#+begin_src emacs-lisp
+(use-package elisp-demos
+  :ensure t
+  :config
+  (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
+#+end_src
+
+*** highlight-defined
+#+begin_src emacs-lisp
+(use-package highlight-defined
+  :ensure t
+  :hook (emacs-lisp-mode . highlight-defined-mode))
+#+end_src
+
+* Org Mode・ノート
+** Org外観
+*** 基本設定
+#+begin_src emacs-lisp
+(use-package org
+  :custom
+  ;; 見た目の改善
+  (org-startup-indented t)  ;; インデント表示
+  (org-pretty-entities t)    ;; エンティティを綺麗に表示
+  (org-hide-emphasis-markers t)  ;; 強調マーカーを隠す
+  (org-fontify-whole-heading-line t)  ;; 見出し行全体をフォント化
+  (org-fontify-done-headline t)  ;; DONE見出しをフォント化
+  (org-fontify-quote-and-verse-blocks t)  ;; 引用ブロックをフォント化
+
+  ;; リストの改善
+  (org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+")))
+  (org-list-allow-alphabetical t)  ;; a. b. c. 形式のリストを許可
+
+  ;; リストの自動補完機能
+  (org-list-automatic-rules '((bullet . t)      ;; 箇条書き記号を自動挿入
+                              (checkbox . t)    ;; チェックボックスを自動挿入
+                              (indent . t)))    ;; インデントを自動調整
+
+  ;; 強調記号のカスタマイズ
+  (org-emphasis-alist
+   '(("*" bold)
+     ("/" italic)
+     ("_" underline)
+     ("=" org-verbatim verbatim)
+     ("~" org-code verbatim)
+     ("+" (:strike-through t))))
+
+  :bind
+  (:map org-mode-map
+        ;; M-RET: 新しいリスト項目を作成（デフォルト動作を維持）
+        ("M-<return>" . org-meta-return)
+        ;; C-RET: 新しいリスト項目を作成（同レベル）
+        ("C-<return>" . org-insert-heading-respect-content)
+        ;; M-S-RET: 新しいTODO項目を作成
+        ("M-S-<return>" . org-insert-todo-heading))
+
+  :config
+  ;; 空のリスト項目でRETを押したらリストを終了
+  (defun my/org-return-dwim ()
+    "リスト内で賢くRETを処理する"
+    (interactive)
+    (if (org-in-item-p)
+        (if (string-match-p "^[ \t]*[-+*][ \t]*$"
+                           (buffer-substring-no-properties
+                            (line-beginning-position)
+                            (line-end-position)))
+            ;; 空のリスト項目の場合、リストを終了
+            (progn
+              (beginning-of-line)
+              (kill-line)
+              (org-return))
+          ;; 内容があるリスト項目の場合、新しい項目を作成
+          (org-return))
+      ;; リスト外では通常のRET
+      (org-return)))
+
+  (define-key org-mode-map (kbd "RET") #'my/org-return-dwim))
+#+end_src
+
+*** org-modern
+#+begin_src emacs-lisp
+(use-package org-modern
+  :ensure t
+  :hook (org-mode . org-modern-mode)
+  :custom
+  ;; 見出しのスター表示
+  (org-modern-star '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶"))
+  (org-modern-hide-stars nil)
+
+  ;; ブロックの装飾
+  (org-modern-block-fringe nil)
+  (org-modern-block-name '("" . ""))
+
+  ;; キーワードの装飾
+  (org-modern-keyword t)
+  (org-modern-timestamp t)
+  (org-modern-priority t)
+  (org-modern-checkbox '((?X . "☑")
+                         (?- . "◐")
+                         (?\s . "☐")))
+
+  ;; テーブルの装飾
+  (org-modern-table t)
+  (org-modern-table-vertical 1)
+  (org-modern-table-horizontal 0.2)
+
+  ;; タグの装飾
+  (org-modern-tag-faces
+   '(("work" . (:foreground "#88c0d0" :background "#2e3440"))
+     ("personal" . (:foreground "#a3be8c" :background "#2e3440"))
+     ("urgent" . (:foreground "#bf616a" :background "#2e3440"))))
+
+  ;; ToDoの装飾
+  (org-modern-todo-faces
+   '(("TODO" . (:foreground "#bf616a" :weight bold))
+     ("DOING" . (:foreground "#ebcb8b" :weight bold))
+     ("DONE" . (:foreground "#a3be8c" :weight bold))))
+
+  ;; その他
+  (org-modern-list '((43 . "▸")
+                     (45 . "•")
+                     (42 . "◦")))
+  (org-modern-footnote (cons nil (cadr org-script-display)))
+  (org-modern-internal-target '(" ⌖ " t " "))
+  (org-modern-radio-target '(" ⎆ " t " "))
+  (org-modern-horizontal-rule "──────────────────────────────────────"))
+#+end_src
+
+*** org-appear
+#+begin_src emacs-lisp
+(use-package org-appear
+  :ensure t
+  :hook (org-mode . org-appear-mode)
+  :custom
+  ;; リンクのマークアップを表示
+  (org-appear-autolinks t)
+  ;; エンティティ（特殊文字）のマークアップを表示
+  (org-appear-autoentities t)
+  ;; #+KEYWORDのマークアップを表示
+  (org-appear-autokeywords t)
+  ;; 下付き・上付きのマークアップを表示
+  (org-appear-autosubmarkers t)
+  ;; LaTeX数式のマークアップを表示
+  (org-appear-inside-latex t)
+  ;; 強調記号（*bold*など）のマークアップを表示
+  (org-appear-autoemphasis t)
+  ;; カーソルが近づいたら即座に表示
+  (org-appear-trigger 'manual)
+  :config
+  ;; manual triggerを使う場合の設定
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (add-hook 'post-command-hook
+                        #'org-appear-manual-start nil t)
+              (add-hook 'pre-command-hook
+                        #'org-appear-manual-stop nil t))))
+#+end_src
+
+*** cdlatex
+Org modeでのLaTeX数式入力を高速化します。
+TAB補完で環境や記号を素早く入力可能になります。
+
+#+begin_src emacs-lisp
+(use-package cdlatex
+  :ensure t
+  :hook (org-mode . turn-on-org-cdlatex))
+#+end_src
+
+*** htmlize
+#+begin_src emacs-lisp
+(use-package htmlize
+  :ensure t)
+#+end_src
+
+** tex aozora
+*** aozora
+#+begin_src emacs-lisp
+(use-package aozora
+  :ensure t
+  :demand t
+  :commands (aozora-view aozora-list))
+#+end_src
+*** aozora-helper-mode
+#+begin_src emacs-lisp
+(use-package aozora-helper-mode
+  :ensure t
+  ;; /aozora/ が含まれる .txt ファイルを対象にする
+  :mode (".*/aozora/.*\\.txt\\'")
+  :config
+  )
+#+end_src
+** ノート管理
+*** denote
+#+begin_src emacs-lisp
+(use-package denote
+  :ensure t
+  :commands (denote denote-open-or-create)
+  :bind (("C-c n n" . denote)
+         ("C-c n f" . denote-open-or-create)
+         ("C-c n i" . denote-link))
+  :config
+  (setq denote-directory (expand-file-name "~/org/notes/")
+        denote-known-keywords '("emacs" "nix" "dev" "idea" "work")
+        denote-prompts '(title keywords)
+        denote-file-type 'org))
+#+end_src
+
+*** consult-notes
+#+begin_src emacs-lisp
+(use-package consult-notes
+  :ensure t
+  :after consult
+  :bind ("C-c n s" . consult-notes)
+  :config
+  (setq consult-notes-denote-files-function #'denote-directory-files))
+#+end_src
+
+*** olivetti
+#+begin_src emacs-lisp
+(use-package olivetti
+  :ensure t
+  :commands olivetti-mode
+  :bind ("C-c o" . olivetti-mode)
+  :config
+  (setq olivetti-body-width 0.65
+        olivetti-minimum-body-width 80))
+#+end_src
+
+* ヘルプ・操作支援
+** キーバインド確認
+*** which-key
+#+begin_src emacs-lisp
+(use-package which-key
+  :ensure t
+  :demand t
+  :config
+  (setq which-key-idle-delay 0.5
+        which-key-popup-type 'side-window
+        which-key-side-window-location 'bottom
+        which-key-sort-order 'which-key-key-order-alpha)
+  (which-key-mode 1))
+#+end_src
+
+** ヘルプ機能強化
+*** helpful
+#+begin_src emacs-lisp
+(use-package helpful
+  :ensure t
+  :bind (("C-h f" . helpful-callable)
+         ("C-h v" . helpful-variable)
+         ("C-h k" . helpful-key)
+         ("C-h x" . helpful-command)
+         ("C-c C-d" . helpful-at-point)))
+#+end_src
+
+* ウィンドウ管理
+** 基本設定
+*** winner-mode
+#+begin_src emacs-lisp
+(winner-mode 1)
+#+end_src
+
+*** windmove
+#+begin_src emacs-lisp
+(windmove-default-keybindings)
+#+end_src
+
+** Hydra
+*** hydra
+#+begin_src emacs-lisp
+(use-package hydra
+  :ensure t
+  :demand t
+  :config
+  (defhydra hydra-window (:hint nil)
+    "
+╔═══════════════════════════════════════════════════╗
+║         Window Management Hydra                   ║
+╠═══════════════════════════════════════════════════╣
+║  Move         Split       Resize      Layout      ║
+║  h: ←         v: vert     H: ← shrink  u: undo    ║
+║  j: ↓         s: horiz    J: ↓ shrink  r: redo    ║
+║  k: ↑         d: delete   K: ↑ grow    b: balance ║
+║  l: →         o: delete-o L: → grow    m: max     ║
+║  t: treemacs                           w: wrap    ║
+╚═══════════════════════════════════════════════════╝
+"
+    ("h" windmove-left)
+    ("j" windmove-down)
+    ("k" windmove-up)
+    ("l" windmove-right)
+    ("v" split-window-right)
+    ("s" split-window-below)
+    ("d" delete-window)
+    ("o" delete-other-windows)
+    ("H" shrink-window-horizontally)
+    ("J" shrink-window)
+    ("K" enlarge-window)
+    ("L" enlarge-window-horizontally)
+    ("u" winner-undo)
+    ("r" winner-redo)
+    ("b" balance-windows)
+    ("m" maximize-window)
+    ("t" treemacs-select-window "Treemacsへ移動")
+    ("w" (setq windmove-wrap-around (not windmove-wrap-around)) "移動周回設定")
+    ("q" nil "quit"))
+  (global-set-key (kbd "C-c w") 'hydra-window/body))
+#+end_src
+
+* 最終設定
+** GC設定の復元
+#+begin_src emacs-lisp
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq file-name-handler-alist my--file-name-handler-alist)
+            (when (boundp 'my--file-name-handler-alist)
+              (makunbound 'my--file-name-handler-alist))))
+#+end_src
+
+** 起動メッセージ
+#+begin_src emacs-lisp
+(message "Emacs configuration loaded successfully!")
+#+end_src

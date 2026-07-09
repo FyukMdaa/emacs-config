@@ -1,0 +1,184 @@
+#+TITLE: early-init.org
+#+AUTHOR: fyukmdaa
+#+PROPERTY: header-args:emacs-lisp :tangle yes
+
+* 言語とエンコーディング設定
+
+#+begin_src emacs-lisp
+(set-language-environment "Japanese")
+(prefer-coding-system 'utf-8)
+(set-default 'buffer-file-coding-system 'utf-8)
+#+end_src
+
+* パフォーマンス最適化
+
+** GC閾値を一時的に最大化（起動高速化）
+
+起動時のGCを抑制し、init.el読み込み後に適切な値に戻す。
+
+#+begin_src emacs-lisp
+(setq gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 1.0)
+#+end_src
+
+** ファイル名ハンドラを一時的に無効化
+
+起動時のファイルアクセスを高速化。init.el読み込み後に復元。
+(init.org側で復元処理が存在します)
+
+#+begin_src emacs-lisp
+(defvar my--file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
+#+end_src
+
+** パッケージ管理の無効化
+
+twist.nixで管理するため、Emacs標準のパッケージシステムを無効化。
+
+#+begin_src emacs-lisp
+(setq package-enable-at-startup nil
+      package-quickstart nil
+      site-run-file nil)
+#+end_src
+
+* UI要素の最適化
+
+** デフォルトフレーム設定
+
+フレーム生成前に設定することでチラつきを防止。
+spacious-paddingを利用するため、internal-border-widthは広めに取っています。
+
+#+begin_src emacs-lisp
+(setq default-frame-alist
+      '((min-height . 1)
+        (min-width . 1)
+        (height . 45)
+        (width . 81)
+        (vertical-scroll-bars . nil)
+        (horizontal-scroll-bars . nil)
+        (internal-border-width . 15)
+        (left-fringe . 1)
+        (right-fringe . 1)
+        (fullscreen . maximized)
+        (tool-bar-lines . 0)
+        (menu-bar-lines . 0)
+        (undecorated . nil)))
+#+end_src
+
+** ウィンドウリサイズの抑制
+
+不要なリサイズ計算を防止。
+
+#+begin_src emacs-lisp
+(setq frame-inhibit-implied-resize t
+      frame-resize-pixelwise t)
+#+end_src
+
+** 起動時の画面設定
+
+スプラッシュスクリーンとメッセージを無効化。
+
+#+begin_src emacs-lisp
+(setq inhibit-startup-screen t
+      inhibit-startup-message t
+      inhibit-startup-echo-area-message user-login-name
+      inhibit-default-init t
+      initial-scratch-message nil
+      initial-major-mode 'fundamental-mode)
+#+end_src
+
+** タイトルバー設定
+
+#+begin_src emacs-lisp
+(setq frame-title-format '("%b - Emacs")
+      icon-title-format frame-title-format)
+#+end_src
+
+* ネイティブコンパイル設定
+
+** 警告の抑制
+
+#+begin_src emacs-lisp
+(setq native-comp-async-report-warnings-errors nil
+      native-comp-warning-on-missing-source nil)
+#+end_src
+
+** コンパイル設定
+
+#+begin_src emacs-lisp
+(when (fboundp 'native-compile-async)
+  (setq native-comp-async-jobs-number 8
+        native-comp-speed 3
+        native-comp-always-compile nil))
+#+end_src
+
+* ELNキャッシュとuser-emacs-directoryの設定
+#+begin_src emacs-lisp
+;; nix run時（initdirがNixストア上＝読み取り専用）はcacheに逃がす
+(unless (file-writable-p user-emacs-directory)
+  (let ((cache-dir (expand-file-name "emacs"
+                     (or (getenv "XDG_CACHE_HOME")
+                         (expand-file-name "~/.cache")))))
+    (make-directory cache-dir t)
+    (setq user-emacs-directory (file-name-as-directory cache-dir))
+    (setopt savehist-file         (expand-file-name "history"   cache-dir))
+    (setopt recentf-save-file     (expand-file-name "recentf"   cache-dir))
+    (setopt bookmark-default-file (expand-file-name "bookmarks" cache-dir))))
+
+;; ELNキャッシュ（user-emacs-directory確定後に設定）
+(when (fboundp 'startup-redirect-eln-cache)
+  (startup-redirect-eln-cache
+   (convert-standard-filename
+    (expand-file-name "var/eln-cache/" user-emacs-directory))))
+#+end_src
+
+* その他の最適化
+
+** レンダリング最適化
+
+#+begin_src emacs-lisp
+;; GUI描画の高速化
+(setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
+
+;; カーソル点滅を無効化（パフォーマンス向上）
+(setq-default cursor-in-non-selected-windows nil)
+
+;; 長い行の処理を最適化
+(setq-default long-line-threshold 1000
+              large-hscroll-threshold 1000
+              syntax-wholeline-max 1000)
+#+end_src
+
+** ファイルI/O最適化
+
+#+begin_src emacs-lisp
+;; 読み込みバッファサイズを増やす
+(setq read-process-output-max (* 1024 1024)) ;; 1MB
+
+;; auto-revertの間隔を調整
+(setq auto-revert-interval 5
+      auto-revert-check-vc-info nil
+      auto-revert-avoid-polling t)
+#+end_src
+
+** 警告とメッセージの抑制
+
+#+begin_src emacs-lisp
+;; 不要な警告を抑制
+(setq warning-suppress-types '((comp) (bytecomp)))
+(setq byte-compile-warnings '(not obsolete))
+(setq ad-redefinition-action 'accept)
+
+;; エコーエリアのメッセージを短縮
+(setq echo-keystrokes 0.1)
+#+end_src
+
+* profiler（デバッグ用・通常は無効）
+
+起動時間を計測する場合にコメントアウトを外す。
+
+#+begin_src emacs-lisp :tangle no
+(require 'profiler)
+(profiler-start 'cpu)
+#+end_src

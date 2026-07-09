@@ -1,0 +1,15 @@
+# Nix build results
+result
+result-*
+
+# direnv
+.direnv/
+
+# org-babel-tangle で手元で試しに生成したファイル
+/init.el
+/early-init.el
+
+# Emacs 由来の雑多なファイル
+*~
+\#*\#
+.\#*
