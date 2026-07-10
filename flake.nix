@@ -40,6 +40,7 @@
           inherit system;
           overlays = [ org-babel.overlays.default ];
         };
+        lib = pkgs.lib;
 
         emacsPackage = pkgs.emacs-pgtk;
 
@@ -60,13 +61,20 @@
           initParser = twist.lib.parseSetup { inherit lib; } { };
           extraPackages = [ "setup" ];
 
+          # パッケージのオーバーライド設定を外部ファイルから読み込む
+          inputOverrides = import ./nix/override.nix { inherit pkgs; };
+
           # パッケージの取得先。
           registries = import ./nix/registries.nix inputs;
 
           # tree-sitter
           extraSiteStartElisp = ''
             (add-to-list 'treesit-extra-load-path "${
-              pkgs.callPackage (import ./treesit-grammars.nix { inherit inputs; }) { }
+              pkgs.emacs.pkgs.treesit-grammars.with-grammars (
+                _: builtins.filter
+                  (grammar: ((grammar.meta or {}).broken or null) != true)
+                  pkgs.tree-sitter.allGrammars
+              )
             }/lib/")
           '';
         };
@@ -94,6 +102,6 @@
       }
     )
     // {
-      homeModules.default = import ./home-module.nix { inherit self twist; };
+      homeModules.default = import ./nix/home-module.nix { inherit self twist; };
     };
 }

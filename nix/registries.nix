@@ -1,7 +1,7 @@
 inputs: [
   {
   	type = "melpa";
-  	path = "../recipes";
+  	path = ../recipes;
   }
   {
     name = "melpa";
@@ -15,7 +15,6 @@ inputs: [
     name = "gnu";
     type = "elpa";
     path = inputs.elpa.outPath + "/elpa-packages";
-    core-src = pkgs.emacs.src;s
     auto-sync-only = true;
   }
   {
