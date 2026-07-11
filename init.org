@@ -29,7 +29,6 @@ setup.elで =setopt= を =:opt= で使えるように
 #+end_src
 
 * 基本設定
-
 ** 保存先を変更する
 
 *** custom-file
@@ -133,9 +132,6 @@ setup.elで =setopt= を =:opt= で使えるように
 ** twist.el
 #+begin_src elisp
     (setup (:package twist))
-    (when (boundp 'twist-current-manifest-file)
-    (setq twist-manifest-file twist-current-manifest-file))
-  (twist-watch-mode 1)
 #+end_src
 * UIのカスタマイズ
 ** テーマ
