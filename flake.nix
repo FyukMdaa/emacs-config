@@ -5,6 +5,7 @@
 
     twist.url = "github:emacs-twist/twist.nix";
     org-babel.url = "github:emacs-twist/org-babel";
+    fmpkgs.url = "github:fyukmdaa/fmnixpkgs";
 
     melpa = {
       url = "github:melpa/melpa";
@@ -31,6 +32,7 @@
       flake-utils,
       twist,
       org-babel,
+      fmpkgs,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
@@ -38,7 +40,11 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ org-babel.overlays.default ];
+          config.allowUnfree = true;
+          overlays = [
+            org-babel.overlays.default
+            fmpkgs.overlays.default
+          ];
         };
         lib = pkgs.lib;
 
@@ -79,6 +85,16 @@
           '';
         };
 
+        # nix run で利用するフォント。
+        fontPackages = with pkgs; [
+        	sfmono-square
+        	nerd-fonts.symbols-only
+        ];
+
+        # 上記のフォントを追加したfontconfig 設定
+        fontsConf = pkgs.makeFontsConf { fontDirectories = fontPackages; };
+
+        # `nix run .` で起動できるようにするラッパー。  
         package = pkgs.runCommandLocal "emacs-config"
           {
             nativeBuildInputs = [ pkgs.makeWrapper ];
@@ -90,7 +106,8 @@
             cp ${initFile} "$out/share/emacs-config/init.el"
 
             makeWrapper ${emacsEnv}/bin/emacs "$out/bin/emacs" \
-              --add-flags --init-directory="$out/share/emacs-config"
+              --add-flags --init-directory="$out/share/emacs-config" \
+              --set FONTCONFIG_FILE ${fontsConf}
           '';
       in
       {

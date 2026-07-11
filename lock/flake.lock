@@ -1,8 +1,111 @@
 {
   "nodes": {
+    "compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783614914,
+        "narHash": "sha256-6Tjoqs0dkK0Z2jiNl/+3owooS5lXrtdTgS2xOdbSjY0=",
+        "owner": "emacs-compat",
+        "repo": "compat",
+        "rev": "65c1343f50a29a8c0beb54204abd2b9f0db3c442",
+        "type": "github"
+      },
+      "original": {
+        "owner": "emacs-compat",
+        "repo": "compat",
+        "type": "github"
+      }
+    },
+    "minions": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780326811,
+        "narHash": "sha256-mkDKIChvJoKTHUP3/wuUI+73HLEpWyUFke7UXGkyxYc=",
+        "owner": "tarsius",
+        "repo": "minions",
+        "rev": "7ec2810c9b3019f8e379022b0ca7ce61e9e7c810",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tarsius",
+        "repo": "minions",
+        "type": "github"
+      }
+    },
+    "mlscroll": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783093489,
+        "narHash": "sha256-o+TxbpPrU7kWOqzMdrA1pEmtdALuUyKnkq63oc4486Q=",
+        "owner": "jdtsmith",
+        "repo": "mlscroll",
+        "rev": "ff698fbbfc3b7c5775944bdff2da0acfb697d162",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jdtsmith",
+        "repo": "mlscroll",
+        "type": "github"
+      }
+    },
+    "modus-themes": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783454928,
+        "narHash": "sha256-olN8ujwBm6Ir9SgtmjPNLAor24hrLHwShIYCI1wyZxI=",
+        "owner": "protesilaos",
+        "repo": "modus-themes",
+        "rev": "a69a3c80b6026b6e5ec93955af7c82c52fbbc735",
+        "type": "github"
+      },
+      "original": {
+        "owner": "protesilaos",
+        "repo": "modus-themes",
+        "type": "github"
+      }
+    },
+    "moody": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780326880,
+        "narHash": "sha256-qw4zKx+1B/bhiL8umtZtoaDX+RRau1sKv2XM7DK1xBM=",
+        "owner": "tarsius",
+        "repo": "moody",
+        "rev": "48556e65f37c040a430f123494f517f961ae000c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tarsius",
+        "repo": "moody",
+        "type": "github"
+      }
+    },
+    "nano-modeline": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1714386273,
+        "narHash": "sha256-CoADZ4L4JpoF3JRMb793z2nAq8s1VE3uqb3gqFD7IOA=",
+        "owner": "rougier",
+        "repo": "nano-modeline",
+        "rev": "04676d57a1e602123a593836745a744d1b2028fb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rougier",
+        "repo": "nano-modeline",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
+        "compat": "compat",
+        "minions": "minions",
+        "mlscroll": "mlscroll",
+        "modus-themes": "modus-themes",
+        "moody": "moody",
+        "nano-modeline": "nano-modeline",
         "setup": "setup",
+        "twist": "twist",
         "which-key": "which-key"
       }
     },
@@ -20,6 +123,22 @@
       "original": {
         "type": "git",
         "url": "https://codeberg.org/pkal/setup.el"
+      }
+    },
+    "twist": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1700878793,
+        "narHash": "sha256-R4wXVq9lb8WuTDdXjtaFiptJgBhKjoiJzUNXtZwkvto=",
+        "owner": "emacs-twist",
+        "repo": "twist.el",
+        "rev": "cc49891252ae060656bb859ca5bc49a5dcb47b40",
+        "type": "github"
+      },
+      "original": {
+        "owner": "emacs-twist",
+        "repo": "twist.el",
+        "type": "github"
       }
     },
     "which-key": {

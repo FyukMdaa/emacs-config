@@ -11,6 +11,7 @@ in
       config = self.packages.${system}.emacsEnv;
       earlyInitFile = self.packages.${system}.earlyInitFile;
       createInitFile = true;
+      createManifestFile = true;
     };
   };
 }
