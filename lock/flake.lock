@@ -16,6 +16,182 @@
         "type": "github"
       }
     },
+    "consult": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783492845,
+        "narHash": "sha256-lKtfg0qJ/2/O0hdmdVwdB4Cv4vV4r4caZMCE18JzhBY=",
+        "owner": "minad",
+        "repo": "consult",
+        "rev": "e43b8315bd1a8d9125fff84ad84c4c003e177acb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "consult",
+        "type": "github"
+      }
+    },
+    "consult-dir": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1760933765,
+        "narHash": "sha256-wsyzn+YxIqqeIip5mLOVD6TqNyf2D7TrxeBOPITQ52g=",
+        "owner": "karthink",
+        "repo": "consult-dir",
+        "rev": "1497b46d6f48da2d884296a1297e5ace1e050eb5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "karthink",
+        "repo": "consult-dir",
+        "type": "github"
+      }
+    },
+    "consult-eglot": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781361828,
+        "narHash": "sha256-oONTmkhUC+11lec00s0mdwyVOXEi3eQjd02agXaBemU=",
+        "owner": "mohkale",
+        "repo": "consult-eglot",
+        "rev": "3e4d9a40911b897c0a2c5d20199d0f7c30bfc1c2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mohkale",
+        "repo": "consult-eglot",
+        "type": "github"
+      }
+    },
+    "consult-flycheck": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782652291,
+        "narHash": "sha256-48KluvcWW1zoeqOh4R//7lyV/oMO/3rAr7CsAayLgqY=",
+        "owner": "minad",
+        "repo": "consult-flycheck",
+        "rev": "087454a31b51ec007365f8e92a04e69409f294d3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "consult-flycheck",
+        "type": "github"
+      }
+    },
+    "corfu": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782652958,
+        "narHash": "sha256-JRgZ0KECw8UmclXlMJLNHoGv/De9dDewm+DEmr94BJY=",
+        "owner": "minad",
+        "repo": "corfu",
+        "rev": "c588350d8f9fc60ed0fcf4b78c37671835be01a9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "corfu",
+        "type": "github"
+      }
+    },
+    "corfu-terminal": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1691633196,
+        "narHash": "sha256-0qdSsuPE2s+DVu6yuqebMEt/29ypRlvb7TbvWEMHsjU=",
+        "ref": "refs/heads/master",
+        "rev": "501548c3d51f926c687e8cd838c5865ec45d03cc",
+        "revCount": 48,
+        "type": "git",
+        "url": "https://codeberg.org/akib/emacs-corfu-terminal"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://codeberg.org/akib/emacs-corfu-terminal"
+      }
+    },
+    "eglot-booster": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782829258,
+        "narHash": "sha256-HhWR40j/WFcorp8QttXtOz5yxL1B4JUXL+9IuNpoND0=",
+        "owner": "jdtsmith",
+        "repo": "eglot-booster",
+        "rev": "510f579409627c333ef0e9157db713b1004da842",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jdtsmith",
+        "repo": "eglot-booster",
+        "type": "github"
+      }
+    },
+    "embark": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781060531,
+        "narHash": "sha256-41hZeCbQuQg8fyo/FZ2GP0HJL7mY1FE0BEolt7AhWGg=",
+        "owner": "oantolin",
+        "repo": "embark",
+        "rev": "350ca86924c5027e80875943fba7b912a71e5791",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oantolin",
+        "repo": "embark",
+        "type": "github"
+      }
+    },
+    "embark-consult": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781060531,
+        "narHash": "sha256-41hZeCbQuQg8fyo/FZ2GP0HJL7mY1FE0BEolt7AhWGg=",
+        "owner": "oantolin",
+        "repo": "embark",
+        "rev": "350ca86924c5027e80875943fba7b912a71e5791",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oantolin",
+        "repo": "embark",
+        "type": "github"
+      }
+    },
+    "flycheck": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780603376,
+        "narHash": "sha256-tw6H9/4ndcGm7r2FGvfyAD42N2I/L3WxJ5UfFARCWWE=",
+        "owner": "flycheck",
+        "repo": "flycheck",
+        "rev": "96f1852c7e352c969393e6e66176178177e933be",
+        "type": "github"
+      },
+      "original": {
+        "owner": "flycheck",
+        "repo": "flycheck",
+        "type": "github"
+      }
+    },
+    "marginalia": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782652506,
+        "narHash": "sha256-0lfo3vI9eU4A+pNbd2H5kLl+Z4HoDUexlD+o8+hdIQw=",
+        "owner": "minad",
+        "repo": "marginalia",
+        "rev": "7604eb0463994b0528b92aaf6e594f64089b8b95",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "marginalia",
+        "type": "github"
+      }
+    },
     "minions": {
       "flake": false,
       "locked": {
@@ -96,16 +272,98 @@
         "type": "github"
       }
     },
+    "nerd-icons": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783700845,
+        "narHash": "sha256-/UrUNZQcoJEprN5MDAnB4TtQjPZY1/3QwTWJfaQFLZM=",
+        "owner": "rainstormstudio",
+        "repo": "nerd-icons.el",
+        "rev": "674909974637ff0ec2b5ebf43f9a8aefa35d93e9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rainstormstudio",
+        "repo": "nerd-icons.el",
+        "type": "github"
+      }
+    },
+    "nerd-icons-corfu": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1753803866,
+        "narHash": "sha256-QayHcSE786PcvJ+I6Yx86awqqn7D6rJ7sRBnjnkh1ww=",
+        "owner": "LuigiPiucco",
+        "repo": "nerd-icons-corfu",
+        "rev": "f821e953b1a3dc9b381bc53486aabf366bf11cb1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "LuigiPiucco",
+        "repo": "nerd-icons-corfu",
+        "type": "github"
+      }
+    },
+    "orderless": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782652430,
+        "narHash": "sha256-s/xX72yq0gjC+RmBtZGrRbKS566QBnFwymJNe/c+EOQ=",
+        "owner": "oantolin",
+        "repo": "orderless",
+        "rev": "0ffd9d6903714c1f6d8fcbb6a20941fb33dd7ae5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oantolin",
+        "repo": "orderless",
+        "type": "github"
+      }
+    },
+    "popon": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1688372833,
+        "narHash": "sha256-stiwCre9Ih6GwKjVQ7iFmMPGbkiQHx8hNgy8PHRE1BA=",
+        "ref": "refs/heads/master",
+        "rev": "bf8174cb7e6e8fe0fe91afe6b01b6562c4dc39da",
+        "revCount": 52,
+        "type": "git",
+        "url": "https://codeberg.org/akib/emacs-popon"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://codeberg.org/akib/emacs-popon"
+      }
+    },
     "root": {
       "inputs": {
         "compat": "compat",
+        "consult": "consult",
+        "consult-dir": "consult-dir",
+        "consult-eglot": "consult-eglot",
+        "consult-flycheck": "consult-flycheck",
+        "corfu": "corfu",
+        "corfu-terminal": "corfu-terminal",
+        "eglot-booster": "eglot-booster",
+        "embark": "embark",
+        "embark-consult": "embark-consult",
+        "flycheck": "flycheck",
+        "marginalia": "marginalia",
         "minions": "minions",
         "mlscroll": "mlscroll",
         "modus-themes": "modus-themes",
         "moody": "moody",
         "nano-modeline": "nano-modeline",
+        "nerd-icons": "nerd-icons",
+        "nerd-icons-corfu": "nerd-icons-corfu",
+        "orderless": "orderless",
+        "popon": "popon",
         "setup": "setup",
         "twist": "twist",
+        "undo-fu": "undo-fu",
+        "vertico": "vertico",
+        "vundo": "vundo",
         "which-key": "which-key"
       }
     },
@@ -138,6 +396,54 @@
       "original": {
         "owner": "emacs-twist",
         "repo": "twist.el",
+        "type": "github"
+      }
+    },
+    "undo-fu": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772969483,
+        "narHash": "sha256-NDaPei4hm9i8sj/Df62gxqn2J8npFlfM9vHFSXphpt8=",
+        "ref": "refs/heads/main",
+        "rev": "5684ef2aef5f60176472916b21869cf221e018cc",
+        "revCount": 111,
+        "type": "git",
+        "url": "https://codeberg.org/ideasman42/emacs-undo-fu.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://codeberg.org/ideasman42/emacs-undo-fu.git"
+      }
+    },
+    "vertico": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783602303,
+        "narHash": "sha256-W64xsCd0Te+jNMTDGw3lWvfOl9PI5AvTMuFF9OrLUpI=",
+        "owner": "minad",
+        "repo": "vertico",
+        "rev": "95bd36e27bafe36158085017b5c5726391089d6b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "vertico",
+        "type": "github"
+      }
+    },
+    "vundo": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1766120651,
+        "narHash": "sha256-d6xUM1PtzT+hJNG7JTQ9Bm7jLChOONnt8lTu9WnirWk=",
+        "owner": "casouri",
+        "repo": "vundo",
+        "rev": "e0af8c5845abf884a644215a9cac37f39c13cd5a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "casouri",
+        "repo": "vundo",
         "type": "github"
       }
     },

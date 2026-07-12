@@ -1,4 +1,5 @@
-#+title: init.el
+#+title: init.org
+#+author: fyukmdaa
 #+property: header-args:elisp :tangle init.el :mkdirp yes
 #+auto_tangle: t
 
@@ -27,7 +28,25 @@ setup.elで =setopt= を =:opt= で使えるように
     `(setopt ,@pairs))
   :after-loaded t)
 #+end_src
-
+=:load-after= を使えるようにする
+#+begin_src elisp
+  (setup-define :load-after
+  (lambda (&rest features)
+    (let ((body `(require ',(setup-get 'feature))))
+      (dolist (feature (nreverse features))
+        (setq body `(with-eval-after-load ',feature ,body)))
+      body))
+  :documentation "Load the current feature after FEATURES.")
+#+end_src
+=:needs= を使えるようにする
+#+begin_src elisp
+  (setup-define :needs
+  (lambda (executable)
+    `(unless (executable-find ,executable)
+       ,(setup-quit)))
+  :documentation "If EXECUTABLE is not in the path, stop here."
+  :repeatable 1)
+#+end_src
 * 基本設定
 ** 保存先を変更する
 
@@ -140,11 +159,11 @@ setup.elで =setopt= を =:opt= で使えるように
 #+begin_src elisp
   (setup (:package modus-themes)
     (:opt modus-themes-common-palette-overrides
-             '((bg-main "#1a162c")
-               (bg-dim "#141026")
-               (bg-alt "#221c38")
-               (bg-active "#2d2645")
-               (bg-inactive "#16122a")
+             '((bg-main "#393f4b")
+               (bg-dim "#434a58")
+               (bg-alt "#3e4140")
+               (bg-active "#5e6160")
+               (bg-inactive "#3f444a")
                (bg-hl-line "#261f3e")
                (bg-region "#322b4d")
                (bg-visual "#322b4d")
@@ -159,16 +178,16 @@ setup.elで =setopt= を =:opt= で使えるように
                (bg-completion-match-1 "#2c3756")
                (bg-completion-match-2 "#34414a")
                (bg-completion-match-3 "#422f4a")
-               (bg-line-number-active "#31294a")
-               (fg-line-number-active "#f9f6ff")
-               (bg-line-number-inactive "#1a162c")
-               (fg-line-number-inactive "#9f95b8")
-               (bg-mode-line-active "#31294a")
-               (fg-mode-line-active "#f9f6ff")
-               (bg-mode-line-inactive "#221c38")
-               (fg-mode-line-inactive "#c3b7d3")
-               (border-mode-line-active "#f6c7a1")
-               (border-mode-line-inactive "#2d2645")
+               (bg-line-number-active "#393f4b")
+               (fg-line-number-active "#edf4f9")
+               (bg-line-number-inactive "#393f4b")
+               (fg-line-number-inactive "#979dae")
+               (bg-mode-line-active "#434a58")
+               (fg-mode-line-active "#cccccc")
+               (bg-mode-line-inactive "#434a58")
+               (fg-mode-line-inactive "#767676")
+               (border-mode-line-active "#5d5f63")
+               (border-mode-line-inactive "#5d5f63")
                (bg-diff-added "#183c2c")
                (bg-diff-changed "#303a54")
                (bg-diff-removed "#412436")
@@ -179,9 +198,9 @@ setup.elで =setopt= を =:opt= で使えるように
                (fg-prompt "#f6c7a1")
                (fringe "#1a162c")
                (cursor "#f6c7a1")
-               (fg-main "#f4f0ff")
-               (fg-dim "#d8d0e7")
-               (fg-alt "#f9e7ff")
+               (fg-main "#bbc2cf")
+               (fg-dim "#969faf")
+               (fg-alt "8fcfbb")
                (comment "#a79dc6")
                (string "#b7e2aa")
                (keyword "#f6c7a1")
@@ -239,6 +258,143 @@ setup.elで =setopt= を =:opt= で使えるように
     (:opt nano-modeline-padding '(0.20 . 0.25))
     (:require nano-modeline)
     (nano-modeline-text-mode t))
+#+end_src
+** アイコン
+*** nerd-icon
+#+begin_src elisp
+  (setup (:package nerd-icons))
+#+end_src
+* ミニバッファ
+** vertico
+#+begin_src elisp
+  (setup (:package vertico)
+    (:opt vertico-resize nil
+          vertico-count 20
+          vertico-cycle t)
+    (:with-map vertico-map
+      ;; ディレクトリ移動時にディレクトリ単位で移動できる。
+      (:bind "DEL" vertico-directory-delete-char))
+
+    (vertico-mode)
+
+    ;; verticoの選択行を指す指アイコンを追加する設定
+    (:require nerd-icons)
+    (defvar +vertico-current-arrow t)
+
+    (defun +vertico-format-candidate-arrow-advice (orig-fun cand prefix suffix index start)
+      "Vertico の選択行に指アイコンを表示するアドバイス"
+      (let ((res (funcall orig-fun cand prefix suffix index start)))
+        (if (and +vertico-current-arrow 
+                 (not (bound-and-true-p vertico-flat-mode)))
+            (let ((arrow (nerd-icons-faicon "nf-fa-hand_o_right")))
+              (if (bound-and-true-p vertico-grid-mode)
+                  (if (= vertico--index index)
+                      (concat arrow " " res)
+                    (concat "  " res))
+                (if (= vertico--index index)
+                    (concat " " arrow " " res)
+                  (concat "    " res))))
+          res)))
+
+    (advice-add 'vertico-format-candidate :around #'+vertico-format-candidate-arrow-advice))
+#+end_src
+** consult
+#+begin_src elisp
+  (setup (:package consult))
+
+  (setup (:package consult-dir)
+    (:load-after consult))
+
+  (setup (:package consult-flycheck)
+    (:load-after consult flycheck))
+
+  (setup (:package consult-eglot)
+    (:load-after consult eglot))
+
+  (setup (:package embark-consult)
+    (:load-after embark consult))
+#+end_src
+** orderless
+#+begin_src elisp
+  (setup (:package orderless)
+  (with-eval-after-load 'minibuffer
+    (setopt completion-styles '(orderless basic)
+            completion-category-overrides '((file (styles basic partial-completion))))))
+#+end_src
+** marginalia
+#+begin_src elisp
+  (setup (:package marginalia)
+  (marginalia-mode))
+#+end_src
+* 補完
+** corfu
+#+begin_src elisp
+  (setup (:package corfu)
+
+  (:option
+   corfu-auto t ;; 補完候補を表示する
+   corfu-auto-delay 0 ;; 文字列入力してから補完候補が表示されるまでのディレイ
+   corfu-popupinfo-delay 0 ;; 補完候補の関数名の横に、さらに説明文がポップアップされるまでのディレイ
+   corfu-auto-prefix 1 ;; 文字列入力の何文字目から補完候補を表示するか
+   corfu-cycle t ;; 補完候補の一番下までカーソルが行ったら上に戻る
+   corfu-preselect 'prompt
+   corfu-quit-no-match 'separator)
+
+  (:with-map corfu-map
+    (:bind
+     ;; 補完時に SPC をセパレータとして orderless 補完できる。
+     "SPC" corfu-insert-separator
+     "TAB" corfu-next
+     "S-TAB" corfu-previous
+     "C-j" corfu-next
+     "C-k" corfu-previous))
+
+  ;; init
+  (global-corfu-mode) ;; グローバルに corfu-mode を有効にする。
+  (corfu-popupinfo-mode) ;; extensions に含まれる、補完に説明表示を追加する。default ではオフ。
+  )
+#+end_src
+* 編集アシスト
+** vundo
+#+begin_src emacs-lisp
+  (setup (:package vundo)
+    (:opt vundo-window-max-height 10))
+#+end_src
+** undo-fu
+#+begin_src emacs-lisp
+  (setup (:package undo-fu)
+    (:bind ("C-z" . undo-fu-only-undo)
+           ("C-S-z" . undo-fu-only-redo)))
+#+end_src
+*** corfu-terminal
+#+begin_src elisp
+  (setup (:package corfu-terminal)
+  (defun corfu-terminal-setup ()
+    (unless (display-graphic-p)
+      (corfu-terminal-mode +1)))
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook #'corfu-terminal-setup)
+    (corfu-terminal-setup)))
+#+end_src
+*** corfu-icon
+#+begin_src elisp
+  (setup (:package nerd-icons-corfu)
+    (:load-after corfu nerd-icons)
+    (:when-loaded
+      (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)))
+#+end_src
+** eglot-booster
+eglotの通信を高速化(python3が必要)
+#+begin_src elisp
+  (setup (:package eglot-booster)
+    (:nixpkgs python3)
+    (:load-after eglot)
+    (:when-loaded
+    (eglot-booster-mode)))
+#+end_src
+** eldoc
+#+begin_src emacs-lisp
+  (global-eldoc-mode)
 #+end_src
 * ユーティリティ
 ** which-key
