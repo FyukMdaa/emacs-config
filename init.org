@@ -34,7 +34,7 @@ setup.elで =setopt= を =:opt= で使えるように
   (lambda (&rest features)
     (let ((body `(require ',(setup-get 'feature))))
       (dolist (feature (nreverse features))
-        (setq body `(with-eval-after-load ',feature ,body)))
+        (setopt body `(with-eval-after-load ',feature ,body)))
       body))
   :documentation "Load the current feature after FEATURES.")
 #+end_src
@@ -52,7 +52,7 @@ setup.elで =setopt= を =:opt= で使えるように
 
 *** custom-file
 #+begin_src emacs-lisp
-  (setq custom-file
+  (setopt custom-file
         (expand-file-name "~/emacs-twist/custom.el"))
   (when (file-exists-p custom-file)
     (load custom-file))
@@ -61,7 +61,7 @@ setup.elで =setopt= を =:opt= で使えるように
 *** バックアップ・自動保存・ロックファイル
 #+begin_src elisp
   (let ((var-dir (expand-file-name "~/emacs-twist/")))
-    (setq backup-directory-alist `((".*" . ,var-dir))
+    (setopt backup-directory-alist `((".*" . ,var-dir))
           auto-save-file-name-transforms `((".*" ,var-dir t))
           lock-file-name-transforms `((".*" ,var-dir t))))
 #+end_src
@@ -73,12 +73,12 @@ setup.elで =setopt= を =:opt= で使えるように
 
 ** インデントタブのデフォルト設定
 #+begin_src elisp
-  (setq-default indent-tabs-mode nil
+  (setopt-default indent-tabs-mode nil
                 tab-width 4)
 #+end_src
 ** スクロールを快適に
 #+begin_src elisp
-  (setq scroll-conservatively 101
+  (setopt scroll-conservatively 101
       scroll-margin 0
       scroll-preserve-screen-position t
       auto-window-vscroll nil)
@@ -86,7 +86,7 @@ setup.elで =setopt= を =:opt= で使えるように
 
 ** FIXME:分割してきれいなタイトルをつける
 #+begin_src elisp
-  (setq inhibit-startup-screen t
+  (setopt inhibit-startup-screen t
         initial-scratch-message nil
         ring-bell-function #'ignore
         use-short-answers t)
@@ -99,12 +99,12 @@ setup.elで =setopt= を =:opt= で使えるように
 
 ** 行番号をデフォルトで無効化
 #+begin_src elisp
-  (setq-default display-line-numbers nil)
+  (setopt-default display-line-numbers nil)
 #+end_src
 
 ** フレームをピクセル単位で指定できるように
 #+begin_src elisp
-  (setq frame-resize-pixelwise t)
+  (setopt frame-resize-pixelwise t)
 #+end_src
 
 ** クリップボードを同期
@@ -200,7 +200,7 @@ setup.elで =setopt= を =:opt= で使えるように
                (cursor "#f6c7a1")
                (fg-main "#bbc2cf")
                (fg-dim "#969faf")
-               (fg-alt "8fcfbb")
+               (fg-alt "#8fcfbb")
                (comment "#a79dc6")
                (string "#b7e2aa")
                (keyword "#f6c7a1")
