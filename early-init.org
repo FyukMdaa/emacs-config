@@ -49,8 +49,7 @@
       inhibit-startup-message t
       inhibit-startup-echo-area-message user-login-name)
 #+end_src
-
-* フレームリサイズを無効化 
+* フレームサイズを固定
 #+begin_src emacs-lisp
   (setq frame-inhibit-implied-resize t)
 #+end_src

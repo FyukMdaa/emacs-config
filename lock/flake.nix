@@ -147,6 +147,11 @@
       type = "git";
       url = "https://codeberg.org/ideasman42/emacs-undo-fu.git";
     };
+    undo-fu-session = {
+      flake = false;
+      type = "git";
+      url = "https://codeberg.org/ideasman42/emacs-undo-fu-session.git";
+    };
     vertico = {
       flake = false;
       owner = "minad";

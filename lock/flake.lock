@@ -363,6 +363,7 @@
         "twist": "twist",
         "ultra-scroll": "ultra-scroll",
         "undo-fu": "undo-fu",
+        "undo-fu-session": "undo-fu-session",
         "vertico": "vertico",
         "vundo": "vundo",
         "which-key": "which-key"
@@ -430,6 +431,22 @@
       "original": {
         "type": "git",
         "url": "https://codeberg.org/ideasman42/emacs-undo-fu.git"
+      }
+    },
+    "undo-fu-session": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770623648,
+        "narHash": "sha256-qXrmwhf5/sxqbWUd6DssqxxwsqxiMS2iRqs56Gii/eA=",
+        "ref": "refs/heads/main",
+        "rev": "92d733a5b162a70c572fac17b9f9e872426df547",
+        "revCount": 125,
+        "type": "git",
+        "url": "https://codeberg.org/ideasman42/emacs-undo-fu-session.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://codeberg.org/ideasman42/emacs-undo-fu-session.git"
       }
     },
     "vertico": {
