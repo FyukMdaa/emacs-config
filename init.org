@@ -47,6 +47,12 @@ setup.elで =setopt= を =:opt= で使えるように
   :documentation "If EXECUTABLE is not in the path, stop here."
   :repeatable 1)
 #+end_src
+=:nixpkgs= を使えるようにする
+#+begin_src emacs-lisp
+  (setup-define :nixpkgs
+    (lambda (&rest nixpkgs))
+    :documentation "Fake installation of packages from NIXPKGS for executables.")
+#+end_src
 * 基本設定
 ** 保存先を変更する
 
@@ -73,15 +79,15 @@ setup.elで =setopt= を =:opt= で使えるように
 
 ** インデントタブのデフォルト設定
 #+begin_src emacs-lisp
-  (setopt-default indent-tabs-mode nil
+  (setq-default indent-tabs-mode nil
                 tab-width 4)
 #+end_src
 ** スクロールを快適に
 #+begin_src emacs-lisp
-  (setopt scroll-conservatively 101
-      scroll-margin 0
-      scroll-preserve-screen-position t
-      auto-window-vscroll nil)
+  (setup (:package ultra-scroll)
+    (:opt scroll-conservatively 101
+          scroll-margin 0)
+    (ultra-scroll-mode 1))
 #+end_src
 
 ** FIXME:分割してきれいなタイトルをつける
@@ -99,7 +105,7 @@ setup.elで =setopt= を =:opt= で使えるように
 
 ** 行番号をデフォルトで無効化
 #+begin_src emacs-lisp
-  (setopt-default display-line-numbers nil)
+  (setq-default display-line-numbers nil)
 #+end_src
 
 ** フレームをピクセル単位で指定できるように
@@ -388,6 +394,7 @@ eglotの通信を高速化(python3が必要)
 #+begin_src emacs-lisp
   (setup (:package eglot-booster)
     (:nixpkgs python3)
+    (:nixpkgs emacs-lsp-booster)
     (:load-after eglot)
     (:when-loaded
     (eglot-booster-mode)))

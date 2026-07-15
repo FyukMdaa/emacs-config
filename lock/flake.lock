@@ -361,6 +361,7 @@
         "popon": "popon",
         "setup": "setup",
         "twist": "twist",
+        "ultra-scroll": "ultra-scroll",
         "undo-fu": "undo-fu",
         "vertico": "vertico",
         "vundo": "vundo",
@@ -396,6 +397,22 @@
       "original": {
         "owner": "emacs-twist",
         "repo": "twist.el",
+        "type": "github"
+      }
+    },
+    "ultra-scroll": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781645197,
+        "narHash": "sha256-N8+ITu25WLtw6sqYxFR2LvfQQCV4ASTYVwDTYN5m/lM=",
+        "owner": "jdtsmith",
+        "repo": "ultra-scroll",
+        "rev": "5be267d2d92c230b4347e0769f584c71aec53589",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jdtsmith",
+        "repo": "ultra-scroll",
         "type": "github"
       }
     },

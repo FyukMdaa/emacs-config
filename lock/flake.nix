@@ -136,6 +136,12 @@
       repo = "twist.el";
       type = "github";
     };
+    ultra-scroll = {
+      flake = false;
+      owner = "jdtsmith";
+      repo = "ultra-scroll";
+      type = "github";
+    };
     undo-fu = {
       flake = false;
       type = "git";
@@ -160,5 +166,5 @@
       type = "github";
     };
   };
-  outputs = { ... }: { };
+  outputs = _: { };
 }

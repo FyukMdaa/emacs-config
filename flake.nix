@@ -64,7 +64,12 @@
           lockDir = ./lock;
 
           # setup.el を使用する
-          initParser = twist.lib.parseSetup { inherit lib; } { };
+          initParser = inputs.twist.lib.parseSetup {
+		    inherit (inputs.nixpkgs) lib;
+		  } {
+		    packageKeyword = ":package";
+		    nixpkgsKeyword = ":nixpkgs";
+		  };
           extraPackages = [ "setup" ];
 
           # パッケージのオーバーライド設定を外部ファイルから読み込む
