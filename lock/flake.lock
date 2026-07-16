@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "clojure-ts-mode": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783590739,
+        "narHash": "sha256-2MiQQn/wLAHgfU6wBphrCYXta3ZmHDN388lRxlIR2M8=",
+        "owner": "clojure-emacs",
+        "repo": "clojure-ts-mode",
+        "rev": "ab0fac4282bf6426f4a5bce0fec7bf40d18b2e1a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "clojure-emacs",
+        "repo": "clojure-ts-mode",
+        "type": "github"
+      }
+    },
     "compat": {
       "flake": false,
       "locked": {
@@ -13,6 +29,22 @@
       "original": {
         "owner": "emacs-compat",
         "repo": "compat",
+        "type": "github"
+      }
+    },
+    "cond-let": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782909426,
+        "narHash": "sha256-u1WuIa1WJB9c2RqMRgjr+FqPwLOZCN8glv5ODIBUrbQ=",
+        "owner": "tarsius",
+        "repo": "cond-let",
+        "rev": "c48600dfab6372670225f046cace263700c78eab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tarsius",
+        "repo": "cond-let",
         "type": "github"
       }
     },
@@ -112,6 +144,38 @@
         "url": "https://codeberg.org/akib/emacs-corfu-terminal"
       }
     },
+    "dash": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1771681581,
+        "narHash": "sha256-VkBJAX1zPjQ0tH3nVSmMH5veOaQl1fgtzWIi4BN0v5A=",
+        "owner": "magnars",
+        "repo": "dash.el",
+        "rev": "d3a84021dbe48dba63b52ef7665651e0cf02e915",
+        "type": "github"
+      },
+      "original": {
+        "owner": "magnars",
+        "repo": "dash.el",
+        "type": "github"
+      }
+    },
+    "dockerfile-mode": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1766335499,
+        "narHash": "sha256-4HpbVvq+DfINc9xZ3dY14kCA+cS8+RDoPtdHfKeysXc=",
+        "owner": "spotify",
+        "repo": "dockerfile-mode",
+        "rev": "97733ce074b1252c1270fd5e8a53d178b66668ed",
+        "type": "github"
+      },
+      "original": {
+        "owner": "spotify",
+        "repo": "dockerfile-mode",
+        "type": "github"
+      }
+    },
     "eglot-booster": {
       "flake": false,
       "locked": {
@@ -173,6 +237,38 @@
       "original": {
         "owner": "flycheck",
         "repo": "flycheck",
+        "type": "github"
+      }
+    },
+    "llama": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780325752,
+        "narHash": "sha256-c1sk4iVTeDoSGBq6h7VPemdKhYi/P3UfLSJbd3MjyuM=",
+        "owner": "tarsius",
+        "repo": "llama",
+        "rev": "4d4024048053b898a01521046e0f063ee47615b0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tarsius",
+        "repo": "llama",
+        "type": "github"
+      }
+    },
+    "magit-section": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783774635,
+        "narHash": "sha256-TEkH4FaOfrYIUGzO8xg+sbrXtPVdqNFwoWGEcdiJlXE=",
+        "owner": "magit",
+        "repo": "magit",
+        "rev": "fe56c0d10a91d00aed65f831b8435a7224bc7730",
+        "type": "github"
+      },
+      "original": {
+        "owner": "magit",
+        "repo": "magit",
         "type": "github"
       }
     },
@@ -304,6 +400,38 @@
         "type": "github"
       }
     },
+    "nix-mode": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1682109415,
+        "narHash": "sha256-W/bxCAn4cvzKGbhILxtTiWJ5Wln2w6g4TPgk+ziCXsQ=",
+        "owner": "NixOS",
+        "repo": "nix-mode",
+        "rev": "719feb7868fb567ecfe5578f6119892c771ac5e5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nix-mode",
+        "type": "github"
+      }
+    },
+    "nix-ts-mode": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783267219,
+        "narHash": "sha256-7oKVJYDqyu1zKB5dtrikiMd5TldssQoBez1k5K94Jy8=",
+        "owner": "nix-community",
+        "repo": "nix-ts-mode",
+        "rev": "3b69aeb8d2403ea52b60a46fa452965b7b37a50e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nix-ts-mode",
+        "type": "github"
+      }
+    },
     "orderless": {
       "flake": false,
       "locked": {
@@ -336,19 +464,57 @@
         "url": "https://codeberg.org/akib/emacs-popon"
       }
     },
+    "puni": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779204424,
+        "narHash": "sha256-LwGNrSrY8Ff13xYx9B7zI81YmKQHX8IwfXJEyaFVzV8=",
+        "owner": "AmaiKinono",
+        "repo": "puni",
+        "rev": "04819e0bad5ed62af9e412ef9715b33bb1edc3ba",
+        "type": "github"
+      },
+      "original": {
+        "owner": "AmaiKinono",
+        "repo": "puni",
+        "type": "github"
+      }
+    },
+    "rainbow-delimiters": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1693411222,
+        "narHash": "sha256-JcNRW0+L65NtOBronwyT7SHP9QsNa3ysj4cHv88yfoI=",
+        "owner": "Fanael",
+        "repo": "rainbow-delimiters",
+        "rev": "f40ece58df8b2f0fb6c8576b527755a552a5e763",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fanael",
+        "repo": "rainbow-delimiters",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
+        "clojure-ts-mode": "clojure-ts-mode",
         "compat": "compat",
+        "cond-let": "cond-let",
         "consult": "consult",
         "consult-dir": "consult-dir",
         "consult-eglot": "consult-eglot",
         "consult-flycheck": "consult-flycheck",
         "corfu": "corfu",
         "corfu-terminal": "corfu-terminal",
+        "dash": "dash",
+        "dockerfile-mode": "dockerfile-mode",
         "eglot-booster": "eglot-booster",
         "embark": "embark",
         "embark-consult": "embark-consult",
         "flycheck": "flycheck",
+        "llama": "llama",
+        "magit-section": "magit-section",
         "marginalia": "marginalia",
         "minions": "minions",
         "mlscroll": "mlscroll",
@@ -357,9 +523,15 @@
         "nano-modeline": "nano-modeline",
         "nerd-icons": "nerd-icons",
         "nerd-icons-corfu": "nerd-icons-corfu",
+        "nix-mode": "nix-mode",
+        "nix-ts-mode": "nix-ts-mode",
         "orderless": "orderless",
         "popon": "popon",
+        "puni": "puni",
+        "rainbow-delimiters": "rainbow-delimiters",
+        "rust-mode": "rust-mode",
         "setup": "setup",
+        "smartparens": "smartparens",
         "twist": "twist",
         "ultra-scroll": "ultra-scroll",
         "undo-fu": "undo-fu",
@@ -367,6 +539,22 @@
         "vertico": "vertico",
         "vundo": "vundo",
         "which-key": "which-key"
+      }
+    },
+    "rust-mode": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781803786,
+        "narHash": "sha256-2UxyEb5Oq9z6mYVQ2IVLROLgJW+aq3w/63Ug/CLasg4=",
+        "owner": "rust-lang",
+        "repo": "rust-mode",
+        "rev": "93778358b6af8ad9e123a41bc2c8c91877a9ffd5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rust-lang",
+        "repo": "rust-mode",
+        "type": "github"
       }
     },
     "setup": {
@@ -383,6 +571,22 @@
       "original": {
         "type": "git",
         "url": "https://codeberg.org/pkal/setup.el"
+      }
+    },
+    "smartparens": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1769688859,
+        "narHash": "sha256-Iy6P4zES6wTRs8p+61iLrnRzT8QkkaxjeDp3m0LW0qw=",
+        "owner": "Fuco1",
+        "repo": "smartparens",
+        "rev": "82d2cf084a19b0c2c3812e0550721f8a61996056",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fuco1",
+        "repo": "smartparens",
+        "type": "github"
       }
     },
     "twist": {

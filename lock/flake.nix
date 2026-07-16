@@ -1,10 +1,22 @@
 {
   description = "THIS IS AN AUTO-GENERATED FILE. PLEASE DON'T EDIT IT MANUALLY.";
   inputs = {
+    clojure-ts-mode = {
+      flake = false;
+      owner = "clojure-emacs";
+      repo = "clojure-ts-mode";
+      type = "github";
+    };
     compat = {
       flake = false;
       owner = "emacs-compat";
       repo = "compat";
+      type = "github";
+    };
+    cond-let = {
+      flake = false;
+      owner = "tarsius";
+      repo = "cond-let";
       type = "github";
     };
     consult = {
@@ -42,6 +54,18 @@
       type = "git";
       url = "https://codeberg.org/akib/emacs-corfu-terminal";
     };
+    dash = {
+      flake = false;
+      owner = "magnars";
+      repo = "dash.el";
+      type = "github";
+    };
+    dockerfile-mode = {
+      flake = false;
+      owner = "spotify";
+      repo = "dockerfile-mode";
+      type = "github";
+    };
     eglot-booster = {
       flake = false;
       owner = "jdtsmith";
@@ -64,6 +88,18 @@
       flake = false;
       owner = "flycheck";
       repo = "flycheck";
+      type = "github";
+    };
+    llama = {
+      flake = false;
+      owner = "tarsius";
+      repo = "llama";
+      type = "github";
+    };
+    magit-section = {
+      flake = false;
+      owner = "magit";
+      repo = "magit";
       type = "github";
     };
     marginalia = {
@@ -114,6 +150,18 @@
       repo = "nerd-icons-corfu";
       type = "github";
     };
+    nix-mode = {
+      flake = false;
+      owner = "NixOS";
+      repo = "nix-mode";
+      type = "github";
+    };
+    nix-ts-mode = {
+      flake = false;
+      owner = "nix-community";
+      repo = "nix-ts-mode";
+      type = "github";
+    };
     orderless = {
       flake = false;
       owner = "oantolin";
@@ -125,10 +173,34 @@
       type = "git";
       url = "https://codeberg.org/akib/emacs-popon";
     };
+    puni = {
+      flake = false;
+      owner = "AmaiKinono";
+      repo = "puni";
+      type = "github";
+    };
+    rainbow-delimiters = {
+      flake = false;
+      owner = "Fanael";
+      repo = "rainbow-delimiters";
+      type = "github";
+    };
+    rust-mode = {
+      flake = false;
+      owner = "rust-lang";
+      repo = "rust-mode";
+      type = "github";
+    };
     setup = {
       flake = false;
       type = "git";
       url = "https://codeberg.org/pkal/setup.el";
+    };
+    smartparens = {
+      flake = false;
+      owner = "Fuco1";
+      repo = "smartparens";
+      type = "github";
     };
     twist = {
       flake = false;
