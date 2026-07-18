@@ -449,6 +449,11 @@ eglotの通信を高速化(python3とemacs-lsp-boosterが必要)
 #+end_src
 * 言語サポート
 ** シンタックスハイライト
+*** lsp-proxy
+#+begin_src emacs-lisp
+  (setup (:package lsp-proxy)
+    (:nixpkgs lsp-proxy))
+#+end_src
 *** treesit
 #+begin_src emacs-lisp
     (setup treesit
@@ -461,8 +466,7 @@ eglotの通信を高速化(python3とemacs-lsp-boosterが必要)
   (setup css-ts-mode
   (:nixpkgs vscode-css-languageserver)
   (:mode-remap css-mode)
-  (:hook css-beautify-on-save-mode
-         eglot-ensure))
+  (:hook css-beautify-on-save-mode))
 #+end_src
 **** js-ts-mode
 #+begin_src emacs-lisp
@@ -475,8 +479,7 @@ eglotの通信を高速化(python3とemacs-lsp-boosterが必要)
 #+begin_src emacs-lisp
   (setup typescript-ts-mode
   (:match-file "*.ts")
-  (:hook dprint-on-save-mode
-         eglot-ensure))
+  (:hook dprint-on-save-mode))
 #+end_src
 **** json-ts-mode
 #+begin_src emacs-lisp
@@ -484,68 +487,61 @@ eglotの通信を高速化(python3とemacs-lsp-boosterが必要)
   (:nixpkgs vscode-json-languageserver)
   (:match-file "*.json")
   (:option json-ts-mode-indent-offset 2)
-  (:hook dprint-on-save-mode
-         eglot-ensure))
+  (:hook dprint-on-save-mode))
 #+end_src
 **** yaml-ts-mode
 #+begin_src emacs-lisp
-  (setup yaml-ts-mode
-    (:nixpkgs yaml-language-server)
-    (:mode-remap yaml-mode)
-    (:match-file "*.yaml"
-                 "*.yml")
-    (:hook yamlfmt-on-save-mode
-           eglot-ensure))
+    (setup yaml-ts-mode
+      (:nixpkgs yaml-language-server
+                yamlfmt)
+      (:mode-remap yaml-mode)
+      (:match-file "*.yaml"
+                   "*.yml")
+      (:hook yamlfmt-on-save-mode))
 #+end_src
 **** toml-ts-mode
 #+begin_src emacs-lisp
   (setup toml-ts-mode
   (:mode-remap conf-toml-mode)
-  (:hook dprint-on-save-mode
-         eglot-ensure))
+  (:hook dprint-on-save-mode))
 #+end_src
 **** bash-ts-mode
 #+begin_src emacs-lisp
   (setup bash-ts-mode
   (:mode-remap sh-mode)
   (:option sh-basic-offset 2)
-  (:hook shfmt-on-save-mode
-         eglot-ensure))
+  (:hook shfmt-on-save-mode))
 #+end_src
 **** dockerfile-ts-mode
 #+begin_src emacs-lisp
   (setup (:package dockerfile-mode)
-  (:hook dprint-on-save-mode
-         eglot-ensure))
+  (:hook dprint-on-save-mode))
 
 (setup dockerfile-ts-mode
   (:match-file "[/\\]\\(?:Containerfile\\|Dockerfile\\)\\(?:\\.[^/\\]*\\)?\\'")
-  (:hook dprint-on-save-mode
-         eglot-ensure))
+  (:hook dprint-on-save-mode))
 #+end_src
 **** nix-ts-mode
 #+begin_src emacs-lisp
-  (setup (:package nix-ts-mode)
-    (:match-file "*.nix")
-    (:hook eglot-ensure)
-    (:nixpkgs nixfmt))
+    (setup (:package nix-ts-mode)
+      (:match-file "*.nix")
+      (:nixpkgs nixfmt
+                nixd))
 
-  (setup (:package nix-mode))
+    (setup (:package nix-mode))
 #+end_src
 **** clojure-ts-mode
 #+begin_src emacs-lisp
   (setup (:package clojure-ts-mode)
     (:nixpkgs clojure-lsp)
     (:match-file "*.clj"
-                 "*.cljs")
-    (:hook eglot-ensure))
+                 "*.cljs"))
 #+end_src
 **** rust-ts-mode
 #+begin_src emacs-lisp
   (setup (:package rust-mode)
   (:option rust-format-on-save t
-           rust-mode-treesitter-derive t)
-  (:hook eglot-ensure))
+           rust-mode-treesitter-derive t))
 #+end_src
 *** reinbow-mode
 #+begin_src emacs-lisp

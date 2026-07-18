@@ -224,6 +224,22 @@
         "type": "github"
       }
     },
+    "f": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1727955076,
+        "narHash": "sha256-rDUl2oUlcnSjNbFZn9A/80RVk6neaTScw2kvh6FjmTE=",
+        "owner": "rejeep",
+        "repo": "f.el",
+        "rev": "931b6d0667fe03e7bf1c6c282d6d8d7006143c52",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rejeep",
+        "repo": "f.el",
+        "type": "github"
+      }
+    },
     "flycheck": {
       "flake": false,
       "locked": {
@@ -240,6 +256,22 @@
         "type": "github"
       }
     },
+    "ht": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1688363925,
+        "narHash": "sha256-suE9ncN4rTA/9GcfAK6B+m9vnE8pYpfGavCFrXpA0+8=",
+        "owner": "Wilfred",
+        "repo": "ht.el",
+        "rev": "1c49aad1c820c86f7ee35bf9fff8429502f60fef",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Wilfred",
+        "repo": "ht.el",
+        "type": "github"
+      }
+    },
     "llama": {
       "flake": false,
       "locked": {
@@ -253,6 +285,22 @@
       "original": {
         "owner": "tarsius",
         "repo": "llama",
+        "type": "github"
+      }
+    },
+    "lsp-proxy": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783134568,
+        "narHash": "sha256-VmMwX+gs3zLSFoPLJZuEXBypVEfZRXSajX2HJaTDh9U=",
+        "owner": "jadestrong",
+        "repo": "lsp-proxy",
+        "rev": "45566dfe32ef31d71ac7d74fc18dd64a04cc82a5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jadestrong",
+        "repo": "lsp-proxy",
         "type": "github"
       }
     },
@@ -512,8 +560,11 @@
         "eglot-booster": "eglot-booster",
         "embark": "embark",
         "embark-consult": "embark-consult",
+        "f": "f",
         "flycheck": "flycheck",
+        "ht": "ht",
         "llama": "llama",
+        "lsp-proxy": "lsp-proxy",
         "magit-section": "magit-section",
         "marginalia": "marginalia",
         "minions": "minions",
@@ -530,6 +581,7 @@
         "puni": "puni",
         "rainbow-delimiters": "rainbow-delimiters",
         "rust-mode": "rust-mode",
+        "s": "s",
         "setup": "setup",
         "smartparens": "smartparens",
         "twist": "twist",
@@ -554,6 +606,22 @@
       "original": {
         "owner": "rust-lang",
         "repo": "rust-mode",
+        "type": "github"
+      }
+    },
+    "s": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779413747,
+        "narHash": "sha256-xP4nFNjFAPcB5GbzJAqLmwfIUqX4pFspz1GdyOolEbQ=",
+        "owner": "magnars",
+        "repo": "s.el",
+        "rev": "7393fa6fa305403e628058c0ec78c35d610fab05",
+        "type": "github"
+      },
+      "original": {
+        "owner": "magnars",
+        "repo": "s.el",
         "type": "github"
       }
     },

@@ -6,6 +6,7 @@
     twist.url = "github:emacs-twist/twist.nix";
     org-babel.url = "github:emacs-twist/org-babel";
     fmpkgs.url = "github:fyukmdaa/fmnixpkgs";
+    lsp-proxy.url = "github:jadestrong/lsp-proxy";
 
     melpa = {
       url = "github:melpa/melpa";
@@ -33,6 +34,7 @@
       twist,
       org-babel,
       fmpkgs,
+      lsp-proxy,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
@@ -44,6 +46,9 @@
           overlays = [
             org-babel.overlays.default
             fmpkgs.overlays.default
+            (final: prev: {
+              lsp-proxy = lsp-proxy.packages.${system}.default;
+            })
           ];
         };
         lib = pkgs.lib;
