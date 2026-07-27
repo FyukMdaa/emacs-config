@@ -32,22 +32,6 @@
         "type": "github"
       }
     },
-    "cond-let": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1782909426,
-        "narHash": "sha256-u1WuIa1WJB9c2RqMRgjr+FqPwLOZCN8glv5ODIBUrbQ=",
-        "owner": "tarsius",
-        "repo": "cond-let",
-        "rev": "c48600dfab6372670225f046cace263700c78eab",
-        "type": "github"
-      },
-      "original": {
-        "owner": "tarsius",
-        "repo": "cond-let",
-        "type": "github"
-      }
-    },
     "consult": {
       "flake": false,
       "locked": {
@@ -176,22 +160,6 @@
         "type": "github"
       }
     },
-    "eglot-booster": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1782829258,
-        "narHash": "sha256-HhWR40j/WFcorp8QttXtOz5yxL1B4JUXL+9IuNpoND0=",
-        "owner": "jdtsmith",
-        "repo": "eglot-booster",
-        "rev": "510f579409627c333ef0e9157db713b1004da842",
-        "type": "github"
-      },
-      "original": {
-        "owner": "jdtsmith",
-        "repo": "eglot-booster",
-        "type": "github"
-      }
-    },
     "embark": {
       "flake": false,
       "locked": {
@@ -272,22 +240,6 @@
         "type": "github"
       }
     },
-    "llama": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1780325752,
-        "narHash": "sha256-c1sk4iVTeDoSGBq6h7VPemdKhYi/P3UfLSJbd3MjyuM=",
-        "owner": "tarsius",
-        "repo": "llama",
-        "rev": "4d4024048053b898a01521046e0f063ee47615b0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "tarsius",
-        "repo": "llama",
-        "type": "github"
-      }
-    },
     "lsp-proxy": {
       "flake": false,
       "locked": {
@@ -301,22 +253,6 @@
       "original": {
         "owner": "jadestrong",
         "repo": "lsp-proxy",
-        "type": "github"
-      }
-    },
-    "magit-section": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1783774635,
-        "narHash": "sha256-TEkH4FaOfrYIUGzO8xg+sbrXtPVdqNFwoWGEcdiJlXE=",
-        "owner": "magit",
-        "repo": "magit",
-        "rev": "fe56c0d10a91d00aed65f831b8435a7224bc7730",
-        "type": "github"
-      },
-      "original": {
-        "owner": "magit",
-        "repo": "magit",
         "type": "github"
       }
     },
@@ -448,22 +384,6 @@
         "type": "github"
       }
     },
-    "nix-mode": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1682109415,
-        "narHash": "sha256-W/bxCAn4cvzKGbhILxtTiWJ5Wln2w6g4TPgk+ziCXsQ=",
-        "owner": "NixOS",
-        "repo": "nix-mode",
-        "rev": "719feb7868fb567ecfe5578f6119892c771ac5e5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "repo": "nix-mode",
-        "type": "github"
-      }
-    },
     "nix-ts-mode": {
       "flake": false,
       "locked": {
@@ -548,7 +468,6 @@
       "inputs": {
         "clojure-ts-mode": "clojure-ts-mode",
         "compat": "compat",
-        "cond-let": "cond-let",
         "consult": "consult",
         "consult-dir": "consult-dir",
         "consult-eglot": "consult-eglot",
@@ -557,15 +476,12 @@
         "corfu-terminal": "corfu-terminal",
         "dash": "dash",
         "dockerfile-mode": "dockerfile-mode",
-        "eglot-booster": "eglot-booster",
         "embark": "embark",
         "embark-consult": "embark-consult",
         "f": "f",
         "flycheck": "flycheck",
         "ht": "ht",
-        "llama": "llama",
         "lsp-proxy": "lsp-proxy",
-        "magit-section": "magit-section",
         "marginalia": "marginalia",
         "minions": "minions",
         "mlscroll": "mlscroll",
@@ -574,13 +490,11 @@
         "nano-modeline": "nano-modeline",
         "nerd-icons": "nerd-icons",
         "nerd-icons-corfu": "nerd-icons-corfu",
-        "nix-mode": "nix-mode",
         "nix-ts-mode": "nix-ts-mode",
         "orderless": "orderless",
         "popon": "popon",
         "puni": "puni",
         "rainbow-delimiters": "rainbow-delimiters",
-        "rust-mode": "rust-mode",
         "s": "s",
         "setup": "setup",
         "smartparens": "smartparens",
@@ -591,22 +505,6 @@
         "vertico": "vertico",
         "vundo": "vundo",
         "which-key": "which-key"
-      }
-    },
-    "rust-mode": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1781803786,
-        "narHash": "sha256-2UxyEb5Oq9z6mYVQ2IVLROLgJW+aq3w/63Ug/CLasg4=",
-        "owner": "rust-lang",
-        "repo": "rust-mode",
-        "rev": "93778358b6af8ad9e123a41bc2c8c91877a9ffd5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "rust-lang",
-        "repo": "rust-mode",
-        "type": "github"
       }
     },
     "s": {

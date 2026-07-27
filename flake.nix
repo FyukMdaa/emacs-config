@@ -59,6 +59,9 @@
         earlyInitFile = pkgs.tangleOrgBabelFile "early-init.el" ./early-init.org { };
         initFile = pkgs.tangleOrgBabelFile "init.el" ./init.org { };
 
+        # lsp-proxyの設定
+        lspProxyConf = import ./nix/lsp-proxy.nix { inherit pkgs; };
+
         emacsEnv = twist.lib.makeEnv {
           inherit pkgs emacsPackage;
 
@@ -85,6 +88,7 @@
 
           # tree-sitter
           extraSiteStartElisp = ''
+            ;; tree-sitter grammars
             (add-to-list 'treesit-extra-load-path "${
               pkgs.emacs.pkgs.treesit-grammars.with-grammars (
                 _: builtins.filter
@@ -92,6 +96,9 @@
                   pkgs.tree-sitter.allGrammars
               )
             }/lib/")
+            
+            ;; LSP Proxy
+            (setq lsp-proxy-user-languages-config "${lspProxyConf.lspProxyToml}")
           '';
         };
 

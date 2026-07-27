@@ -138,7 +138,6 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     (delete-selection-mode 1))
 #+end_src
 
-
 ** ultra-scroll
 ピクセル単位の滑らかなスクロール
 #+begin_src emacs-lisp
@@ -156,6 +155,7 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     (:opt recentf-save-file (expand-file-name "~/emacs-twist/recentf"))
     (recentf-mode 1))
 #+end_src
+
 ** savehist
 ミニバッファの履歴
 #+begin_src emacs-lisp
@@ -164,6 +164,7 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     (:opt savehist-file (expand-file-name "~/emacs-twist/history"))
     (savehist-mode 1))
 #+end_src
+
 ** saveplace
 カーソル位置の保存
 #+begin_src emacs-lisp
@@ -421,27 +422,22 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     (:when-loaded
       (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)))
 #+end_src
-*** eglot-booster
-eglotの通信を高速化(python3とemacs-lsp-boosterが必要)
-#+begin_src emacs-lisp
-    (setup (:package eglot-booster)
-      (:nixpkgs python3
-                emacs-lsp-booster)
-      (:load-after eglot)
-      (:when-loaded
-      (eglot-booster-mode)))
-#+end_src
 *** eldoc
 #+begin_src emacs-lisp
   (global-eldoc-mode)
+#+end_src
+*** lsp-proxy
+#+begin_src emacs-lisp
+  (setup (:package lsp-proxy)
+    (:nixpkgs lsp-proxy)
+    (:option lsp-proxy-user-languages-config lsp-proxy-user-languages-config))
 #+end_src
 ** 括弧
 *** smartparens
 #+begin_src emacs-lisp
   (setup (:package smartparens)
     (smartparens-global-mode)
-    (show-smartparens-global-mode)
-    (smartparens-global-strict-mode))
+    (show-smartparens-global-mode))
 #+end_src
 *** puni
 #+begin_src emacs-lisp
@@ -449,11 +445,6 @@ eglotの通信を高速化(python3とemacs-lsp-boosterが必要)
 #+end_src
 * 言語サポート
 ** シンタックスハイライト
-*** lsp-proxy
-#+begin_src emacs-lisp
-  (setup (:package lsp-proxy)
-    (:nixpkgs lsp-proxy))
-#+end_src
 *** treesit
 #+begin_src emacs-lisp
     (setup treesit
@@ -464,84 +455,89 @@ eglotの通信を高速化(python3とemacs-lsp-boosterが必要)
 **** css-ts-mode
 #+begin_src emacs-lisp
   (setup css-ts-mode
-  (:nixpkgs vscode-css-languageserver)
   (:mode-remap css-mode)
-  (:hook css-beautify-on-save-mode))
+  (:match-file "*.css")
+  (:hook css-beautify-on-save-mode
+         lsp-proxy-mode))
 #+end_src
 **** js-ts-mode
 #+begin_src emacs-lisp
-  (setup js-ts-mode
-  (:mode-remap javascript-mode)
-  (:hook dprint-on-save-mode
-         eglot-ensure))
+    (setup js-ts-mode
+    (:mode-remap javascript-mode)
+    (:match-file "*.js"
+                 "*.jsx")
+    (:hook dprint-on-save-mode
+           lsp-proxy-mode))
 #+end_src
 **** typescript-ts-mode
 #+begin_src emacs-lisp
-  (setup typescript-ts-mode
-  (:match-file "*.ts")
-  (:hook dprint-on-save-mode))
+    (setup typescript-ts-mode
+      (:match-file "*.ts"
+                   "*.tsx")
+      (:hook dprint-on-save-mode
+             lsp-proxy-mode))
 #+end_src
 **** json-ts-mode
 #+begin_src emacs-lisp
   (setup json-ts-mode
-  (:nixpkgs vscode-json-languageserver)
-  (:match-file "*.json")
-  (:option json-ts-mode-indent-offset 2)
-  (:hook dprint-on-save-mode))
+    (:option json-ts-mode-indent-offset 2)
+    (:match-file "*.json")
+    (:hook dprint-on-save-mode
+           lsp-proxy-mode))
 #+end_src
 **** yaml-ts-mode
 #+begin_src emacs-lisp
-    (setup yaml-ts-mode
-      (:nixpkgs yaml-language-server
-                yamlfmt)
-      (:mode-remap yaml-mode)
-      (:match-file "*.yaml"
-                   "*.yml")
-      (:hook yamlfmt-on-save-mode))
+  (setup yaml-ts-mode
+    (:mode-remap yaml-mode)
+    (:match-file "*.yaml"
+                 "*.yml")
+    (:hook yamlfmt-on-save-mod
+           lsp-proxy-mode))
 #+end_src
 **** toml-ts-mode
 #+begin_src emacs-lisp
   (setup toml-ts-mode
   (:mode-remap conf-toml-mode)
-  (:hook dprint-on-save-mode))
+  (:match-file "*.toml")
+  (:hook dprint-on-save-mode
+         lsp-proxy-mode))
 #+end_src
 **** bash-ts-mode
 #+begin_src emacs-lisp
-  (setup bash-ts-mode
-  (:mode-remap sh-mode)
-  (:option sh-basic-offset 2)
-  (:hook shfmt-on-save-mode))
+    (setup bash-ts-mode
+    (:mode-remap sh-mode)
+    (:option sh-basic-offset 2)
+    (:hook shfmt-on-save-mode
+           lsp-proxy-mode))
 #+end_src
 **** dockerfile-ts-mode
 #+begin_src emacs-lisp
   (setup (:package dockerfile-mode)
-  (:hook dprint-on-save-mode))
+    (:hook dprint-on-save-mode
+           lsp-proxy-mode))
 
-(setup dockerfile-ts-mode
-  (:match-file "[/\\]\\(?:Containerfile\\|Dockerfile\\)\\(?:\\.[^/\\]*\\)?\\'")
-  (:hook dprint-on-save-mode))
+  (setup dockerfile-ts-mode
+    (:hook dprint-on-save-mode
+           lsp-proxy-mode))
 #+end_src
 **** nix-ts-mode
 #+begin_src emacs-lisp
-    (setup (:package nix-ts-mode)
+  (setup (:package nix-ts-mode)
       (:match-file "*.nix")
-      (:nixpkgs nixfmt
-                nixd))
-
-    (setup (:package nix-mode))
+    (:hook lsp-proxy-mode))
+#+end_src
 #+end_src
 **** clojure-ts-mode
 #+begin_src emacs-lisp
   (setup (:package clojure-ts-mode)
-    (:nixpkgs clojure-lsp)
-    (:match-file "*.clj"
-                 "*.cljs"))
+    (:hook lsp-proxy-mode))
 #+end_src
 **** rust-ts-mode
 #+begin_src emacs-lisp
-  (setup (:package rust-mode)
-  (:option rust-format-on-save t
-           rust-mode-treesitter-derive t))
+  (setup rust-ts-mode
+    (:mode-remap rust-mode)
+    (:option rust-format-on-save t)
+    (:hook lsp-proxy-mode))
 #+end_src
 *** reinbow-mode
 #+begin_src emacs-lisp

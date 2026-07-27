@@ -13,12 +13,6 @@
       repo = "compat";
       type = "github";
     };
-    cond-let = {
-      flake = false;
-      owner = "tarsius";
-      repo = "cond-let";
-      type = "github";
-    };
     consult = {
       flake = false;
       owner = "minad";
@@ -66,12 +60,6 @@
       repo = "dockerfile-mode";
       type = "github";
     };
-    eglot-booster = {
-      flake = false;
-      owner = "jdtsmith";
-      repo = "eglot-booster";
-      type = "github";
-    };
     embark = {
       flake = false;
       owner = "oantolin";
@@ -102,22 +90,10 @@
       repo = "ht.el";
       type = "github";
     };
-    llama = {
-      flake = false;
-      owner = "tarsius";
-      repo = "llama";
-      type = "github";
-    };
     lsp-proxy = {
       flake = false;
       owner = "jadestrong";
       repo = "lsp-proxy";
-      type = "github";
-    };
-    magit-section = {
-      flake = false;
-      owner = "magit";
-      repo = "magit";
       type = "github";
     };
     marginalia = {
@@ -168,12 +144,6 @@
       repo = "nerd-icons-corfu";
       type = "github";
     };
-    nix-mode = {
-      flake = false;
-      owner = "NixOS";
-      repo = "nix-mode";
-      type = "github";
-    };
     nix-ts-mode = {
       flake = false;
       owner = "nix-community";
@@ -201,12 +171,6 @@
       flake = false;
       owner = "Fanael";
       repo = "rainbow-delimiters";
-      type = "github";
-    };
-    rust-mode = {
-      flake = false;
-      owner = "rust-lang";
-      repo = "rust-mode";
       type = "github";
     };
     "s" = {
