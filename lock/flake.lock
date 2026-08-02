@@ -1,5 +1,53 @@
 {
   "nodes": {
+    "ace-window": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1662868721,
+        "narHash": "sha256-eGmOL272H5X7BmeXRCfMjB3ucf9GH2xThyozgkW62dA=",
+        "owner": "abo-abo",
+        "repo": "ace-window",
+        "rev": "77115afc1b0b9f633084cf7479c767988106c196",
+        "type": "github"
+      },
+      "original": {
+        "owner": "abo-abo",
+        "repo": "ace-window",
+        "type": "github"
+      }
+    },
+    "avy": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1730469433,
+        "narHash": "sha256-p4IY1gksiC6YonDvaccISEbp6glz2AJoLgHzsc5fbvQ=",
+        "owner": "abo-abo",
+        "repo": "avy",
+        "rev": "933d1f36cca0f71e4acb5fac707e9ae26c536264",
+        "type": "github"
+      },
+      "original": {
+        "owner": "abo-abo",
+        "repo": "avy",
+        "type": "github"
+      }
+    },
+    "cfrs": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1753798930,
+        "narHash": "sha256-RHy6LWVo+fSNuBhRRHq41/B0I5PGuVivyml+YTZkzq4=",
+        "owner": "Alexander-Miller",
+        "repo": "cfrs",
+        "rev": "981bddb3fb9fd9c58aed182e352975bd10ad74c8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Alexander-Miller",
+        "repo": "cfrs",
+        "type": "github"
+      }
+    },
     "clojure-ts-mode": {
       "flake": false,
       "locked": {
@@ -240,6 +288,22 @@
         "type": "github"
       }
     },
+    "hydra": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1742129692,
+        "narHash": "sha256-OtGbTkC3j4jFlcbopvHhRoUJlDjnIsO4eeDYgngNntY=",
+        "owner": "abo-abo",
+        "repo": "hydra",
+        "rev": "59a2a45a35027948476d1d7751b0f0215b1e61aa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "abo-abo",
+        "repo": "hydra",
+        "type": "github"
+      }
+    },
     "lsp-proxy": {
       "flake": false,
       "locked": {
@@ -253,6 +317,22 @@
       "original": {
         "owner": "jadestrong",
         "repo": "lsp-proxy",
+        "type": "github"
+      }
+    },
+    "lv": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1742129692,
+        "narHash": "sha256-OtGbTkC3j4jFlcbopvHhRoUJlDjnIsO4eeDYgngNntY=",
+        "owner": "abo-abo",
+        "repo": "hydra",
+        "rev": "59a2a45a35027948476d1d7751b0f0215b1e61aa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "abo-abo",
+        "repo": "hydra",
         "type": "github"
       }
     },
@@ -416,6 +496,22 @@
         "type": "github"
       }
     },
+    "pfuture": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1663077673,
+        "narHash": "sha256-/UZ2nLJkogrd94CefY4bZntW59zpFZBQ3KDxVw2K7j8=",
+        "owner": "Alexander-Miller",
+        "repo": "pfuture",
+        "rev": "19b53aebbc0f2da31de6326c495038901bffb73c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Alexander-Miller",
+        "repo": "pfuture",
+        "type": "github"
+      }
+    },
     "popon": {
       "flake": false,
       "locked": {
@@ -430,6 +526,22 @@
       "original": {
         "type": "git",
         "url": "https://codeberg.org/akib/emacs-popon"
+      }
+    },
+    "posframe": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779872224,
+        "narHash": "sha256-G4IlPAtAdhmHKeFr3XQDyMS1xEUEvh+rHtIM+O6wRoE=",
+        "owner": "tumashu",
+        "repo": "posframe",
+        "rev": "74c8c56131ed866db47ae4191364b72dd4852456",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tumashu",
+        "repo": "posframe",
+        "type": "github"
       }
     },
     "puni": {
@@ -464,8 +576,27 @@
         "type": "github"
       }
     },
+    "reformatter": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781870287,
+        "narHash": "sha256-UyjV9ODjPQ2IewC6OHfrANHU+FNvGhbZESUUmUfeSco=",
+        "owner": "purcell",
+        "repo": "emacs-reformatter",
+        "rev": "2bd8818f3f2119a3876e574a437495214c87bc81",
+        "type": "github"
+      },
+      "original": {
+        "owner": "purcell",
+        "repo": "emacs-reformatter",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
+        "ace-window": "ace-window",
+        "avy": "avy",
+        "cfrs": "cfrs",
         "clojure-ts-mode": "clojure-ts-mode",
         "compat": "compat",
         "consult": "consult",
@@ -481,7 +612,9 @@
         "f": "f",
         "flycheck": "flycheck",
         "ht": "ht",
+        "hydra": "hydra",
         "lsp-proxy": "lsp-proxy",
+        "lv": "lv",
         "marginalia": "marginalia",
         "minions": "minions",
         "mlscroll": "mlscroll",
@@ -492,17 +625,23 @@
         "nerd-icons-corfu": "nerd-icons-corfu",
         "nix-ts-mode": "nix-ts-mode",
         "orderless": "orderless",
+        "pfuture": "pfuture",
         "popon": "popon",
+        "posframe": "posframe",
         "puni": "puni",
         "rainbow-delimiters": "rainbow-delimiters",
+        "reformatter": "reformatter",
         "s": "s",
         "setup": "setup",
         "smartparens": "smartparens",
+        "treemacs": "treemacs",
+        "treemacs-nerd-icons": "treemacs-nerd-icons",
         "twist": "twist",
         "ultra-scroll": "ultra-scroll",
         "undo-fu": "undo-fu",
         "undo-fu-session": "undo-fu-session",
         "vertico": "vertico",
+        "visual-regexp": "visual-regexp",
         "vundo": "vundo",
         "which-key": "which-key"
       }
@@ -552,6 +691,38 @@
       "original": {
         "owner": "Fuco1",
         "repo": "smartparens",
+        "type": "github"
+      }
+    },
+    "treemacs": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1766754455,
+        "narHash": "sha256-1oVjyv9sfiD1TNoAA+Z8ABBGubzT8xv2xkSvbtma+lE=",
+        "owner": "Alexander-Miller",
+        "repo": "treemacs",
+        "rev": "2ab5a3c89fa01bbbd99de9b8986908b2bc5a7b49",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Alexander-Miller",
+        "repo": "treemacs",
+        "type": "github"
+      }
+    },
+    "treemacs-nerd-icons": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1761333266,
+        "narHash": "sha256-Tf4nv8Clu9C7tSkCAwABDJmr+b7mAqPBz2ZPN/Xvr04=",
+        "owner": "rainstormstudio",
+        "repo": "treemacs-nerd-icons",
+        "rev": "0c5ddcb978da639f01ddb023febc40fc755171e5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rainstormstudio",
+        "repo": "treemacs-nerd-icons",
         "type": "github"
       }
     },
@@ -632,6 +803,22 @@
       "original": {
         "owner": "minad",
         "repo": "vertico",
+        "type": "github"
+      }
+    },
+    "visual-regexp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1619986774,
+        "narHash": "sha256-X7DyfbiwaWbUAFTSwlTNxxd7PBHI8NrcWflXj5z5TPw=",
+        "owner": "benma",
+        "repo": "visual-regexp.el",
+        "rev": "48457d42a5e0fe10fa3a9c15854f1f127ade09b5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "benma",
+        "repo": "visual-regexp.el",
         "type": "github"
       }
     },

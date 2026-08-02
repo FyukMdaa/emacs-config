@@ -51,11 +51,10 @@
             })
           ];
         };
-        lib = pkgs.lib;
 
         emacsPackage = pkgs.emacs-pgtk;
 
-        # early-init.org / init.org をtangleする。
+        # early-init.org / init.org をtangle
         earlyInitFile = pkgs.tangleOrgBabelFile "early-init.el" ./early-init.org { };
         initFile = pkgs.tangleOrgBabelFile "init.el" ./init.org { };
 
@@ -71,61 +70,66 @@
           initFiles = [ initFile ];
           lockDir = ./lock;
 
-          # setup.el を使用する
-          initParser = inputs.twist.lib.parseSetup {
-		    inherit (inputs.nixpkgs) lib;
-		  } {
-		    packageKeyword = ":package";
-		    nixpkgsKeyword = ":nixpkgs";
-		  };
+          # setup.elの設定
+          initParser =
+            inputs.twist.lib.parseSetup
+              {
+                inherit (inputs.nixpkgs) lib;
+              }
+              {
+                packageKeyword = ":package";
+                nixpkgsKeyword = ":nixpkgs";
+              };
           extraPackages = [ "setup" ];
 
-          # パッケージのオーバーライド設定を外部ファイルから読み込む
+          # パッケージのオーバーライド設定を読み込む
           inputOverrides = import ./nix/override.nix { inherit pkgs; };
 
-          # パッケージの取得先。
+          # パッケージの取得元
           registries = import ./nix/registries.nix inputs;
 
-          # tree-sitter
+          # tree-sitterとlsp-proxy
           extraSiteStartElisp = ''
             ;; tree-sitter grammars
             (add-to-list 'treesit-extra-load-path "${
               pkgs.emacs.pkgs.treesit-grammars.with-grammars (
-                _: builtins.filter
-                  (grammar: ((grammar.meta or {}).broken or null) != true)
-                  pkgs.tree-sitter.allGrammars
+                _:
+                builtins.filter (
+                  grammar: ((grammar.meta or { }).broken or null) != true
+                ) pkgs.tree-sitter.allGrammars
               )
             }/lib/")
-            
+
             ;; LSP Proxy
             (setq lsp-proxy-user-languages-config "${lspProxyConf.lspProxyToml}")
           '';
         };
 
-        # nix run で利用するフォント。
+        # nix run で利用するフォント
         fontPackages = with pkgs; [
-        	sfmono-square
-        	nerd-fonts.symbols-only
+          sfmono-square
+          nerd-fonts.symbols-only
         ];
 
         # 上記のフォントを追加したfontconfig 設定
         fontsConf = pkgs.makeFontsConf { fontDirectories = fontPackages; };
 
-        # `nix run .` で起動できるようにするラッパー。  
-        package = pkgs.runCommandLocal "emacs-config"
-          {
-            nativeBuildInputs = [ pkgs.makeWrapper ];
-            meta.mainProgram = "emacs";
-          }
-          ''
-            mkdir -p "$out/bin" "$out/share/emacs-config"
-            cp ${earlyInitFile} "$out/share/emacs-config/early-init.el"
-            cp ${initFile} "$out/share/emacs-config/init.el"
+        # `nix run .` で起動できるようにするラッパー
+        package =
+          pkgs.runCommandLocal "emacs-config"
+            {
+              nativeBuildInputs = [ pkgs.makeWrapper ];
+              meta.mainProgram = "emacs";
+            }
+            ''
+              mkdir -p "$out/bin" "$out/share/emacs-config"
+              cp ${earlyInitFile} "$out/share/emacs-config/early-init.el"
+              cp ${initFile} "$out/share/emacs-config/init.el"
 
-            makeWrapper ${emacsEnv}/bin/emacs "$out/bin/emacs" \
-              --add-flags --init-directory="$out/share/emacs-config" \
-              --set FONTCONFIG_FILE ${fontsConf}
-          '';
+              makeWrapper ${emacsEnv}/bin/emacs "$out/bin/emacs" \
+                --add-flags --init-directory="$out/share/emacs-config" \
+                --set FONTCONFIG_FILE ${fontsConf}
+            '';
       in
       {
         packages.default = package;

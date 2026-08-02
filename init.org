@@ -105,18 +105,26 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 ** インデントタブのデフォルト設定
 #+begin_src emacs-lisp
   (setq-default indent-tabs-mode nil
-                tab-width 4)
+                tab-width 2)
 #+end_src
 
 ** FIXME:分割してきれいなタイトルをつける
 #+begin_src emacs-lisp
   (setopt inhibit-startup-screen t
-        initial-scratch-message nil
-        ring-bell-function #'ignore
-        use-short-answers t)
+          initial-scratch-message nil
+          ring-bell-function #'ignore
+          use-short-answers t)
 
-  (column-number-mode 1)
-  (global-display-line-numbers-mode 1)
+  (setup display-line-numbers    
+    (defun my-display-line-numbers-with-padding ()
+      "Enable line numbers with one extra column of left padding."
+      (setq-local display-line-numbers-width
+                  (1+ (length (number-to-string (count-lines (point-min) (point-max))))))
+      (display-line-numbers-mode 1))
+    (:with-mode (text-mode
+                 prog-mode
+                 conf-mode)
+      (:hook my-display-line-numbers-with-padding)))
 
   (keymap-global-set "C-x C-b" #'ibuffer)
 #+end_src
@@ -187,27 +195,27 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 *** modus-themes
 オーバーライドして自作テーマを入れ込む
 #+begin_src emacs-lisp
-  (setup (:package modus-themes)
+(setup (:package modus-themes)
     (:opt modus-themes-common-palette-overrides
              '((bg-main "#393f4b")
                (bg-dim "#434a58")
                (bg-alt "#3e4140")
                (bg-active "#5e6160")
                (bg-inactive "#3f444a")
-               (bg-hl-line "#261f3e")
-               (bg-region "#322b4d")
-               (bg-visual "#322b4d")
+               (bg-hl-line "#2a3148")
+               (bg-region "#2d3f5c")
+               (bg-visual "#2d3f5c")
                (bg-visual-alt "#2a3550")
-               (bg-paren-match "#3a3052")
+               (bg-paren-match "#3a4258")
                (fg-paren-match "#f6c7a1")
-               (bg-search-current "#4a3a63")
+               (bg-search-current "#5c4a2a")
                (bg-search-lazy "#35475a")
                (bg-search-replace "#4d3a33")
-               (bg-completion "#241c36")
-               (bg-completion-match-0 "#322b4d")
+               (bg-completion "#1e2233")
+               (bg-completion-match-0 "#28344a")
                (bg-completion-match-1 "#2c3756")
                (bg-completion-match-2 "#34414a")
-               (bg-completion-match-3 "#422f4a")
+               (bg-completion-match-3 "#4a2c38")
                (bg-line-number-active "#393f4b")
                (fg-line-number-active "#edf4f9")
                (bg-line-number-inactive "#393f4b")
@@ -224,35 +232,35 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
                (fg-diff-added "#a6e7c9")
                (fg-diff-changed "#8bd4f6")
                (fg-diff-removed "#ff8fa3")
-               (bg-prompt "#22182b")
+               (bg-prompt "#1c2333")
                (fg-prompt "#f6c7a1")
-               (fringe "#1a162c")
-               (cursor "#f6c7a1")
+               (fringe "#1a1f2e")
+               (cursor "#c0caf5")
                (fg-main "#bbc2cf")
                (fg-dim "#969faf")
                (fg-alt "#8fcfbb")
-               (comment "#a79dc6")
+               (comment "#7f88a8")
                (string "#b7e2aa")
                (keyword "#f6c7a1")
-               (builtin "#c9b5ff")
-               (constant "#f0c6ff")
+               (builtin "#4fd6be")
+               (constant "#e0af68")
                (function "#8bd4f6")
                (variable "#f4f0ff")
                (type "#9fe4c4")
                (number "#ffd08a")
-               (warning "#ffd08a")
+               (warning "#ff9e64")
                (err "#ff8fa3")
-               (info "#9fe4c4")
+               (info "#7dcfff")
                (success "#a6e7c9")
                (link "#8bd4f6")
-               (link-visited "#f0c6ff")
-               (accent-0 "#c9b5ff")
+               (link-visited "#c0a080")
+               (accent-0 "#dfb12d")
                (accent-1 "#f6c7a1")
                (accent-2 "#9fe4c4")
                (accent-3 "#8bd4f6")
-               (bg-tab-bar "#1a162c")
-               (bg-tab-current "#31294a")
-               (bg-tab-other "#221c38"))
+               (bg-tab-bar "#1a1f2e")
+               (bg-tab-current "#2b3752")
+               (bg-tab-other "#20263a"))
              modus-themes-vivendi-palette-overrides modus-themes-common-palette-overrides)
     (load-theme 'modus-vivendi t))
 #+end_src
@@ -302,31 +310,13 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
           vertico-count 20
           vertico-cycle t)
     (:with-map vertico-map
-      ;; ディレクトリ移動時にディレクトリ単位で移動できる。
       (:bind "DEL" vertico-directory-delete-char))
-
+    
     (vertico-mode)
-
-    ;; verticoの選択行を指す指アイコンを追加する設定
+    
     (:require nerd-icons)
-    (defvar +vertico-current-arrow t)
-
-    (defun +vertico-format-candidate-arrow-advice (orig-fun cand prefix suffix index start)
-      "Vertico の選択行に指アイコンを表示するアドバイス"
-      (let ((res (funcall orig-fun cand prefix suffix index start)))
-        (if (and +vertico-current-arrow 
-                 (not (bound-and-true-p vertico-flat-mode)))
-            (let ((arrow (nerd-icons-faicon "nf-fa-hand_o_right")))
-              (if (bound-and-true-p vertico-grid-mode)
-                  (if (= vertico--index index)
-                      (concat arrow " " res)
-                    (concat "  " res))
-                (if (= vertico--index index)
-                    (concat " " arrow " " res)
-                  (concat "    " res))))
-          res)))
-
-    (advice-add 'vertico-format-candidate :around #'+vertico-format-candidate-arrow-advice))
+    (setq vertico-current-prefix
+          (concat " " (nerd-icons-faicon "nf-fa-hand_o_right") " ")))
 #+end_src
 ** consult
 #+begin_src emacs-lisp
@@ -354,7 +344,53 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 ** marginalia
 #+begin_src emacs-lisp
   (setup (:package marginalia)
-  (marginalia-mode))
+    (:load-after vertico)
+    (marginalia-mode))
+#+end_src
+* サイドバー
+** treemacs
+#+begin_src emacs-lisp
+  (setup (:package treemacs)
+    (:global-bind "C-c t" treemacs)
+    (:bind [mouse-1] treemacs-single-click-expand-action)
+    (:option treemacs-text-scale -1)
+    (:option
+     treemacs-last-error-persist-file (expand-file-name "~/emacs-twist/treemacs/persist-last-error.org")
+     treemacs-persist-file (expand-file-name "~/emacs-twist/treemacs/persist.org"))
+    ;; VSCode のようにシングルクリックでファイル展開しつつフォーカスは移さない。
+    (:when-loaded
+      (defun my-treemacs-expand-action (&rest _)
+        "Keep the focus on the Treemacs buffer after an action."
+        (select-window (treemacs-get-local-window)))
+      (advice-add 'treemacs-single-click-expand-action :after #'my-treemacs-expand-action)
+        ;; modeline に mlscroll を載せる。
+      (defun my-treemacs-setup-mode-line ()
+        "Configure a Treemacs-specific mode line with moody and mlscroll."
+        (setq-local mlscroll-right-align nil)
+        (setq-local mode-line-format
+                    '("%e"
+                      (:eval (moody-tab " Treemacs " 10 'down))
+                      mode-line-format-right-align
+                      (:eval (mlscroll-mode-line)
+                             " ")))
+        (force-mode-line-update))
+      
+      (add-hook 'treemacs-mode-hook #'my-treemacs-setup-mode-line)
+      ;; 右フリンジの継続と切り詰めの矢印表示を無効にする。
+      (defun my-treemacs-hide-fringe-indicators ()
+        "Hide continuation and truncation fringe indicators in Treemacs."
+        (setq-local fringe-indicator-alist
+                    (let ((alist (copy-tree fringe-indicator-alist)))
+                      (setf (cdr (assq 'truncation alist)) '(nil nil)
+                            (cdr (assq 'continuation alist)) '(nil nil))
+                      alist)))
+      
+      (add-hook 'treemacs-mode-hook #'my-treemacs-hide-fringe-indicators)))
+  
+  (setup (:package treemacs-nerd-icons)
+    (:load-after treemacs nerd-icons)
+    (:require treemacs-nerd-icons)
+    (treemacs-load-theme "nerd-icons"))
 #+end_src
 * 編集アシスト
 ** undo
@@ -378,6 +414,15 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
   (setup (:package undo-fu-session)
     (:opt undo-fu-session-directory (expand-file-name "~/emacs-twist/undo-fu-session/"))
     (undo-fu-session-global-mode))
+#+end_src
+** 置換
+*** visual-regexp
+#+begin_src emacs-lisp
+  (setup (:package visual-regexp)
+    (:global-bind
+     "C-c r" vr/replace
+     "C-c q" vr/query-replace
+     "C-c m" vr/mc-mark))
 #+end_src
 ** 補完
 *** corfu
@@ -444,6 +489,70 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
   (setup (:package puni))
 #+end_src
 * 言語サポート
+** フォーマッター
+*** reformatter
+#+begin_src emacs-lisp
+  (setup (:package reformatter)
+    (:nixpkgs cljstyle
+              dprint
+              just
+              kdlfmt
+              alejandra
+              deadnix
+              shfmt
+              superhtml
+              stylua
+              ruff
+              tombi
+              yamlfmt
+              biome
+              google-java-format
+              )
+    (reformatter-define cljstyle
+      :program "cljstyle"
+      :args (list "pipe"))
+    (reformatter-define dprint
+      :program "dprint"
+      :args (list "fmt" "--stdin" buffer-file-name))
+    (reformatter-define just
+      :program "just"
+      :stdin nil
+      :stdout nil
+      :args (list "--fmt" "--unstable" "-f" input-file))
+    (reformatter-define kdlfmt
+      :program "kdlfmt"
+      :args (list "format" "-"))
+    (reformatter-define alejandra
+      :program "alejandra"
+      :args (list "-"))
+    (reformatter-define deadnix
+      :program "deadnix"
+      :args (list "--edit" "--output-to-stdout" input-file))
+    (reformatter-define shfmt
+      :program "shfmt"
+      :args (list "--indent" (number-to-string sh-basic-offset) "-"))
+    (reformatter-define superhtml
+      :program "superhtml"
+      :args (list "fmt" "--stdin"))
+    (reformatter-define stylua
+      :program "stylua"
+      :args (list "-" "--indent-type=Spaces" (format "--indent-width=%s" lua-indent-level)))
+    (reformatter-define ruff
+      :program "ruff"
+      :args (list "format" "--stdin-filename" input-file "-"))
+    (reformatter-define tombi
+      :program "tombi"
+      :args (list "format" "-"))
+    (reformatter-define yamlfmt
+      :program "yamlfmt"
+      :args (list "-in"))
+    (reformatter-define biome
+      :program "biome"
+      :args (list "format" "--stdin-file-path" buffer-file-name))
+    (reformatter-define google-java-format
+      :program "google-java-format"
+      :args (list "-")))
+#+end_src
 ** シンタックスハイライト
 *** treesit
 #+begin_src emacs-lisp
@@ -457,7 +566,7 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
   (setup css-ts-mode
   (:mode-remap css-mode)
   (:match-file "*.css")
-  (:hook css-beautify-on-save-mode
+  (:hook biome-on-save-mode
          lsp-proxy-mode))
 #+end_src
 **** js-ts-mode
@@ -491,7 +600,7 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     (:mode-remap yaml-mode)
     (:match-file "*.yaml"
                  "*.yml")
-    (:hook yamlfmt-on-save-mod
+    (:hook yamlfmt-on-save-mode
            lsp-proxy-mode))
 #+end_src
 **** toml-ts-mode
@@ -504,11 +613,12 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 #+end_src
 **** bash-ts-mode
 #+begin_src emacs-lisp
-    (setup bash-ts-mode
-    (:mode-remap sh-mode)
-    (:option sh-basic-offset 2)
-    (:hook shfmt-on-save-mode
-           lsp-proxy-mode))
+  (setup bash-ts-mode
+  (:mode-remap sh-mode)
+  (:match-file "*.sh")
+  (:option sh-basic-offset 2)
+  (:hook shfmt-on-save-mode
+         lsp-proxy-mode))
 #+end_src
 **** dockerfile-ts-mode
 #+begin_src emacs-lisp
@@ -524,20 +634,70 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 #+begin_src emacs-lisp
   (setup (:package nix-ts-mode)
       (:match-file "*.nix")
-    (:hook lsp-proxy-mode))
-#+end_src
+      (:hook alejandra-on-save-mode
+             deadnix-on-save-mode
+             lsp-proxy-mode))
 #+end_src
 **** clojure-ts-mode
 #+begin_src emacs-lisp
-  (setup (:package clojure-ts-mode)
-    (:hook lsp-proxy-mode))
+    (setup (:package clojure-ts-mode)
+      (:match-file "*.clj"
+                   "*.cljs"
+                   "*.cljc"
+                   "*.edn")
+      (:hook cljstyle-on-save-mode
+             lsp-proxy-mode))
 #+end_src
 **** rust-ts-mode
 #+begin_src emacs-lisp
   (setup rust-ts-mode
     (:mode-remap rust-mode)
+    (:match-file "*.rs")
     (:option rust-format-on-save t)
     (:hook lsp-proxy-mode))
+#+end_src
+**** python-ts-mode
+#+begin_src emacs-lisp
+  (setup python-ts-mode
+    (:mode-remap python-mode)
+    (:match-file "*.py")
+    (:hook ruff-on-save-mode
+           lsp-proxy-mode))
+#+end_src
+**** java-ts-mode
+#+begin_src emacs-lisp
+  (setup java-ts-mode
+    (:mode-remap java-mode)
+    (:match-file "*.java")
+    (:hook google-java-format-on-save-mode
+           lsp-proxy-mode))
+#+end_src
+**** go-ts-mode
+#+begin_src emacs-lisp
+  (setup go-ts-mode
+    (:mode-remap go-mode)
+    (:match-file "*.go")
+    (:hook lsp-proxy-mode))
+#+end_src
+**** c-ts-mode / c++-ts-mode
+#+begin_src emacs-lisp
+  (setup c-ts-mode
+    (:mode-remap c-mode)
+    (:match-file "*.c" "*.h")
+    (:hook lsp-proxy-mode))
+
+  (setup c++-ts-mode
+    (:mode-remap c++-mode)
+    (:match-file "*.cpp" "*.hpp")
+    (:hook lsp-proxy-mode))
+#+end_src
+**** lua-ts-mode
+#+begin_src emacs-lisp
+  (setup lua-ts-mode
+    (:mode-remap lua-mode)
+    (:match-file "*.lua")
+    (:hook stylua-on-save-mode
+           lsp-proxy-mode))
 #+end_src
 *** reinbow-mode
 #+begin_src emacs-lisp

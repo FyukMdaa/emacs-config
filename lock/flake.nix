@@ -1,6 +1,24 @@
 {
   description = "THIS IS AN AUTO-GENERATED FILE. PLEASE DON'T EDIT IT MANUALLY.";
   inputs = {
+    ace-window = {
+      flake = false;
+      owner = "abo-abo";
+      repo = "ace-window";
+      type = "github";
+    };
+    avy = {
+      flake = false;
+      owner = "abo-abo";
+      repo = "avy";
+      type = "github";
+    };
+    cfrs = {
+      flake = false;
+      owner = "Alexander-Miller";
+      repo = "cfrs";
+      type = "github";
+    };
     clojure-ts-mode = {
       flake = false;
       owner = "clojure-emacs";
@@ -90,10 +108,22 @@
       repo = "ht.el";
       type = "github";
     };
+    hydra = {
+      flake = false;
+      owner = "abo-abo";
+      repo = "hydra";
+      type = "github";
+    };
     lsp-proxy = {
       flake = false;
       owner = "jadestrong";
       repo = "lsp-proxy";
+      type = "github";
+    };
+    lv = {
+      flake = false;
+      owner = "abo-abo";
+      repo = "hydra";
       type = "github";
     };
     marginalia = {
@@ -156,10 +186,22 @@
       repo = "orderless";
       type = "github";
     };
+    pfuture = {
+      flake = false;
+      owner = "Alexander-Miller";
+      repo = "pfuture";
+      type = "github";
+    };
     popon = {
       flake = false;
       type = "git";
       url = "https://codeberg.org/akib/emacs-popon";
+    };
+    posframe = {
+      flake = false;
+      owner = "tumashu";
+      repo = "posframe";
+      type = "github";
     };
     puni = {
       flake = false;
@@ -171,6 +213,12 @@
       flake = false;
       owner = "Fanael";
       repo = "rainbow-delimiters";
+      type = "github";
+    };
+    reformatter = {
+      flake = false;
+      owner = "purcell";
+      repo = "emacs-reformatter";
       type = "github";
     };
     "s" = {
@@ -188,6 +236,18 @@
       flake = false;
       owner = "Fuco1";
       repo = "smartparens";
+      type = "github";
+    };
+    treemacs = {
+      flake = false;
+      owner = "Alexander-Miller";
+      repo = "treemacs";
+      type = "github";
+    };
+    treemacs-nerd-icons = {
+      flake = false;
+      owner = "rainstormstudio";
+      repo = "treemacs-nerd-icons";
       type = "github";
     };
     twist = {
@@ -216,6 +276,12 @@
       flake = false;
       owner = "minad";
       repo = "vertico";
+      type = "github";
+    };
+    visual-regexp = {
+      flake = false;
+      owner = "benma";
+      repo = "visual-regexp.el";
       type = "github";
     };
     vundo = {

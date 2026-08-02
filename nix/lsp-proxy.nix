@@ -39,6 +39,16 @@ let
       rust-analyzer = {
         command = pkgs.lib.getExe pkgs.rust-analyzer;
       };
+      jdtls = {
+        command = pkgs.lib.getExe pkgs.jdt-language-server;
+      };
+      gopls.command = pkgs.lib.getExe pkgs.gopls;
+      clangd.command = pkgs.lib.getExe' pkgs.llvmPackages.clang-unwrapped "clangd";
+      lua-language-server.command = pkgs.lib.getExe pkgs.lua-language-server;
+      pyright = {
+        command = pkgs.lib.getExe' pkgs.pyright "pyright-langserver";
+        args = [ "--stdio" ];
+      };
     };
     language = [
       {
@@ -107,6 +117,36 @@ let
         roots = [ "Cargo.toml" ];
         language-servers = [ "rust-analyzer" ];
       }
+      {
+        name = "java";
+        file-types = [ "java" ];
+        roots = [ "pom.xml" "build.gradle" "gradlew" ".git" ];
+        language-servers = [ "jdtls" ];
+      }
+      {
+        name = "go";
+        file-types = [ "go" ];
+        roots = [ "go.mod" ];
+        language-servers = [ "gopls" ];
+      }
+      {
+        name = "c";
+        file-types = [ "c" "cpp" "h" "hpp" ];
+        roots = [ "CMakeLists.txt" "compile_commands.json" ];
+        language-servers = [ "clangd" ];
+      }
+      {
+        name = "lua";
+        file-types = [ "lua" ];
+        roots = [ ".luarc.json" ];
+        language-servers = [ "lua-language-server" ];
+      }
+      {
+        name = "python";
+        file-types = [ "py" ];
+        roots = [ "pyproject.toml" "setup.py" "requirements.txt" ];
+        language-servers = [ "pyright" ];
+      }
     ];
   };
 in
@@ -123,5 +163,13 @@ in
     taplo
     bash-language-server
     rust-analyzer
+    jdt-language-server
+    google-java-format
+    gopls
+    gotools
+    llvmPackages.clang-unwrapped
+    lua-language-server
+    pyright
+    ruff
   ];
 }
