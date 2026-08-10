@@ -72,6 +72,18 @@
       repo = "dash.el";
       type = "github";
     };
+    diff-hl = {
+      flake = false;
+      owner = "dgutov";
+      repo = "diff-hl";
+      type = "github";
+    };
+    dimmer = {
+      flake = false;
+      owner = "gonewest818";
+      repo = "dimmer.el";
+      type = "github";
+    };
     dockerfile-mode = {
       flake = false;
       owner = "spotify";
@@ -130,6 +142,12 @@
       flake = false;
       owner = "minad";
       repo = "marginalia";
+      type = "github";
+    };
+    meow = {
+      flake = false;
+      owner = "meow-edit";
+      repo = "meow";
       type = "github";
     };
     minions = {
@@ -236,6 +254,12 @@
       flake = false;
       owner = "Fuco1";
       repo = "smartparens";
+      type = "github";
+    };
+    spacious-padding = {
+      flake = false;
+      owner = "protesilaos";
+      repo = "spacious-padding";
       type = "github";
     };
     treemacs = {

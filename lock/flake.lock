@@ -192,6 +192,38 @@
         "type": "github"
       }
     },
+    "diff-hl": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784774334,
+        "narHash": "sha256-sIwCz+jyPD1pjqGRW7Dt11os5nXwoqJKj5FgI09MMCw=",
+        "owner": "dgutov",
+        "repo": "diff-hl",
+        "rev": "91fcd4fa42fef895a754e80c4435ae6314be7822",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dgutov",
+        "repo": "diff-hl",
+        "type": "github"
+      }
+    },
+    "dimmer": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781798375,
+        "narHash": "sha256-BE/5QL+Aa9yUnCIngXwXRRuj6nMBsOue4xsLfM6o96s=",
+        "owner": "gonewest818",
+        "repo": "dimmer.el",
+        "rev": "bbab62f01d45086b9098f6a0ab765282d9c7bc45",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gonewest818",
+        "repo": "dimmer.el",
+        "type": "github"
+      }
+    },
     "dockerfile-mode": {
       "flake": false,
       "locked": {
@@ -349,6 +381,22 @@
       "original": {
         "owner": "minad",
         "repo": "marginalia",
+        "type": "github"
+      }
+    },
+    "meow": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784030458,
+        "narHash": "sha256-B9jgNqWSWNtin9yXrcz6/HREfV1gqdDB2hZs6HyC+dU=",
+        "owner": "meow-edit",
+        "repo": "meow",
+        "rev": "aa8aec19e70369b547176e625f5b95c4a8565e8e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "meow-edit",
+        "repo": "meow",
         "type": "github"
       }
     },
@@ -606,6 +654,8 @@
         "corfu": "corfu",
         "corfu-terminal": "corfu-terminal",
         "dash": "dash",
+        "diff-hl": "diff-hl",
+        "dimmer": "dimmer",
         "dockerfile-mode": "dockerfile-mode",
         "embark": "embark",
         "embark-consult": "embark-consult",
@@ -616,6 +666,7 @@
         "lsp-proxy": "lsp-proxy",
         "lv": "lv",
         "marginalia": "marginalia",
+        "meow": "meow",
         "minions": "minions",
         "mlscroll": "mlscroll",
         "modus-themes": "modus-themes",
@@ -634,6 +685,7 @@
         "s": "s",
         "setup": "setup",
         "smartparens": "smartparens",
+        "spacious-padding": "spacious-padding",
         "treemacs": "treemacs",
         "treemacs-nerd-icons": "treemacs-nerd-icons",
         "twist": "twist",
@@ -691,6 +743,22 @@
       "original": {
         "owner": "Fuco1",
         "repo": "smartparens",
+        "type": "github"
+      }
+    },
+    "spacious-padding": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784875372,
+        "narHash": "sha256-81yEPeph7n5uqZvuTyB+4l2Vu4SYJwb+Y7ITdg8XSB0=",
+        "owner": "protesilaos",
+        "repo": "spacious-padding",
+        "rev": "03d475863f65fafe502141a06e919bc057554991",
+        "type": "github"
+      },
+      "original": {
+        "owner": "protesilaos",
+        "repo": "spacious-padding",
         "type": "github"
       }
     },

@@ -7,7 +7,6 @@
 
 twist.nix がすでにすべてのパッケージを Nix store 上にビルド・配置して
 いるので、setup.el 標準の =:package= は何もしない =no-op= に置き換える。
-
 #+begin_src emacs-lisp
 ;; -*- lexical-binding: t; -*-
 
@@ -28,6 +27,7 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     `(setopt ,@pairs))
   :after-loaded t)
 #+end_src
+
 ** =:load-after= を使えるようにする
 #+begin_src emacs-lisp
   (setup-define :load-after
@@ -38,6 +38,7 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
       body))
   :documentation "Load the current feature after FEATURES.")
 #+end_src
+
 ** =:needs= を使えるようにする
 #+begin_src emacs-lisp
   (setup-define :needs
@@ -47,12 +48,14 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
   :documentation "If EXECUTABLE is not in the path, stop here."
   :repeatable 1)
 #+end_src
+
 ** =:nixpkgs= を使えるようにする
 #+begin_src emacs-lisp
   (setup-define :nixpkgs
     (lambda (&rest nixpkgs))
     :documentation "Fake installation of packages from NIXPKGS for executables.")
 #+end_src
+
 ** =:global-bind= を使えるようにする
 #+begin_src emacs-lisp
   (setup-define :global-bind
@@ -61,6 +64,7 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     :documentation "Use `keymap-global-set' to define global keybindings."
     :repeatable t)
 #+end_src
+
 ** =:mode-remap= を使えるようにする
 #+begin_src emacs-lisp
     (setup-define :mode-remap
@@ -76,7 +80,9 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     :repeatable t
     :signature '(OLD-MODE ...))
 #+end_src
+
 * 基本設定
+
 ** 保存先を変更する
 *** custom-file
 #+begin_src emacs-lisp
@@ -146,6 +152,13 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     (delete-selection-mode 1))
 #+end_src
 
+** バッファの自動更新
+#+begin_src emacs-lisp
+  (setup autorevert
+  (:opt auto-revert-avoid-polling t
+        auto-revert-check-vc-info t)
+  (global-auto-revert-mode 1))
+#+end_src
 ** ultra-scroll
 ピクセル単位の滑らかなスクロール
 #+begin_src emacs-lisp
@@ -185,11 +198,13 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
   (setup text-mode
     (:hook visual-line-mode))
 #+end_src
+
 * パッケージの管理
 ** twist.el
 #+begin_src emacs-lisp
     (setup (:package twist))
 #+end_src
+
 * UIのカスタマイズ
 ** テーマ
 *** modus-themes
@@ -264,16 +279,121 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
              modus-themes-vivendi-palette-overrides modus-themes-common-palette-overrides)
     (load-theme 'modus-vivendi t))
 #+end_src
+
+*** dimmer
+#+begin_src emacs-lisp
+(setup (:package dimmer)
+  (:option dimmer-fraction 0.07 ;; 色の薄くなる比率
+           dimmer-adjustment-mode :background
+           dimmer-use-colorspace :rgb
+           dimmer-watch-frame-focus-events nil)
+  (:require dimmer)
+  (dimmer-configure-which-key)
+  (dimmer-configure-magit)
+  (dimmer-configure-org)
+  (dimmer-mode t))
+#+end_src
+
+*** diff-hl
+#+begin_src emacs-lisp
+(setup (:package diff-hl)
+  (:with-mode dired-mode
+    (:hook diff-hl-dired-mode))
+  (:with-mode magit-pre-refresh
+    (:hook diff-hl-magit-pre-refresh))
+  (:with-mode magit-post-refresh
+    (:hook diff-hl-magit-post-refresh))
+  (global-diff-hl-mode +1)
+  (diff-hl-flydiff-mode +1) ; realtime, global minor mode
+  (global-diff-hl-show-hunk-mouse-mode +1))
+#+end_src
+
+*** spacious-padding
+#+begin_src emacs-lisp
+(setup (:package spacious-padding)
+  (:option spacious-padding-widths
+           '(:internal-border-width 4 ; 最外周の余白。
+             :header-line-width 4 ; org src block 編集時の注釈ヘッダーなど。
+             :mode-line-width 0 ; モードラインの高さ。変更すると moody の表示がズレる。
+             :tab-width 4 ; tab-bar-mode の高さ。centaur-tabs は関係ない。
+             :right-divider-width 0 ; 画面分割時のディバイダーの幅。
+             :scroll-bar-width 8 ; スクロールバーは無効にしているので関係ない。
+             :left-fringe-width 2 ; 対象ウインドウの左側に表示する diff-hl のエリア。
+             :right-fringe-width 8 ; 対象ウインドウの右側に表示する treemacs の折り返し → の表示エリア。
+             ))
+  (spacious-padding-mode 1))
+#+end_src
+
 ** モードライン
 *** moody
 モダンなモードライン
 #+begin_src emacs-lisp
-  (setup (:package moody)
-    (:opt x-underline-at-descent-line t)
-    (:require moody)
-    (moody-replace-mode-line-buffer-identification)
-    (moody-replace-eldoc-minibuffer-message-function))
+(setup (:package moody)
+  (:opt x-underline-at-descent-line t)
+  (:require moody)
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-eldoc-minibuffer-message-function)
+
+  ; dimmerを効かせる
+  (defun my-dimmer-background-active-p ()
+    "Return non-nil when `dimmer' is active for background dimming."
+  (and (bound-and-true-p dimmer-mode)
+       (boundp 'dimmer-buffer-face-remaps)
+       dimmer-buffer-face-remaps
+       (eq dimmer-adjustment-mode :background)
+       (fboundp 'dimmer-cached-compute-rgb)))
+
+  (defun my-dim-background-color (color)
+    "Return COLOR dimmed with the same background adjustment as `dimmer'."
+    (when (and color
+               (stringp color)
+               (my-dimmer-background-active-p)
+               (color-defined-p color)
+               (color-defined-p (face-foreground 'default)))
+      (dimmer-cached-compute-rgb color
+                                 (face-foreground 'default)
+                                 dimmer-fraction
+                                 dimmer-use-colorspace)))
+
+  (defun my-moody-dim-inactive-face-attribute (orig-fn face attribute &optional frame inherit)
+    "Return dimmed Moody colors for inactive tabs."
+    (let ((value (funcall orig-fn face attribute frame inherit)))
+      (pcase (list face attribute)
+        (`(default :background)
+         (or (my-dim-background-color value) value))
+        (`(mode-line-inactive :background)
+         (or (my-dim-background-color value) value))
+        (`(mode-line-inactive :underline)
+         (let* ((bg (funcall orig-fn 'mode-line-inactive :background frame inherit))
+                (line (cond
+                       ((and value (listp value)) (plist-get value :color))
+                       ((eq value 'unspecified) bg)
+                       ((or value bg))))
+                (dimmed (and line (my-dim-background-color line))))
+           (cond
+            ((and dimmed (listp value)) (plist-put (copy-sequence value) :color dimmed))
+            (dimmed dimmed)
+            (t value))))
+        (_ value))))
+
+  (defun my-moody-dim-inactive-tab-a (orig-fn &rest args)
+    "Dim inactive Moody separators with the same algorithm as `dimmer'."
+    (if (or (moody-window-active-p)
+            (not (my-dimmer-background-active-p)))
+        (apply orig-fn args)
+      (let ((orig-face-attribute (symbol-function 'face-attribute)))
+        (cl-letf (((symbol-function 'face-attribute)
+                   (lambda (face attribute &optional frame inherit)
+                     (my-moody-dim-inactive-face-attribute
+                      orig-face-attribute face attribute frame inherit))))
+          (apply orig-fn args)))))
+
+  (advice-add 'moody-wrap :around #'my-moody-dim-inactive-tab-a)
+  (moody-replace-mode-line-buffer-identification)
+  ;; (moody-replace-vc-mode)
+  (moody-replace-eldoc-minibuffer-message-function))
 #+end_src
+
 *** minions
 マイナーモードをまとめてたたむ
 #+begin_src emacs-lisp
@@ -281,6 +401,7 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     (:opt minions-mode-line-lighter "[+]")
     (minions-mode))
 #+end_src
+
 *** mlscroll
 モードラインにスクロールバーを表示
 #+begin_src emacs-lisp
@@ -289,6 +410,7 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
         (add-hook 'server-after-make-frame-hook #'mlscroll-mode)
       (mlscroll-mode 1)))
 #+end_src
+
 *** nano-modeline
 ヘッダーとして使用
 #+begin_src emacs-lisp
@@ -297,30 +419,43 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     (:require nano-modeline)
     (nano-modeline-text-mode t))
 #+end_src
+
 ** アイコン
 *** nerd-icon
 #+begin_src emacs-lisp
   (setup (:package nerd-icons))
 #+end_src
+
 * ミニバッファ
 ** vertico
 #+begin_src emacs-lisp
-  (setup (:package vertico)
-    (:opt vertico-resize nil
-          vertico-count 20
-          vertico-cycle t)
+    (setup (:package vertico)
+      (:opt vertico-resize nil
+            vertico-count 20
+            vertico-cycle t)
+      (:with-map vertico-map
+        (:bind "DEL" vertico-directory-delete-char))
+      
+      (vertico-mode)
+      
+      (:require nerd-icons)
+      (setq vertico-current-prefix
+            (concat " " (nerd-icons-faicon "nf-fa-hand_o_right") " "))
+      (:when-loaded
+    (require 'vertico-directory)
+    ;; パス入力時にパス区切り文字や親ディレクトリへスマートに移動
     (:with-map vertico-map
-      (:bind "DEL" vertico-directory-delete-char))
-    
-    (vertico-mode)
-    
-    (:require nerd-icons)
-    (setq vertico-current-prefix
-          (concat " " (nerd-icons-faicon "nf-fa-hand_o_right") " ")))
+      (:bind "DEL" vertico-directory-delete-char
+             "RET" vertico-directory-enter))))
 #+end_src
 ** consult
 #+begin_src emacs-lisp
-  (setup (:package consult))
+  (setup (:package consult)
+    (:global-bind
+     "C-s" consult-line
+     "C-x b" consult-buffer
+     "M-y" consult-yank-pop
+     "C-c i" consult-imenu))
 
   (setup (:package consult-dir)
     (:load-after consult))
@@ -393,6 +528,82 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     (treemacs-load-theme "nerd-icons"))
 #+end_src
 * 編集アシスト
+** meow
+#+begin_src emacs-lisp
+  (setup (:package meow)
+  (:require meow)
+  
+  (:when-loaded
+    (defun my-meow-setup ()
+      (meow-motion-overwrite-define-key
+       '("j" . meow-next)
+       '("k" . meow-prev)
+       '("h" . meow-left)
+       '("l" . meow-right))
+      
+      (meow-leader-define-key
+       '("f" . find-file)
+       '("b" . switch-to-buffer))
+      
+      (meow-normal-define-key
+       '("0" . meow-expand-0)
+       '("1" . meow-expand-1)
+       '("2" . meow-expand-2)
+       '("3" . meow-expand-3)
+       '("4" . meow-expand-4)
+       '("5" . meow-expand-5)
+       '("6" . meow-expand-6)
+       '("7" . meow-expand-7)
+       '("8" . meow-expand-8)
+       '("9" . meow-expand-9)
+       '("-" . negative-argument)
+       '(";" . meow-reverse)
+       '("," . meow-inner-of-thing)
+       '("." . meow-bounds-of-thing)
+       '("[" . meow-beginning-of-thing)
+       '("]" . meow-end-of-thing)
+       '("a" . meow-append)
+       '("b" . meow-back-word)
+       '("c" . meow-change)
+       '("d" . meow-delete)
+       '("e" . meow-next-word)
+       '("f" . meow-find)
+       '("g" . meow-grab)
+       '("h" . meow-left)
+       '("i" . meow-insert)
+       '("j" . meow-next)
+       '("k" . meow-prev)
+       '("l" . meow-right)
+       '("m" . meow-join)
+       '("n" . meow-search)
+       '("o" . meow-open-below)
+       '("O" . meow-open-above)
+       '("p" . meow-yank)
+       '("q" . meow-quit)
+       '("r" . meow-replace)
+       '("s" . meow-kill)
+       '("t" . meow-till)
+       '("u" . meow-undo)
+       '("v" . meow-visit)
+       '("w" . meow-next-symbol)
+       '("x" . meow-line)
+       '("y" . meow-save)
+       '("z" . meow-pop-selection)
+       '("<escape>" . meow-insert)))
+
+    (my-meow-setup)
+
+    ;; Meowの自動モード切り替えを抑止
+    (:opt meow-mode-state-list
+          '((authinfo-mode . normal)
+            (dired-mode . motion)))
+    
+    ;; デフォルトの初期状態を insert に固定
+    (:opt  meow-initial-state 'insert))
+
+  ;; C-c v で NORMAL モードへ移行
+  (:global-bind "C-c v" meow-global-mode))
+#+end_src
 ** undo
 *** vundo
 #+begin_src emacs-lisp
@@ -701,25 +912,33 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 #+end_src
 *** reinbow-mode
 #+begin_src emacs-lisp
-    (setup (:package rainbow-mode)
-      (:hook-into prog-mode))
+(setup (:package rainbow-mode)
+  (:hook-into prog-mode))
+#+end_src
+*** org-mode
+#+begin_src emacs-lisp
+(setup org
+  (:opt org-src-fontify-natively t
+    org-src-tab-acts-natively t     
+    org-edit-src-content-indentation 0
+    ))
 #+end_src
 ** 括弧
 *** rainbow-delimiters
 #+begin_src emacs-lisp
-  (setup (:package rainbow-delimiters)
-    (:hook-into prog-mode))
+(setup (:package rainbow-delimiters)
+  (:hook-into prog-mode))
 #+end_src
 *** show-paren-mode
 #+begin_src emacs-lisp
-  (show-paren-mode t)
-  (setopt show-paren-style 'mixed)
+(show-paren-mode t)
+(setopt show-paren-style 'mixed)
 #+end_src
 * ユーティリティ
 ** which-key
 キーバインドを表示
 #+begin_src emacs-lisp
-  (setup (:package which-key)
-    (:require which-key)
-    (which-key-mode 1))
+(setup (:package which-key)
+  (:require which-key)
+  (which-key-mode 1))
 #+end_src
