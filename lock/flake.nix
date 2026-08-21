@@ -67,6 +67,12 @@
       repo = "corfu";
       type = "github";
     };
+    corfu-prescient = {
+      flake = false;
+      owner = "radian-software";
+      repo = "prescient.el";
+      type = "github";
+    };
     corfu-terminal = {
       flake = false;
       type = "git";
@@ -239,6 +245,12 @@
       repo = "posframe";
       type = "github";
     };
+    prescient = {
+      flake = false;
+      owner = "radian-software";
+      repo = "prescient.el";
+      type = "github";
+    };
     puni = {
       flake = false;
       owner = "AmaiKinono";
@@ -255,6 +267,12 @@
       flake = false;
       owner = "purcell";
       repo = "emacs-reformatter";
+      type = "github";
+    };
+    rg = {
+      flake = false;
+      owner = "dajva";
+      repo = "rg.el";
       type = "github";
     };
     "s" = {
@@ -336,6 +354,12 @@
       flake = false;
       owner = "casouri";
       repo = "vundo";
+      type = "github";
+    };
+    wgrep = {
+      flake = false;
+      owner = "mhayashi1120";
+      repo = "Emacs-wgrep";
       type = "github";
     };
     which-key = {

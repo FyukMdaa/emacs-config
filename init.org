@@ -454,9 +454,6 @@ touching `auto-mode-alist' itself."
     (:with-map vertico-map
       (:bind "DEL" vertico-directory-delete-char
              "RET" vertico-directory-enter))))
-(setup (:package vertico-repeat))
-(setup (:package vertico-truncate))
-(setup (:package vertico-posframe))
 #+end_src
 ** consult
 #+begin_src emacs-lisp
