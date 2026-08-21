@@ -454,6 +454,9 @@ touching `auto-mode-alist' itself."
     (:with-map vertico-map
       (:bind "DEL" vertico-directory-delete-char
              "RET" vertico-directory-enter))))
+(setup (:package vertico-repeat))
+(setup (:package vertico-truncate))
+(setup (:package vertico-posframe))
 #+end_src
 ** consult
 #+begin_src emacs-lisp
@@ -488,6 +491,18 @@ touching `auto-mode-alist' itself."
 (setup (:package marginalia)
   (:load-after vertico)
   (marginalia-mode))
+#+end_src
+** rg
+#+begin_src emacs-lisp
+(setup (:package rg))
+#+end_src
+** wgrep
+#+begin_src emacs-lisp
+(setup (:package wgrep))
+#+end_src
+** embark
+#+begin_src emacs-lisp
+(setup (:package embark))
 #+end_src
 * サイドバー
 ** treemacs
@@ -667,6 +682,7 @@ touching `auto-mode-alist' itself."
   (global-corfu-mode)
   (corfu-popupinfo-mode) ;; 補完に説明表示を追加する。
   )
+(setup (:package corfu-prescient))
 #+end_src
 **** corfu-terminal
 #+begin_src emacs-lisp
