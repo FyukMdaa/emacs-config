@@ -13,16 +13,22 @@
       repo = "avy";
       type = "github";
     };
+    cape = {
+      flake = false;
+      owner = "minad";
+      repo = "cape";
+      type = "github";
+    };
     cfrs = {
       flake = false;
       owner = "Alexander-Miller";
       repo = "cfrs";
       type = "github";
     };
-    clojure-ts-mode = {
+    clojure-mode = {
       flake = false;
       owner = "clojure-emacs";
-      repo = "clojure-ts-mode";
+      repo = "clojure-mode";
       type = "github";
     };
     compat = {
@@ -102,6 +108,12 @@
       repo = "embark";
       type = "github";
     };
+    envrc = {
+      flake = false;
+      owner = "purcell";
+      repo = "envrc";
+      type = "github";
+    };
     "f" = {
       flake = false;
       owner = "rejeep";
@@ -124,6 +136,12 @@
       flake = false;
       owner = "abo-abo";
       repo = "hydra";
+      type = "github";
+    };
+    inheritenv = {
+      flake = false;
+      owner = "purcell";
+      repo = "inheritenv";
       type = "github";
     };
     lsp-proxy = {
@@ -260,6 +278,12 @@
       flake = false;
       owner = "protesilaos";
       repo = "spacious-padding";
+      type = "github";
+    };
+    tempel = {
+      flake = false;
+      owner = "minad";
+      repo = "tempel";
       type = "github";
     };
     treemacs = {

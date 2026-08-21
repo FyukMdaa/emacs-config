@@ -30,7 +30,7 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 
 ** =:load-after= を使えるようにする
 #+begin_src emacs-lisp
-  (setup-define :load-after
+(setup-define :load-after
   (lambda (&rest features)
     (let ((body `(require ',(setup-get 'feature))))
       (dolist (feature (nreverse features))
@@ -41,7 +41,7 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 
 ** =:needs= を使えるようにする
 #+begin_src emacs-lisp
-  (setup-define :needs
+(setup-define :needs
   (lambda (executable)
     `(unless (executable-find ,executable)
        ,(setup-quit)))
@@ -51,34 +51,34 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 
 ** =:nixpkgs= を使えるようにする
 #+begin_src emacs-lisp
-  (setup-define :nixpkgs
-    (lambda (&rest nixpkgs))
-    :documentation "Fake installation of packages from NIXPKGS for executables.")
-#+end_src
+(setup-define :nixpkgs
+  (lambda (&rest nixpkgs))
+  :documentation "Fake installation of packages from NIXPKGS for executables.")
+  #+end_src
 
 ** =:global-bind= を使えるようにする
 #+begin_src emacs-lisp
-  (setup-define :global-bind
-    (lambda (key command)
-      `(keymap-global-set ,key #',command))
-    :documentation "Use `keymap-global-set' to define global keybindings."
-    :repeatable t)
+(setup-define :global-bind
+  (lambda (key command)
+    `(keymap-global-set ,key #',command))
+  :documentation "Use `keymap-global-set' to define global keybindings."
+  :repeatable t)
 #+end_src
 
 ** =:mode-remap= を使えるようにする
 #+begin_src emacs-lisp
-    (setup-define :mode-remap
-    (lambda (old-mode)
-      `(add-to-list 'major-mode-remap-alist
-                     (cons ',old-mode ',(setup-get 'mode))))
-    :documentation "Remap OLD-MODE to the current mode via `major-mode-remap-alist'.
-  This causes Emacs to automatically use the current mode instead of
-  OLD-MODE whenever OLD-MODE would otherwise be activated (e.g. by
-  `auto-mode-alist' or `set-auto-mode'). Useful for redirecting legacy
-  major modes to their tree-sitter (or other) replacements without
-  touching `auto-mode-alist' itself."
-    :repeatable t
-    :signature '(OLD-MODE ...))
+(setup-define :mode-remap
+  (lambda (old-mode)
+    `(add-to-list 'major-mode-remap-alist
+                  (cons ',old-mode ',(setup-get 'mode))))
+  :documentation "Remap OLD-MODE to the current mode via `major-mode-remap-alist'.
+This causes Emacs to automatically use the current mode instead of
+OLD-MODE whenever OLD-MODE would otherwise be activated (e.g. by
+`auto-mode-alist' or `set-auto-mode'). Useful for redirecting legacy
+major modes to their tree-sitter (or other) replacements without
+touching `auto-mode-alist' itself."
+  :repeatable t
+  :signature '(OLD-MODE ...))
 #+end_src
 
 * 基本設定
@@ -86,75 +86,75 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 ** 保存先を変更する
 *** custom-file
 #+begin_src emacs-lisp
-  (setopt custom-file
+(setopt custom-file
         (expand-file-name "~/emacs-twist/custom.el"))
-  (when (file-exists-p custom-file)
-    (load custom-file))
+(when (file-exists-p custom-file)
+  (load custom-file))
 #+end_src
 
 *** バックアップ・自動保存・ロックファイル
 #+begin_src emacs-lisp
-  (let ((var-dir (expand-file-name "~/emacs-twist/")))
-    (setopt backup-directory-alist `((".*" . ,var-dir))
+(let ((var-dir (expand-file-name "~/emacs-twist/")))
+  (setopt backup-directory-alist `((".*" . ,var-dir))
           auto-save-file-name-transforms `((".*" ,var-dir t))
           lock-file-name-transforms `((".*" ,var-dir t))))
 #+end_src
 
 ** フォント
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil
-                       :family "SF Mono Square"
-                       :height 160)
-  (set-face-attribute 'mode-line nil :height 1.0)
+(set-face-attribute 'default nil
+                    :family "SF Mono Square"
+                    :height 160)
+(set-face-attribute 'mode-line nil :height 1.0)
 #+end_src
 
 ** インデントタブのデフォルト設定
 #+begin_src emacs-lisp
-  (setq-default indent-tabs-mode nil
-                tab-width 2)
+(setq-default indent-tabs-mode nil
+              tab-width 2)
 #+end_src
 
 ** FIXME:分割してきれいなタイトルをつける
 #+begin_src emacs-lisp
-  (setopt inhibit-startup-screen t
-          initial-scratch-message nil
-          ring-bell-function #'ignore
-          use-short-answers t)
+(setopt inhibit-startup-screen t
+        initial-scratch-message nil
+        ring-bell-function #'ignore
+        use-short-answers t)
 
-  (setup display-line-numbers    
-    (defun my-display-line-numbers-with-padding ()
-      "Enable line numbers with one extra column of left padding."
-      (setq-local display-line-numbers-width
-                  (1+ (length (number-to-string (count-lines (point-min) (point-max))))))
-      (display-line-numbers-mode 1))
-    (:with-mode (text-mode
-                 prog-mode
-                 conf-mode)
-      (:hook my-display-line-numbers-with-padding)))
+(setup display-line-numbers    
+  (defun my-display-line-numbers-with-padding ()
+    "Enable line numbers with one extra column of left padding."
+    (setq-local display-line-numbers-width
+                (1+ (length (number-to-string (count-lines (point-min) (point-max))))))
+    (display-line-numbers-mode 1))
+  (:with-mode (text-mode
+               prog-mode
+               conf-mode)
+    (:hook my-display-line-numbers-with-padding)))
 
-  (keymap-global-set "C-x C-b" #'ibuffer)
+(keymap-global-set "C-x C-b" #'ibuffer)
 #+end_src
 
 ** フレームをピクセル単位で指定できるように
 #+begin_src emacs-lisp
-  (setopt frame-resize-pixelwise t)
+(setopt frame-resize-pixelwise t)
 #+end_src
 
 ** クリップボードを同期
 #+begin_src emacs-lisp
-  (setup select
-    (:opt select-enable-clipboard t))
+(setup select
+  (:opt select-enable-clipboard t))
 #+end_src
 
 ** 選択した後文字入力で選択文字の削除
 #+begin_src emacs-lisp
-  (setup delsel
-    (delete-selection-mode 1))
+(setup delsel
+  (delete-selection-mode 1))
 #+end_src
 
 ** バッファの自動更新
 #+begin_src emacs-lisp
-  (setup autorevert
+(setup autorevert
   (:opt auto-revert-avoid-polling t
         auto-revert-check-vc-info t)
   (global-auto-revert-mode 1))
@@ -162,122 +162,129 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 ** ultra-scroll
 ピクセル単位の滑らかなスクロール
 #+begin_src emacs-lisp
-  (setup (:package ultra-scroll)
-    (:opt scroll-conservatively 101
-          scroll-margin 0)
-    (ultra-scroll-mode 1))
+(setup (:package ultra-scroll)
+  (:opt scroll-conservatively 101
+        scroll-margin 0)
+  (ultra-scroll-mode 1))
 #+end_src
 
 ** recentf
 最近使ったファイルの表示
 #+begin_src emacs-lisp
-  (setup recentf
-    (:require recentf)
-    (:opt recentf-save-file (expand-file-name "~/emacs-twist/recentf"))
-    (recentf-mode 1))
+(setup recentf
+  (:require recentf)
+  (:opt recentf-save-file (expand-file-name "~/emacs-twist/recentf"))
+  (recentf-mode 1))
 #+end_src
 
 ** savehist
 ミニバッファの履歴
 #+begin_src emacs-lisp
-  (setup savehist
-    (:require savehist)
-    (:opt savehist-file (expand-file-name "~/emacs-twist/history"))
-    (savehist-mode 1))
+(setup savehist
+  (:require savehist)
+  (:opt savehist-file (expand-file-name "~/emacs-twist/history"))
+  (savehist-mode 1))
 #+end_src
 
 ** saveplace
 カーソル位置の保存
 #+begin_src emacs-lisp
-  (setup saveplace
-    (:require saveplace)
-    (save-place-mode 1))
+(setup saveplace
+  (:require saveplace)
+  (save-place-mode 1))
 #+end_src
 
 #+begin_src emacs-lisp
-  (setup text-mode
-    (:hook visual-line-mode))
+(setup text-mode
+  (:hook visual-line-mode))
 #+end_src
 
 * パッケージの管理
 ** twist.el
 #+begin_src emacs-lisp
-    (setup (:package twist))
+(setup (:package twist))
 #+end_src
 
+* 環境
+** envrc
+#+begin_src emacs-lisp
+(setup (:package envrc)
+  (:needs "direnv")
+  (envrc-global-mode))
+#+end_src
 * UIのカスタマイズ
 ** テーマ
 *** modus-themes
 オーバーライドして自作テーマを入れ込む
 #+begin_src emacs-lisp
 (setup (:package modus-themes)
-    (:opt modus-themes-common-palette-overrides
-             '((bg-main "#393f4b")
-               (bg-dim "#434a58")
-               (bg-alt "#3e4140")
-               (bg-active "#5e6160")
-               (bg-inactive "#3f444a")
-               (bg-hl-line "#2a3148")
-               (bg-region "#2d3f5c")
-               (bg-visual "#2d3f5c")
-               (bg-visual-alt "#2a3550")
-               (bg-paren-match "#3a4258")
-               (fg-paren-match "#f6c7a1")
-               (bg-search-current "#5c4a2a")
-               (bg-search-lazy "#35475a")
-               (bg-search-replace "#4d3a33")
-               (bg-completion "#1e2233")
-               (bg-completion-match-0 "#28344a")
-               (bg-completion-match-1 "#2c3756")
-               (bg-completion-match-2 "#34414a")
-               (bg-completion-match-3 "#4a2c38")
-               (bg-line-number-active "#393f4b")
-               (fg-line-number-active "#edf4f9")
-               (bg-line-number-inactive "#393f4b")
-               (fg-line-number-inactive "#979dae")
-               (bg-mode-line-active "#434a58")
-               (fg-mode-line-active "#cccccc")
-               (bg-mode-line-inactive "#434a58")
-               (fg-mode-line-inactive "#767676")
-               (border-mode-line-active "#5d5f63")
-               (border-mode-line-inactive "#5d5f63")
-               (bg-diff-added "#183c2c")
-               (bg-diff-changed "#303a54")
-               (bg-diff-removed "#412436")
-               (fg-diff-added "#a6e7c9")
-               (fg-diff-changed "#8bd4f6")
-               (fg-diff-removed "#ff8fa3")
-               (bg-prompt "#1c2333")
-               (fg-prompt "#f6c7a1")
-               (fringe "#1a1f2e")
-               (cursor "#c0caf5")
-               (fg-main "#bbc2cf")
-               (fg-dim "#969faf")
-               (fg-alt "#8fcfbb")
-               (comment "#7f88a8")
-               (string "#b7e2aa")
-               (keyword "#f6c7a1")
-               (builtin "#4fd6be")
-               (constant "#e0af68")
-               (function "#8bd4f6")
-               (variable "#f4f0ff")
-               (type "#9fe4c4")
-               (number "#ffd08a")
-               (warning "#ff9e64")
-               (err "#ff8fa3")
-               (info "#7dcfff")
-               (success "#a6e7c9")
-               (link "#8bd4f6")
-               (link-visited "#c0a080")
-               (accent-0 "#dfb12d")
-               (accent-1 "#f6c7a1")
-               (accent-2 "#9fe4c4")
-               (accent-3 "#8bd4f6")
-               (bg-tab-bar "#1a1f2e")
-               (bg-tab-current "#2b3752")
-               (bg-tab-other "#20263a"))
-             modus-themes-vivendi-palette-overrides modus-themes-common-palette-overrides)
-    (load-theme 'modus-vivendi t))
+  (:opt modus-themes-common-palette-overrides
+        '((bg-main "#393f4b")
+          (bg-dim "#434a58")
+          (bg-alt "#3e4140")
+          (bg-active "#5e6160")
+          (bg-inactive "#3f444a")
+          (bg-hl-line "#2a3148")
+          (bg-region "#2d3f5c")
+          (bg-visual "#2d3f5c")
+          (bg-visual-alt "#2a3550")
+          (bg-paren-match "#3a4258")
+          (fg-paren-match "#f6c7a1")
+          (bg-search-current "#5c4a2a")
+          (bg-search-lazy "#35475a")
+          (bg-search-replace "#4d3a33")
+          (bg-completion "#1e2233")
+          (bg-completion-match-0 "#28344a")
+          (bg-completion-match-1 "#2c3756")
+          (bg-completion-match-2 "#34414a")
+          (bg-completion-match-3 "#4a2c38")
+          (bg-line-number-active "#393f4b")
+          (fg-line-number-active "#edf4f9")
+          (bg-line-number-inactive "#393f4b")
+          (fg-line-number-inactive "#979dae")
+          (bg-mode-line-active "#434a58")
+          (fg-mode-line-active "#cccccc")
+          (bg-mode-line-inactive "#434a58")
+          (fg-mode-line-inactive "#767676")
+          (border-mode-line-active "#5d5f63")
+          (border-mode-line-inactive "#5d5f63")
+          (bg-diff-added "#183c2c")
+          (bg-diff-changed "#303a54")
+          (bg-diff-removed "#412436")
+          (fg-diff-added "#a6e7c9")
+          (fg-diff-changed "#8bd4f6")
+          (fg-diff-removed "#ff8fa3")
+          (bg-prompt "#1c2333")
+          (fg-prompt "#f6c7a1")
+          (fringe "#1a1f2e")
+          (cursor "#c0caf5")
+          (fg-main "#bbc2cf")
+          (fg-dim "#969faf")
+          (fg-alt "#8fcfbb")
+          (comment "#7f88a8")
+          (string "#b7e2aa")
+          (keyword "#f6c7a1")
+          (builtin "#4fd6be")
+          (constant "#e0af68")
+          (function "#8bd4f6")
+          (variable "#f4f0ff")
+          (type "#9fe4c4")
+          (number "#ffd08a")
+          (warning "#ff9e64")
+          (err "#ff8fa3")
+          (info "#7dcfff")
+          (success "#a6e7c9")
+          (link "#8bd4f6")
+          (link-visited "#c0a080")
+          (accent-0 "#dfb12d")
+          (accent-1 "#f6c7a1")
+          (accent-2 "#9fe4c4")
+          (accent-3 "#8bd4f6")
+          (bg-tab-bar "#1a1f2e")
+          (bg-tab-current "#2b3752")
+          (bg-tab-other "#20263a"))
+        modus-themes-vivendi-palette-overrides modus-themes-common-palette-overrides)
+  (load-theme 'modus-vivendi t))
 #+end_src
 
 *** dimmer
@@ -334,14 +341,14 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
   (moody-replace-mode-line-buffer-identification)
   (moody-replace-eldoc-minibuffer-message-function)
 
-  ; dimmerを効かせる
+                                        ; dimmerを効かせる
   (defun my-dimmer-background-active-p ()
     "Return non-nil when `dimmer' is active for background dimming."
-  (and (bound-and-true-p dimmer-mode)
-       (boundp 'dimmer-buffer-face-remaps)
-       dimmer-buffer-face-remaps
-       (eq dimmer-adjustment-mode :background)
-       (fboundp 'dimmer-cached-compute-rgb)))
+    (and (bound-and-true-p dimmer-mode)
+         (boundp 'dimmer-buffer-face-remaps)
+         dimmer-buffer-face-remaps
+         (eq dimmer-adjustment-mode :background)
+         (fboundp 'dimmer-cached-compute-rgb)))
 
   (defun my-dim-background-color (color)
     "Return COLOR dimmed with the same background adjustment as `dimmer'."
@@ -397,51 +404,51 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 *** minions
 マイナーモードをまとめてたたむ
 #+begin_src emacs-lisp
-  (setup (:package minions)
-    (:opt minions-mode-line-lighter "[+]")
-    (minions-mode))
+(setup (:package minions)
+  (:opt minions-mode-line-lighter "[+]")
+  (minions-mode))
 #+end_src
 
 *** mlscroll
 モードラインにスクロールバーを表示
 #+begin_src emacs-lisp
-  (setup (:package mlscroll)
-    (if (daemonp)
-        (add-hook 'server-after-make-frame-hook #'mlscroll-mode)
-      (mlscroll-mode 1)))
+(setup (:package mlscroll)
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook #'mlscroll-mode)
+    (mlscroll-mode 1)))
 #+end_src
 
 *** nano-modeline
 ヘッダーとして使用
 #+begin_src emacs-lisp
-  (setup (:package nano-modeline)
-    (:opt nano-modeline-padding '(0.20 . 0.25))
-    (:require nano-modeline)
-    (nano-modeline-text-mode t))
+(setup (:package nano-modeline)
+  (:opt nano-modeline-padding '(0.20 . 0.25))
+  (:require nano-modeline)
+  (nano-modeline-text-mode t))
 #+end_src
 
 ** アイコン
 *** nerd-icon
 #+begin_src emacs-lisp
-  (setup (:package nerd-icons))
+(setup (:package nerd-icons))
 #+end_src
 
 * ミニバッファ
 ** vertico
 #+begin_src emacs-lisp
-    (setup (:package vertico)
-      (:opt vertico-resize nil
-            vertico-count 20
-            vertico-cycle t)
-      (:with-map vertico-map
-        (:bind "DEL" vertico-directory-delete-char))
-      
-      (vertico-mode)
-      
-      (:require nerd-icons)
-      (setq vertico-current-prefix
-            (concat " " (nerd-icons-faicon "nf-fa-hand_o_right") " "))
-      (:when-loaded
+(setup (:package vertico)
+  (:opt vertico-resize nil
+        vertico-count 20
+        vertico-cycle t)
+  (:with-map vertico-map
+    (:bind "DEL" vertico-directory-delete-char))
+  
+  (vertico-mode)
+  
+  (:require nerd-icons)
+  (setq vertico-current-prefix
+        (concat " " (nerd-icons-faicon "nf-fa-hand_o_right") " "))
+  (:when-loaded
     (require 'vertico-directory)
     ;; パス入力時にパス区切り文字や親ディレクトリへスマートに移動
     (:with-map vertico-map
@@ -450,89 +457,89 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 #+end_src
 ** consult
 #+begin_src emacs-lisp
-  (setup (:package consult)
-    (:global-bind
-     "C-s" consult-line
-     "C-x b" consult-buffer
-     "M-y" consult-yank-pop
-     "C-c i" consult-imenu))
+(setup (:package consult)
+  (:global-bind
+   "C-s" consult-line
+   "C-x b" consult-buffer
+   "M-y" consult-yank-pop
+   "C-c i" consult-imenu))
 
-  (setup (:package consult-dir)
-    (:load-after consult))
+(setup (:package consult-dir)
+  (:load-after consult))
 
-  (setup (:package consult-flycheck)
-    (:load-after consult flycheck))
+(setup (:package consult-flycheck)
+  (:load-after consult flycheck))
 
-  (setup (:package consult-eglot)
-    (:load-after consult eglot))
+(setup (:package consult-eglot)
+  (:load-after consult eglot))
 
-  (setup (:package embark-consult)
-    (:load-after embark consult))
+(setup (:package embark-consult)
+  (:load-after embark consult))
 #+end_src
 ** orderless
 #+begin_src emacs-lisp
-  (setup (:package orderless)
+(setup (:package orderless)
   (with-eval-after-load 'minibuffer
     (setopt completion-styles '(orderless basic)
             completion-category-overrides '((file (styles basic partial-completion))))))
 #+end_src
 ** marginalia
 #+begin_src emacs-lisp
-  (setup (:package marginalia)
-    (:load-after vertico)
-    (marginalia-mode))
+(setup (:package marginalia)
+  (:load-after vertico)
+  (marginalia-mode))
 #+end_src
 * サイドバー
 ** treemacs
 #+begin_src emacs-lisp
-  (setup (:package treemacs)
-    (:global-bind "C-c t" treemacs)
-    (:bind [mouse-1] treemacs-single-click-expand-action)
-    (:option treemacs-text-scale -1)
-    (:option
-     treemacs-last-error-persist-file (expand-file-name "~/emacs-twist/treemacs/persist-last-error.org")
-     treemacs-persist-file (expand-file-name "~/emacs-twist/treemacs/persist.org"))
-    ;; VSCode のようにシングルクリックでファイル展開しつつフォーカスは移さない。
-    (:when-loaded
-      (defun my-treemacs-expand-action (&rest _)
-        "Keep the focus on the Treemacs buffer after an action."
-        (select-window (treemacs-get-local-window)))
-      (advice-add 'treemacs-single-click-expand-action :after #'my-treemacs-expand-action)
-        ;; modeline に mlscroll を載せる。
-      (defun my-treemacs-setup-mode-line ()
-        "Configure a Treemacs-specific mode line with moody and mlscroll."
-        (setq-local mlscroll-right-align nil)
-        (setq-local mode-line-format
-                    '("%e"
-                      (:eval (moody-tab " Treemacs " 10 'down))
-                      mode-line-format-right-align
-                      (:eval (mlscroll-mode-line)
-                             " ")))
-        (force-mode-line-update))
-      
-      (add-hook 'treemacs-mode-hook #'my-treemacs-setup-mode-line)
-      ;; 右フリンジの継続と切り詰めの矢印表示を無効にする。
-      (defun my-treemacs-hide-fringe-indicators ()
-        "Hide continuation and truncation fringe indicators in Treemacs."
-        (setq-local fringe-indicator-alist
-                    (let ((alist (copy-tree fringe-indicator-alist)))
-                      (setf (cdr (assq 'truncation alist)) '(nil nil)
-                            (cdr (assq 'continuation alist)) '(nil nil))
-                      alist)))
-      
-      (add-hook 'treemacs-mode-hook #'my-treemacs-hide-fringe-indicators)))
-  
-  (setup (:package treemacs-nerd-icons)
-    (:load-after treemacs nerd-icons)
-    (:require treemacs-nerd-icons)
-    (treemacs-load-theme "nerd-icons"))
+(setup (:package treemacs)
+  (:global-bind "C-c t" treemacs)
+  (:bind [mouse-1] treemacs-single-click-expand-action)
+  (:option treemacs-text-scale -1)
+  (:option
+   treemacs-last-error-persist-file (expand-file-name "~/emacs-twist/treemacs/persist-last-error.org")
+   treemacs-persist-file (expand-file-name "~/emacs-twist/treemacs/persist.org"))
+  ;; VSCode のようにシングルクリックでファイル展開しつつフォーカスは移さない。
+  (:when-loaded
+    (defun my-treemacs-expand-action (&rest _)
+      "Keep the focus on the Treemacs buffer after an action."
+      (select-window (treemacs-get-local-window)))
+    (advice-add 'treemacs-single-click-expand-action :after #'my-treemacs-expand-action)
+    ;; modeline に mlscroll を載せる。
+    (defun my-treemacs-setup-mode-line ()
+      "Configure a Treemacs-specific mode line with moody and mlscroll."
+      (setq-local mlscroll-right-align nil)
+      (setq-local mode-line-format
+                  '("%e"
+                    (:eval (moody-tab " Treemacs " 10 'down))
+                    mode-line-format-right-align
+                    (:eval (mlscroll-mode-line)
+                           " ")))
+      (force-mode-line-update))
+    
+    (add-hook 'treemacs-mode-hook #'my-treemacs-setup-mode-line)
+    ;; 右フリンジの継続と切り詰めの矢印表示を無効にする。
+    (defun my-treemacs-hide-fringe-indicators ()
+      "Hide continuation and truncation fringe indicators in Treemacs."
+      (setq-local fringe-indicator-alist
+                  (let ((alist (copy-tree fringe-indicator-alist)))
+                    (setf (cdr (assq 'truncation alist)) '(nil nil)
+                          (cdr (assq 'continuation alist)) '(nil nil))
+                    alist)))
+    
+    (add-hook 'treemacs-mode-hook #'my-treemacs-hide-fringe-indicators)))
+
+(setup (:package treemacs-nerd-icons)
+  (:load-after treemacs nerd-icons)
+  (:require treemacs-nerd-icons)
+  (treemacs-load-theme "nerd-icons"))
 #+end_src
 * 編集アシスト
 ** meow
 #+begin_src emacs-lisp
-  (setup (:package meow)
+(setup (:package meow)
   (:require meow)
-  
+
   (:when-loaded
     (defun my-meow-setup ()
       (meow-motion-overwrite-define-key
@@ -607,38 +614,38 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 ** undo
 *** vundo
 #+begin_src emacs-lisp
-      (setup (:package vundo)
-        (:opt vundo-window-max-height 10
-              vundo-glyph-alist
-              vundo-unicode-symbols)
-        (:global-bind "C-x u" vundo))
+(setup (:package vundo)
+  (:opt vundo-window-max-height 10
+        vundo-glyph-alist
+        vundo-unicode-symbols)
+  (:global-bind "C-x u" vundo))
 #+end_src
 *** undo-fu
 #+begin_src emacs-lisp
-  (setup (:package undo-fu)
-    (:global-bind
-     "C-z" undo-fu-only-undo
-     "C-S-z" undo-fu-only-redo))
+(setup (:package undo-fu)
+  (:global-bind
+   "C-z" undo-fu-only-undo
+   "C-S-z" undo-fu-only-redo))
 #+end_src
 **** undo-fu-session
 #+begin_src emacs-lisp
-  (setup (:package undo-fu-session)
-    (:opt undo-fu-session-directory (expand-file-name "~/emacs-twist/undo-fu-session/"))
-    (undo-fu-session-global-mode))
+(setup (:package undo-fu-session)
+  (:opt undo-fu-session-directory (expand-file-name "~/emacs-twist/undo-fu-session/"))
+  (undo-fu-session-global-mode))
 #+end_src
 ** 置換
 *** visual-regexp
 #+begin_src emacs-lisp
-  (setup (:package visual-regexp)
-    (:global-bind
-     "C-c r" vr/replace
-     "C-c q" vr/query-replace
-     "C-c m" vr/mc-mark))
+(setup (:package visual-regexp)
+  (:global-bind
+   "C-c r" vr/replace
+   "C-c q" vr/query-replace
+   "C-c m" vr/mc-mark))
 #+end_src
 ** 補完
 *** corfu
 #+begin_src emacs-lisp
-  (setup (:package corfu)
+(setup (:package corfu)
 
   (:option
    corfu-auto t
@@ -663,7 +670,7 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 #+end_src
 **** corfu-terminal
 #+begin_src emacs-lisp
-  (setup (:package corfu-terminal)
+(setup (:package corfu-terminal)
   (defun corfu-terminal-setup ()
     (unless (display-graphic-p)
       (corfu-terminal-mode +1)))
@@ -673,108 +680,104 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 #+end_src
 **** corfu-icon
 #+begin_src emacs-lisp
-  (setup (:package nerd-icons-corfu)
-    (:load-after corfu nerd-icons)
-    (:when-loaded
-      (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)))
+(setup (:package nerd-icons-corfu)
+  (:load-after corfu nerd-icons)
+  (:when-loaded
+    (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)))
 #+end_src
 *** eldoc
 #+begin_src emacs-lisp
-  (global-eldoc-mode)
+(global-eldoc-mode)
 #+end_src
 *** lsp-proxy
 #+begin_src emacs-lisp
-  (setup (:package lsp-proxy)
-    (:nixpkgs lsp-proxy)
-    (:option lsp-proxy-user-languages-config lsp-proxy-user-languages-config))
+(setup (:package lsp-proxy)
+  (:nixpkgs lsp-proxy)
+  (:option lsp-proxy-user-languages-config lsp-proxy-user-languages-config))
 #+end_src
 ** 括弧
 *** smartparens
 #+begin_src emacs-lisp
-  (setup (:package smartparens)
-    (smartparens-global-mode)
-    (show-smartparens-global-mode))
+(setup (:package smartparens)
+  (smartparens-global-mode)
+  (show-smartparens-global-mode))
 #+end_src
 *** puni
 #+begin_src emacs-lisp
-  (setup (:package puni))
+(setup (:package puni))
 #+end_src
 * 言語サポート
 ** フォーマッター
 *** reformatter
 #+begin_src emacs-lisp
-  (setup (:package reformatter)
-    (:nixpkgs cljstyle
-              dprint
-              just
-              kdlfmt
-              alejandra
-              deadnix
-              shfmt
-              superhtml
-              stylua
-              ruff
-              tombi
-              yamlfmt
-              biome
-              google-java-format
-              )
-    (reformatter-define cljstyle
-      :program "cljstyle"
-      :args (list "pipe"))
-    (reformatter-define dprint
-      :program "dprint"
-      :args (list "fmt" "--stdin" buffer-file-name))
-    (reformatter-define just
-      :program "just"
-      :stdin nil
-      :stdout nil
-      :args (list "--fmt" "--unstable" "-f" input-file))
-    (reformatter-define kdlfmt
-      :program "kdlfmt"
-      :args (list "format" "-"))
-    (reformatter-define alejandra
-      :program "alejandra"
-      :args (list "-"))
-    (reformatter-define deadnix
-      :program "deadnix"
-      :args (list "--edit" "--output-to-stdout" input-file))
-    (reformatter-define shfmt
-      :program "shfmt"
-      :args (list "--indent" (number-to-string sh-basic-offset) "-"))
-    (reformatter-define superhtml
-      :program "superhtml"
-      :args (list "fmt" "--stdin"))
-    (reformatter-define stylua
-      :program "stylua"
-      :args (list "-" "--indent-type=Spaces" (format "--indent-width=%s" lua-indent-level)))
-    (reformatter-define ruff
-      :program "ruff"
-      :args (list "format" "--stdin-filename" input-file "-"))
-    (reformatter-define tombi
-      :program "tombi"
-      :args (list "format" "-"))
-    (reformatter-define yamlfmt
-      :program "yamlfmt"
-      :args (list "-in"))
-    (reformatter-define biome
-      :program "biome"
-      :args (list "format" "--stdin-file-path" buffer-file-name))
-    (reformatter-define google-java-format
-      :program "google-java-format"
-      :args (list "-")))
+(setup (:package reformatter)
+  (:nixpkgs cljstyle
+            dprint
+            just
+            kdlfmt
+            alejandra
+            shfmt
+            superhtml
+            stylua
+            ruff
+            tombi
+            yamlfmt
+            biome
+            google-java-format
+            )
+  (reformatter-define cljstyle
+    :program "cljstyle"
+    :args (list "pipe"))
+  (reformatter-define dprint
+    :program "dprint"
+    :args (list "fmt" "--stdin" buffer-file-name))
+  (reformatter-define just
+    :program "just"
+    :stdin nil
+    :stdout nil
+    :args (list "--fmt" "--unstable" "-f" input-file))
+  (reformatter-define kdlfmt
+    :program "kdlfmt"
+    :args (list "format" "-"))
+  (reformatter-define alejandra
+    :program "alejandra"
+    :args (list "-"))
+  (reformatter-define shfmt
+    :program "shfmt"
+    :args (list "--indent" (number-to-string sh-basic-offset) "-"))
+  (reformatter-define superhtml
+    :program "superhtml"
+    :args (list "fmt" "--stdin"))
+  (reformatter-define stylua
+    :program "stylua"
+    :args (list "-" "--indent-type=Spaces" (format "--indent-width=%s" lua-indent-level)))
+  (reformatter-define ruff
+    :program "ruff"
+    :args (list "format" "--stdin-filename" input-file "-"))
+  (reformatter-define tombi
+    :program "tombi"
+    :args (list "format" "-"))
+  (reformatter-define yamlfmt
+    :program "yamlfmt"
+    :args (list "-in"))
+  (reformatter-define biome
+    :program "biome"
+    :args (list "format" "--stdin-file-path" buffer-file-name))
+  (reformatter-define google-java-format
+    :program "google-java-format"
+    :args (list "-")))
 #+end_src
 ** シンタックスハイライト
 *** treesit
 #+begin_src emacs-lisp
-    (setup treesit
-      (:nixpkgs tree-sitter
-                color-lsp)
-      (:opt treesit-font-lock-level 4))
+(setup treesit
+  (:nixpkgs tree-sitter
+            color-lsp)
+  (:opt treesit-font-lock-level 4))
 #+end_src
 **** css-ts-mode
 #+begin_src emacs-lisp
-  (setup css-ts-mode
+(setup css-ts-mode
   (:mode-remap css-mode)
   (:match-file "*.css")
   (:hook biome-on-save-mode
@@ -782,41 +785,41 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 #+end_src
 **** js-ts-mode
 #+begin_src emacs-lisp
-    (setup js-ts-mode
-    (:mode-remap javascript-mode)
-    (:match-file "*.js"
-                 "*.jsx")
-    (:hook dprint-on-save-mode
-           lsp-proxy-mode))
+(setup js-ts-mode
+  (:mode-remap javascript-mode)
+  (:match-file "*.js"
+               "*.jsx")
+  (:hook dprint-on-save-mode
+         lsp-proxy-mode))
 #+end_src
 **** typescript-ts-mode
 #+begin_src emacs-lisp
-    (setup typescript-ts-mode
-      (:match-file "*.ts"
-                   "*.tsx")
-      (:hook dprint-on-save-mode
-             lsp-proxy-mode))
+(setup typescript-ts-mode
+  (:match-file "*.ts"
+               "*.tsx")
+  (:hook dprint-on-save-mode
+         lsp-proxy-mode))
 #+end_src
 **** json-ts-mode
 #+begin_src emacs-lisp
-  (setup json-ts-mode
-    (:option json-ts-mode-indent-offset 2)
-    (:match-file "*.json")
-    (:hook dprint-on-save-mode
-           lsp-proxy-mode))
+(setup json-ts-mode
+  (:option json-ts-mode-indent-offset 2)
+  (:match-file "*.json")
+  (:hook dprint-on-save-mode
+         lsp-proxy-mode))
 #+end_src
 **** yaml-ts-mode
 #+begin_src emacs-lisp
-  (setup yaml-ts-mode
-    (:mode-remap yaml-mode)
-    (:match-file "*.yaml"
-                 "*.yml")
-    (:hook yamlfmt-on-save-mode
-           lsp-proxy-mode))
+(setup yaml-ts-mode
+  (:mode-remap yaml-mode)
+  (:match-file "*.yaml"
+               "*.yml")
+  (:hook yamlfmt-on-save-mode
+         lsp-proxy-mode))
 #+end_src
 **** toml-ts-mode
 #+begin_src emacs-lisp
-  (setup toml-ts-mode
+(setup toml-ts-mode
   (:mode-remap conf-toml-mode)
   (:match-file "*.toml")
   (:hook dprint-on-save-mode
@@ -833,82 +836,82 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
 #+end_src
 **** dockerfile-ts-mode
 #+begin_src emacs-lisp
-  (setup (:package dockerfile-mode)
-    (:hook dprint-on-save-mode
-           lsp-proxy-mode))
+(setup (:package dockerfile-mode)
+  (:hook dprint-on-save-mode
+         lsp-proxy-mode))
 
-  (setup dockerfile-ts-mode
-    (:hook dprint-on-save-mode
-           lsp-proxy-mode))
+(setup dockerfile-ts-modex
+
+  (:hook dprint-on-save-mode
+         lsp-proxy-mode))
 #+end_src
 **** nix-ts-mode
 #+begin_src emacs-lisp
-  (setup (:package nix-ts-mode)
-      (:match-file "*.nix")
-      (:hook alejandra-on-save-mode
-             deadnix-on-save-mode
-             lsp-proxy-mode))
+(setup (:package nix-ts-mode)
+  (:match-file "*.nix")
+  (:hook alejandra-on-save-mode
+         lsp-proxy-mode))
 #+end_src
-**** clojure-ts-mode
+**** clojure-mode
 #+begin_src emacs-lisp
-    (setup (:package clojure-ts-mode)
-      (:match-file "*.clj"
-                   "*.cljs"
-                   "*.cljc"
-                   "*.edn")
-      (:hook cljstyle-on-save-mode
-             lsp-proxy-mode))
+(setup (:package clojure-mode)
+  (:match-file "*.clj"
+               "*.cljs"
+               "*.cljc"
+               "*.edn")
+  (:hook cljstyle-on-save-mode
+         lsp-proxy-mode))
 #+end_src
 **** rust-ts-mode
 #+begin_src emacs-lisp
-  (setup rust-ts-mode
-    (:mode-remap rust-mode)
-    (:match-file "*.rs")
-    (:option rust-format-on-save t)
-    (:hook lsp-proxy-mode))
+(setup rust-ts-mode
+  (:mode-remap rust-mode)
+  (:match-file "*.rs")
+  (:option rust-format-on-save t)
+  (:hook lsp-proxy-mode))
 #+end_src
 **** python-ts-mode
 #+begin_src emacs-lisp
-  (setup python-ts-mode
-    (:mode-remap python-mode)
-    (:match-file "*.py")
-    (:hook ruff-on-save-mode
-           lsp-proxy-mode))
+(setup python-ts-mode
+  (:mode-remap python-mode)
+  (:match-file "*.py")
+  (:hook ruff-on-save-mode
+         lsp-proxy-mode))
 #+end_src
 **** java-ts-mode
 #+begin_src emacs-lisp
-  (setup java-ts-mode
-    (:mode-remap java-mode)
-    (:match-file "*.java")
-    (:hook google-java-format-on-save-mode
-           lsp-proxy-mode))
+(setup java-ts-mode
+  (:mode-remap java-mode)
+  (:match-file "*.java")
+  (:hook google-java-format-on-save-mode
+         lsp-proxy-mode))
 #+end_src
 **** go-ts-mode
 #+begin_src emacs-lisp
-  (setup go-ts-mode
-    (:mode-remap go-mode)
-    (:match-file "*.go")
-    (:hook lsp-proxy-mode))
+(setup go-ts-mode
+  (:mode-remap go-mode)
+  (:match-file "*.go")
+  (:hook lsp-proxy-mode))
 #+end_src
 **** c-ts-mode / c++-ts-mode
 #+begin_src emacs-lisp
-  (setup c-ts-mode
-    (:mode-remap c-mode)
-    (:match-file "*.c" "*.h")
-    (:hook lsp-proxy-mode))
+(setup c-ts-mode
+  (:mode-remap c-mode)
+  (:match-file "*.c" "*.h")
+  (:hook lsp-proxy-mode))
 
-  (setup c++-ts-mode
-    (:mode-remap c++-mode)
-    (:match-file "*.cpp" "*.hpp")
-    (:hook lsp-proxy-mode))
+(setup c++-ts-mode
+  (:mode-remap c++-mode)
+  (:match-file "*.cpp" "*.hpp")
+  (:hook lsp-proxy-mode))
 #+end_src
 **** lua-ts-mode
 #+begin_src emacs-lisp
-  (setup lua-ts-mode
-    (:mode-remap lua-mode)
-    (:match-file "*.lua")
-    (:hook stylua-on-save-mode
-           lsp-proxy-mode))
+(setup lua-ts-mode
+  (:mode-remap lua-mode)
+  (:match-file "*.lua")
+  (:hook stylua-on-save-mode
+         lsp-proxy-mode))
 #+end_src
 *** reinbow-mode
 #+begin_src emacs-lisp
@@ -922,6 +925,29 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
     org-src-tab-acts-natively t     
     org-edit-src-content-indentation 0
     ))
+#+end_src
+** 補完拡張
+*** cape
+#+begin_src emacs-lisp
+(setup (:package cape)
+  (:require cape)
+  (:when-loaded
+    ;; Org-mode のソースブロック内で Elisp 補完
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (add-hook 'completion-at-point-functions #'cape-elisp-block nil t)))
+
+    ;; ファイルパスの補完
+    (add-to-list 'completion-at-point-functions #'cape-file)
+    ;; バッファ内の単語補完（Dabbrev）
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    ;; 言語キーワード補完
+    (add-to-list 'completion-at-point-functions #'cape-keyword)))
+#+end_src
+** スニペット
+*** tempel
+#+begin_src emacs-lisp
+(setup (:package tempel))
 #+end_src
 ** 括弧
 *** rainbow-delimiters
