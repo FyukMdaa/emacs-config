@@ -108,14 +108,48 @@ touching `auto-mode-alist' itself."
 (set-face-attribute 'mode-line nil :height 1.0)
 #+end_src
 
-** インデントタブのデフォルト設定
+** インデント
+インデントは「賢すぎない」ことを優先する。
+RET は現在の構造に従って次行をインデントするが、TAB/S-TAB は現在行を
+1 段ずつ動かすだけにする。言語全体の整形は formatter に任せる。
 #+begin_src emacs-lisp
 (setq-default indent-tabs-mode nil
               tab-width 2)
+
+(defun my-indent-line-forward ()
+  "Indent the current line by exactly one `tab-width' step."
+  (interactive)
+  (let ((column (current-column))
+        (indent (+ (current-indentation) tab-width)))
+    (indent-line-to indent)
+    (when (< (current-column) column)
+      (move-to-column column))))
+
+(defun my-indent-line-backward ()
+  "Outdent the current line by exactly one `tab-width' step."
+  (interactive)
+  (let ((column (current-column))
+        (indent (max 0 (- (current-indentation) tab-width))))
+    (indent-line-to indent)
+    (when (< (current-column) column)
+      (move-to-column column))))
+
+(defun my-newline-and-indent ()
+  "Insert a newline and indent it according to the current major mode."
+  (interactive)
+  (newline-and-indent))
+
+(keymap-global-set "TAB" #'my-indent-line-forward)
+(keymap-global-set "<tab>" #'my-indent-line-forward)
+(keymap-global-set "S-TAB" #'my-indent-line-backward)
+(keymap-global-set "<backtab>" #'my-indent-line-backward)
+(keymap-global-set "RET" #'my-newline-and-indent)
 #+end_src
 
-** FIXME:分割してきれいなタイトルをつける
+** 起動
 #+begin_src emacs-lisp
+;; 通常起動は空の scratch から始める。
+;; プロジェクト起動は後段の Projectile/ghq ランチャーから行う。
 (setopt inhibit-startup-screen t
         initial-scratch-message nil
         ring-bell-function #'ignore
@@ -459,10 +493,22 @@ touching `auto-mode-alist' itself."
 #+begin_src emacs-lisp
 (setup (:package consult)
   (:global-bind
+   ;; 現在 buffer の全文検索。
    "C-s" consult-line
+   ;; Buffer picker。Vertico + Orderless で曖昧検索する。
    "C-x b" consult-buffer
+   ;; C-x f はファイルを開く入口として使う。
+   "C-x f" find-file
    "M-y" consult-yank-pop
-   "C-c i" consult-imenu))
+   "C-c i" consult-imenu
+   ;; Search namespace: C-s で検索し、M-s はその検索に対する操作。
+   "M-s f" isearch-forward
+   "M-s b" isearch-backward
+   "M-s r" vr/query-replace
+   ;; gotoを置き換える
+   "M-g g" consult-goto-line
+   "M-g M-g" consult-goto-line
+   "M-g i" consult-imenu))
 
 (setup (:package consult-dir)
   (:load-after consult))
@@ -501,6 +547,71 @@ touching `auto-mode-alist' itself."
 #+begin_src emacs-lisp
 (setup (:package embark))
 #+end_src
+* Window / Buffer
+** window hydra
+Window 操作は一時的な Hydra にまとめる。
+hjkl はフォーカス移動、HJKL は window 自体の移動として大小文字を対応させる。
+#+begin_src emacs-lisp
+(setup (:package ace-window))
+
+(setup (:package hydra)
+  (:require hydra)
+  (:when-loaded
+    (defhydra my-window-hydra (:hint nil)
+      "
+Window: _a_: split vertical  _d_: close  hjkl: focus  HJKL: move  _g_: ace-window  _q_: quit"
+      ("a" split-window-right)
+      ("d" delete-window)
+      ("h" windmove-left)
+      ("j" windmove-down)
+      ("k" windmove-up)
+      ("l" windmove-right)
+      ("H" windmove-swap-states-left)
+      ("J" windmove-swap-states-down)
+      ("K" windmove-swap-states-up)
+      ("L" windmove-swap-states-right)
+      ("g" ace-window)
+      ("q" nil))
+    (keymap-global-set "C-c w" #'my-window-hydra/body)))
+#+end_src
+
+** buffer picker
+Buffer の移動は Vertico/Consult に任せ、一覧から曖昧検索する。
+既に別 window に表示されている buffer は、その window を再利用してフォーカスを移す。
+#+begin_src emacs-lisp
+(setopt switch-to-buffer-obey-display-actions t
+        display-buffer-base-action '(display-buffer-reuse-window))
+#+end_src
+
+** Project / ghq
+Project は Treemacs のプロジェクト一覧ではなく Projectile の抽象として扱う。
+ghq はリポジトリの保管場所、Projectile は Emacs 内の project 操作を担当する。
+#+begin_src emacs-lisp
+(setup (:package projectile)
+  (:nixpkgs ghq)
+  (:global-bind "C-c p" projectile-command-map)
+  (:opt projectile-completion-system 'default
+        projectile-project-search-path '("~/ghq"))
+  (:when-loaded
+    (defun my-projectile-refresh-ghq ()
+      "Register all repositories known to ghq as Projectile projects."
+      (interactive)
+      (if-let ((ghq (executable-find "ghq")))
+          (let ((projects
+                 (split-string
+                  (string-trim
+                   (with-temp-buffer
+                     (call-process ghq nil t nil "list" "-p")
+                     (buffer-string)))
+                  "\n" t)))
+            (dolist (project projects)
+              (projectile-add-known-project project))
+            (message "Projectile: registered %d ghq repositories"
+                     (length projects)))
+        (user-error "ghq executable not found")))
+    (define-key projectile-command-map (kbd "g") #'my-projectile-refresh-ghq)))
+#+end_src
+
 * サイドバー
 ** treemacs
 #+begin_src emacs-lisp
@@ -712,6 +823,8 @@ touching `auto-mode-alist' itself."
 *** smartparens
 #+begin_src emacs-lisp
 (setup (:package smartparens)
+  ;; 補完はするが、編集操作を勝手に巻き戻さない。
+  (:opt sp-autodelete-pair nil)
   (smartparens-global-mode)
   (show-smartparens-global-mode))
 #+end_src

@@ -251,6 +251,12 @@
       repo = "prescient.el";
       type = "github";
     };
+    projectile = {
+      flake = false;
+      owner = "bbatsov";
+      repo = "projectile";
+      type = "github";
+    };
     puni = {
       flake = false;
       owner = "AmaiKinono";

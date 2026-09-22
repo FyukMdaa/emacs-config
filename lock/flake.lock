@@ -672,6 +672,22 @@
         "type": "github"
       }
     },
+    "projectile": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789569018,
+        "narHash": "sha256-SZcymmLaP1dqKKVHixboCijSUlu+h5R7D+hky4v6k3U=",
+        "owner": "bbatsov",
+        "repo": "projectile",
+        "rev": "f902073c1d10bb125875470c9dcbdcd7c9a1eefb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bbatsov",
+        "repo": "projectile",
+        "type": "github"
+      }
+    },
     "puni": {
       "flake": false,
       "locked": {
@@ -780,6 +796,7 @@
         "popon": "popon",
         "posframe": "posframe",
         "prescient": "prescient",
+        "projectile": "projectile",
         "puni": "puni",
         "rainbow-delimiters": "rainbow-delimiters",
         "reformatter": "reformatter",
