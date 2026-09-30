@@ -616,18 +616,21 @@ ghq はリポジトリの保管場所、Projectile は Emacs 内の project 操�
 ** treemacs
 #+begin_src emacs-lisp
 (setup (:package treemacs)
-  (:global-bind "C-c t" treemacs)
+  (:global-bind "C-c t" treemacs
+                "C-<tab>" treemacs)
   (:bind [mouse-1] treemacs-single-click-expand-action)
+  ;; yazi風のbindにする
+  (:bind "r" treemacs-rename-file
+         "j" treemacs-next-line
+         "k" treemacs-previous-line
+         "a f" treemacs-create-file
+         "a d" treemacs-create-dir)
   (:option treemacs-text-scale -1)
   (:option
    treemacs-last-error-persist-file (expand-file-name "~/emacs-twist/treemacs/persist-last-error.org")
    treemacs-persist-file (expand-file-name "~/emacs-twist/treemacs/persist.org"))
-  ;; VSCode のようにシングルクリックでファイル展開しつつフォーカスは移さない。
+
   (:when-loaded
-    (defun my-treemacs-expand-action (&rest _)
-      "Keep the focus on the Treemacs buffer after an action."
-      (select-window (treemacs-get-local-window)))
-    (advice-add 'treemacs-single-click-expand-action :after #'my-treemacs-expand-action)
     ;; modeline に mlscroll を載せる。
     (defun my-treemacs-setup-mode-line ()
       "Configure a Treemacs-specific mode line with moody and mlscroll."
