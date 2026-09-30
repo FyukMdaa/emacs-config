@@ -65,6 +65,22 @@ twist.nix がすでにすべてのパッケージを Nix store 上にビルド�
   :repeatable t)
 #+end_src
 
+** =:mode-bind= を使えるようにする
+M-c はモード別バインドの入口として使う。各 major mode の map に M-c 用の
+prefix keymap を作り、そこへ KEY を登録する。
+#+begin_src emacs-lisp
+(setup-define :mode-bind
+  (lambda (key command)
+    (let ((map (setup-get 'map)))
+      `(progn
+         (unless (keymapp (keymap-lookup ,map "M-c"))
+           (keymap-set ,map "M-c" (make-sparse-keymap)))
+         (keymap-set (keymap-lookup ,map "M-c") ,key #',command))))
+  :documentation "Bind KEY to COMMAND under the mode-local M-c prefix."
+  :repeatable t
+  :after-loaded t)
+#+end_src
+
 ** =:mode-remap= を使えるようにする
 #+begin_src emacs-lisp
 (setup-define :mode-remap
@@ -109,41 +125,54 @@ touching `auto-mode-alist' itself."
 #+end_src
 
 ** インデント
-インデントは「賢すぎない」ことを優先する。
-RET は現在の構造に従って次行をインデントするが、TAB/S-TAB は現在行を
-1 段ずつ動かすだけにする。言語全体の整形は formatter に任せる。
+インデントは「賢すぎない」ことを優先する。幅は 2 スペースで統一する。
+TAB/S-TAB は現在行 (リージョン選択中は選択行すべて) を 1 段ずつ動かすだけにする。
+言語全体の整形は formatter に任せる。
+
+Emacs 側と formatter 側で幅が食い違うと、保存時に 4 に戻されたりするので、
+各言語のオフセットも 2 に揃えておく。Go は gofmt がタブなので例外にする。
 #+begin_src emacs-lisp
 (setq-default indent-tabs-mode nil
               tab-width 2)
 
+;; 言語ごとのオフセットを tab-width に揃える。
+(setopt standard-indent 2
+        python-indent-offset 2
+        js-indent-level 2
+        css-indent-offset 2
+        typescript-ts-mode-indent-offset 2
+        rust-ts-mode-indent-offset 2
+        c-ts-mode-indent-offset 2
+        java-ts-mode-indent-offset 2
+        lua-ts-mode-indent-offset 2)
+
+(defun my-indent-shift (amount)
+  "Shift the current line, or every line in the active region, by AMOUNT columns."
+  (if (use-region-p)
+      (let ((deactivate-mark nil))
+        (indent-rigidly (region-beginning) (region-end) amount))
+    ;; 行内のカーソル位置は、同じ文字の上に残るようにする。
+    (let ((offset (max 0 (- (point)
+                            (save-excursion (back-to-indentation) (point))))))
+      (indent-line-to (max 0 (+ (current-indentation) amount)))
+      (forward-char offset))))
+
 (defun my-indent-line-forward ()
-  "Indent the current line by exactly one `tab-width' step."
+  "Indent by exactly one `tab-width' step."
   (interactive)
-  (let ((column (current-column))
-        (indent (+ (current-indentation) tab-width)))
-    (indent-line-to indent)
-    (when (< (current-column) column)
-      (move-to-column column))))
+  (my-indent-shift tab-width))
 
 (defun my-indent-line-backward ()
-  "Outdent the current line by exactly one `tab-width' step."
+  "Outdent by exactly one `tab-width' step."
   (interactive)
-  (let ((column (current-column))
-        (indent (max 0 (- (current-indentation) tab-width))))
-    (indent-line-to indent)
-    (when (< (current-column) column)
-      (move-to-column column))))
-
-(defun my-newline-and-indent ()
-  "Insert a newline and indent it according to the current major mode."
-  (interactive)
-  (newline-and-indent))
+  (my-indent-shift (- tab-width)))
 
 (keymap-global-set "TAB" #'my-indent-line-forward)
 (keymap-global-set "<tab>" #'my-indent-line-forward)
 (keymap-global-set "S-TAB" #'my-indent-line-backward)
 (keymap-global-set "<backtab>" #'my-indent-line-backward)
-(keymap-global-set "RET" #'my-newline-and-indent)
+;; python-mode などは electric-indent を止めているので、RET は明示的に束縛する。
+(keymap-global-set "RET" #'newline-and-indent)
 #+end_src
 
 ** 起動
@@ -167,6 +196,17 @@ RET は現在の構造に従って次行をインデントするが、TAB/S-TAB 
     (:hook my-display-line-numbers-with-padding)))
 
 (keymap-global-set "C-x C-b" #'ibuffer)
+#+end_src
+
+** キーバインドの方針
+- C-x :: Emacs の基本機能 (開く・保存・終了など)
+- C-c :: 追加したパッケージの入口
+- M-c :: モード別の個人バインド (=:mode-bind= で登録)
+- M-キー :: C-キーの拡張 (C-s の検索に対する M-s、C-g の移動に対する M-g など)
+- C-n/p/f/b :: 通常の移動、M-f/b :: 単語移動 (M-n/M-p は未使用)
+#+begin_src emacs-lisp
+;; M-c は capitalize-word だったが、モード別 prefix に明け渡す。
+(keymap-global-unset "M-c")
 #+end_src
 
 ** フレームをピクセル単位で指定できるように
@@ -500,11 +540,11 @@ RET は現在の構造に従って次行をインデントするが、TAB/S-TAB 
    ;; C-x f はファイルを開く入口として使う。
    "C-x f" find-file
    "M-y" consult-yank-pop
-   "C-c i" consult-imenu
    ;; Search namespace: C-s で検索し、M-s はその検索に対する操作。
    "M-s f" isearch-forward
    "M-s b" isearch-backward
    "M-s r" vr/query-replace
+   "M-s R" vr/replace
    ;; gotoを置き換える
    "M-g g" consult-goto-line
    "M-g M-g" consult-goto-line
@@ -545,7 +585,8 @@ RET は現在の構造に従って次行をインデントするが、TAB/S-TAB 
 #+end_src
 ** embark
 #+begin_src emacs-lisp
-(setup (:package embark))
+(setup (:package embark)
+  (:global-bind "C-." embark-act))
 #+end_src
 * Window / Buffer
 ** window hydra
@@ -722,20 +763,22 @@ ghq はリポジトリの保管場所、Projectile は Emacs 内の project 操�
        '("x" . meow-line)
        '("y" . meow-save)
        '("z" . meow-pop-selection)
-       '("<escape>" . meow-insert)))
+       '("<escape>" . meow-cancel-selection)))
 
     (my-meow-setup)
 
-    ;; Meowの自動モード切り替えを抑止
-    (:opt meow-mode-state-list
-          '((authinfo-mode . normal)
-            (dired-mode . motion)))
-    
-    ;; デフォルトの初期状態を insert に固定
-    (:opt  meow-initial-state 'insert))
+    ;; 通常の編集バッファは INSERT (= Emacs-bind) から始める。
+    ;; 既定の meow-mode-state-list は残して、必要な分だけ上書きする。
+    (dolist (entry '((fundamental-mode . insert)
+                     (text-mode . insert)
+                     (prog-mode . insert)
+                     (conf-mode . insert)
+                     (authinfo-mode . normal)
+                     (dired-mode . motion)))
+      (setf (alist-get (car entry) meow-mode-state-list) (cdr entry))))
 
-  ;; C-c v で NORMAL モードへ移行
-  (:global-bind "C-c v" meow-global-mode))
+  ;; ESC で NORMAL、NORMAL の i/a/o などで INSERT に戻る。
+  (meow-global-mode 1))
 #+end_src
 ** undo
 *** vundo
@@ -762,11 +805,7 @@ ghq はリポジトリの保管場所、Projectile は Emacs 内の project 操�
 ** 置換
 *** visual-regexp
 #+begin_src emacs-lisp
-(setup (:package visual-regexp)
-  (:global-bind
-   "C-c r" vr/replace
-   "C-c q" vr/query-replace
-   "C-c m" vr/mc-mark))
+(setup (:package visual-regexp))
 #+end_src
 ** 補完
 *** corfu
@@ -882,7 +921,8 @@ ghq はリポジトリの保管場所、Projectile は Emacs 内の project 操�
     :args (list "-" "--indent-type=Spaces" (format "--indent-width=%s" lua-indent-level)))
   (reformatter-define ruff
     :program "ruff"
-    :args (list "format" "--stdin-filename" input-file "-"))
+    :args (list "format" "--config" "indent-width = 2"
+                "--stdin-filename" input-file "-"))
   (reformatter-define tombi
     :program "tombi"
     :args (list "format" "-"))
@@ -965,12 +1005,10 @@ ghq はリポジトリの保管場所、Projectile は Emacs 内の project 操�
 #+end_src
 **** dockerfile-ts-mode
 #+begin_src emacs-lisp
-(setup (:package dockerfile-mode)
-  (:hook dprint-on-save-mode
-         lsp-proxy-mode))
+(setup (:package dockerfile-mode))
 
-(setup dockerfile-ts-modex
-
+(setup dockerfile-ts-mode
+  (:mode-remap dockerfile-mode)
   (:hook dprint-on-save-mode
          lsp-proxy-mode))
 #+end_src
@@ -1020,7 +1058,9 @@ ghq はリポジトリの保管場所、Projectile は Emacs 内の project 操�
 (setup go-ts-mode
   (:mode-remap go-mode)
   (:match-file "*.go")
-  (:hook lsp-proxy-mode))
+  ;; gofmt はタブ固定。TAB の 1 段 = タブ 1 文字にする。
+  (:hook (lambda () (setq-local indent-tabs-mode t tab-width 4))
+         lsp-proxy-mode))
 #+end_src
 **** c-ts-mode / c++-ts-mode
 #+begin_src emacs-lisp
