@@ -861,6 +861,15 @@ ghq はリポジトリの保管場所、Projectile は Emacs 内の project 操�
   (:nixpkgs lsp-proxy)
   (:option lsp-proxy-user-languages-config lsp-proxy-user-languages-config))
 #+end_src
+*** lsp-proxy-corfu-fix
+lsp-proxy + corfu の補完確定時のバッファ破壊バグ修正。
+exit-function が corfu 挿入前の座標を使っている問題等を advice で上書きする。
+#+begin_src emacs-lisp
+(setup (:require lsp-proxy-corfu-fix)
+  ;; lsp-proxy-completion が読み込まれた後に有効化
+  (with-eval-after-load 'lsp-proxy-completion
+    (lsp-proxy-corfu-fix-enable)))
+#+end_src
 ** 括弧
 *** smartparens
 #+begin_src emacs-lisp

@@ -1,0 +1,3 @@
+(lsp-proxy-corfu-fix :fetcher github
+                     :repo "fyukmdaa/emacs-config"
+                     :files ("elisp/lsp-proxy-corfu-fix/*.el"))
